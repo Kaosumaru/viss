@@ -23,8 +23,13 @@ export interface Pins {
   [key: string]: Type;
 }
 
+export interface ParameterInfo {
+  type: ParameterValueType;
+  defaultValue?: ParameterValue;
+}
+
 export interface Parameters {
-  [key: string]: ParameterValueType;
+  [key: string]: ParameterInfo;
 }
 export abstract class CompilerNode {
   inputs: Pins = {};

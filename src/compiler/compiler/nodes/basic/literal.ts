@@ -1,12 +1,17 @@
-import type { Type } from "@glsl/types";
-import type { Context } from "../../context";
+import type { ScalarType } from "@glsl/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
+import type { Context } from "@compiler/context";
 
-export class LiteralNode<T extends Type> extends CompilerNode {
+export class LiteralNode<T extends ScalarType> extends CompilerNode {
   constructor(type: T) {
     super();
     this.type = type;
-    this.parameters.value = "number"; // TODO should also support Vector and Matrix types
+    // TODO should also support Vector and Matrix types
+    this.parameters.value = {
+      type: "number",
+      defaultValue: { type: "number", value: 0 },
+    };
+
     this.outputs.out = type;
   }
   override compile(node: NodeContext): Context {
@@ -18,7 +23,7 @@ export class LiteralNode<T extends Type> extends CompilerNode {
   }
 
   override getLabel(): string {
-    return `${this.type.id}`;
+    return `${this.type.type}`;
   }
   type: T;
 }

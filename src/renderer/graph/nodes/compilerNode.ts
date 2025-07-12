@@ -8,8 +8,37 @@ export class UICompilerNode extends ClassicPreset.Node {
   constructor(compilerNode: CompilerNode) {
     super(compilerNode.getLabel());
 
-    const socket = new ClassicPreset.Socket("socket");
-    this.addControl("a", new ClassicPreset.InputControl("text", {}));
-    this.addOutput("a", new ClassicPreset.Output(socket));
+    this.addInputs(compilerNode);
+    this.addParams(compilerNode);
+    this.addOutputs(compilerNode);
+  }
+
+  protected addOutputs(compilerNode: CompilerNode) {
+    Object.entries(compilerNode.outputs).forEach(([name]) => {
+      this.addOutput(
+        name,
+        new ClassicPreset.Output(new ClassicPreset.Socket(name))
+      );
+    });
+  }
+
+  protected addInputs(compilerNode: CompilerNode) {
+    Object.entries(compilerNode.inputs).forEach(([name]) => {
+      this.addInput(
+        name,
+        new ClassicPreset.Input(new ClassicPreset.Socket(name))
+      );
+    });
+  }
+
+  protected addParams(compilerNode: CompilerNode) {
+    Object.entries(compilerNode.parameters).forEach(([name, value]) => {
+      this.addControl(
+        name,
+        new ClassicPreset.InputControl("number", {
+          initial: value.defaultValue?.value || 0,
+        })
+      );
+    });
   }
 }
