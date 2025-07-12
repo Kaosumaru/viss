@@ -1,6 +1,7 @@
 import { scalar, vector } from "@glsl/types";
 import { LiteralNode } from "./basic/literal";
 import type { CompilerNode } from "./compilerNode";
+import { add } from "./operators/add";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -8,6 +9,8 @@ export const nodes = {
   vector2: new LiteralNode(vector("float", 2)),
   vector3: new LiteralNode(vector("float", 3)),
   vector4: new LiteralNode(vector("float", 4)),
+
+  add,
 };
 
 export type NodeType = keyof typeof nodes;

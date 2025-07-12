@@ -9,10 +9,14 @@ export type ParamExtractedValue<T> = Extract<
 
 export interface NodeContext {
   getInput(name: string): Context;
-  getParam<T extends ParameterValueType>(
+  getParamValue<T extends ParameterValueType>(
     name: string,
     type: T
   ): ParamExtractedValue<T>;
+  tryGetParamValue<T extends ParameterValueType>(
+    name: string,
+    type: T
+  ): ParamExtractedValue<T> | undefined;
 }
 
 export interface Pins {
@@ -26,5 +30,5 @@ export abstract class CompilerNode {
   inputs: Pins = {};
   parameters: Parameters = {};
   outputs: Pins = {};
-  abstract compile(ctx: Context, node: NodeContext): Context;
+  abstract compile(node: NodeContext): Context;
 }
