@@ -6,11 +6,6 @@ export interface NumberValue {
 export type ParameterValue = NumberValue;
 export type ParameterValueType = ParameterValue["type"];
 
-export interface Parameter {
-  identifier: string;
-  value: ParameterValue;
-}
-
 export interface Parameters {
-  [key: string]: Parameter;
+  [key: string]: ParameterValue;
 }

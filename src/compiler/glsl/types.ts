@@ -20,3 +20,18 @@ export interface VectorType {
 }
 
 export type Type = AnyType | ScalarType | VectorType;
+
+export function scalar(type: ScalarTypeName): ScalarType {
+  return {
+    id: "scalar",
+    type,
+  };
+}
+
+export function vector(type: ScalarTypeName, size: number): VectorType {
+  return {
+    id: "scalar",
+    size,
+    type,
+  };
+}

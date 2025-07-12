@@ -9,6 +9,7 @@ export default defineConfig({
       "@compiler": path.resolve(__dirname, "src/compiler"),
       "@glsl": path.resolve(__dirname, "src/glsl"),
       "@graph": path.resolve(__dirname, "src/graph"),
+      "@test": path.resolve(__dirname, "src/test"),
     },
   },
   plugins: [react()],

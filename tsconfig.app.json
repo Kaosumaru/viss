@@ -28,6 +28,7 @@
       "@compiler/*": ["compiler/compiler/*"],
       "@glsl/*": ["compiler/glsl/*"],
       "@graph/*": ["compiler/graph/*"],
+      "@test/*": ["compiler/test/*"],
     }
   },
   "include": ["src"]

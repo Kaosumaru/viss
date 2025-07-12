@@ -1,5 +1,5 @@
 import type { Position } from "./position";
-import type { Socket } from "./socket";
+import type { Sockets } from "./socket";
 import type { Parameters } from "./parameter";
 
 export interface Node {
@@ -8,6 +8,6 @@ export interface Node {
   position: Position;
 
   parameters: Parameters;
-  inputs: Socket[];
-  outputs: Socket[];
+  inputs: Sockets;
+  outputs: Sockets;
 }

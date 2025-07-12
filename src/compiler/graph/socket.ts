@@ -3,6 +3,10 @@ export interface Socket {
   label: string;
 }
 
+export interface Sockets {
+  [key: string]: Socket;
+}
+
 export function socket(id: string, label: string): Socket {
   return {
     identifier: id,
