@@ -4,7 +4,7 @@ import type { Parameters } from "./parameter";
 
 export interface Node {
   identifier: string;
-  label: string;
+  nodeType: string;
   position: Position;
 
   parameters: Parameters;

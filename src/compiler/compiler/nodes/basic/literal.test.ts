@@ -1,7 +1,8 @@
-import { setup } from "@test/setup";
+import { scalar } from "@glsl/types";
+import { expectedOutput, setup } from "@test/setup";
 import { expect, test } from "vitest";
 
-test("expect float literal to output float", () => {
+test("FloatLiteral", () => {
   const c = setup({
     floatNode: {
       type: "float",
@@ -11,8 +12,5 @@ test("expect float literal to output float", () => {
     },
   }).compile("floatNode");
 
-  expect(c).toEqual({
-    type: "float",
-    value: 1.0,
-  });
+  expect(c).toEqual(expectedOutput("1", scalar("float")));
 });

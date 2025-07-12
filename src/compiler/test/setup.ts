@@ -1,6 +1,7 @@
 import { Compiler } from "@compiler/compiler";
 import type { Context } from "@compiler/context";
 import type { NodeType } from "@compiler/nodes/allNodes";
+import type { Type } from "@glsl/types";
 import type { Graph } from "@graph/graph";
 import type { Node } from "@graph/node";
 import type { Parameters } from "@graph/parameter";
@@ -33,7 +34,7 @@ export function setup<T extends Descriptors>(
       nodes: Object.entries(desc).reduce((acc, [key, value]) => {
         acc.push({
           identifier: key,
-          label: key,
+          nodeType: value.type,
           position: { x: 0, y: 0 }, // Default position
           parameters: value.params || {},
           inputs: {}, // No inputs for test nodes
@@ -64,11 +65,9 @@ export function setup<T extends Descriptors>(
   };
 }
 
-setup({
-  exampleNode: {
-    type: "vector2",
-  },
-  anotherNode: {
-    type: "vector3",
-  },
-}).connect("exampleNode", "input1", "anotherNode");
+export function expectedOutput(main: string, type: Type): Context {
+  return {
+    mainOutput: main,
+    type: type,
+  };
+}

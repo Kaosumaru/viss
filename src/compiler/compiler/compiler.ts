@@ -23,12 +23,12 @@ export class Compiler {
       mainOutput: "",
     };
 
-    const compilerNode = getNode(node.identifier as NodeType);
+    const compilerNode = getNode(node.nodeType as NodeType);
     const nodeContext = this.createNodeContextFor(node);
 
-    compilerNode.compile(ctx, nodeContext);
+    const compiledCtx = compilerNode.compile(ctx, nodeContext);
 
-    return ctx;
+    return compiledCtx;
   }
 
   protected createNodeContextFor(node: Node): NodeContext {
