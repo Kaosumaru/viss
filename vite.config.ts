@@ -6,10 +6,10 @@ import path from "path";
 export default defineConfig({
   resolve: {
     alias: {
-      "@compiler": path.resolve(__dirname, "src/compiler"),
-      "@glsl": path.resolve(__dirname, "src/glsl"),
-      "@graph": path.resolve(__dirname, "src/graph"),
-      "@test": path.resolve(__dirname, "src/test"),
+      "@compiler": path.resolve(__dirname, "src/compiler/compiler"),
+      "@glsl": path.resolve(__dirname, "src/compiler/glsl"),
+      "@graph": path.resolve(__dirname, "src/compiler/graph"),
+      "@test": path.resolve(__dirname, "src/compiler/test"),
     },
   },
   plugins: [react()],

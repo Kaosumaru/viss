@@ -2,6 +2,7 @@ import { scalar, vector } from "@glsl/types";
 import { LiteralNode } from "./basic/literal";
 import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
+import { substract } from "./operators/substract";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -11,6 +12,7 @@ export const nodes = {
   vector4: new LiteralNode(vector("float", 4)),
 
   add,
+  substract,
 };
 
 export type NodeType = keyof typeof nodes;

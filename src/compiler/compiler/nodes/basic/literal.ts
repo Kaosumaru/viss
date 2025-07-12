@@ -17,5 +17,8 @@ export class LiteralNode<T extends Type> extends CompilerNode {
     };
   }
 
+  override getLabel(): string {
+    return `${this.type.id}`;
+  }
   type: T;
 }

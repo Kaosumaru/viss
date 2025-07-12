@@ -31,4 +31,5 @@ export abstract class CompilerNode {
   parameters: Parameters = {};
   outputs: Pins = {};
   abstract compile(node: NodeContext): Context;
+  abstract getLabel(): string;
 }
