@@ -10,7 +10,11 @@ class PreviewNode extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    return node.getInput("in");
+    const ctx = node.getInput("in");
+    return {
+      type: ctx.type,
+      mainOutput: `vec4(${ctx.mainOutput},${ctx.mainOutput},${ctx.mainOutput},1.0)`,
+    };
   }
 
   override getLabel(): string {

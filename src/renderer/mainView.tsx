@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
+import { useCallback, useState } from "react";
+import type { OnGraphChanged } from "./editor";
+import { compileGraph } from "./compileGraph";
 
 const Layout = styled.div`
   display: grid;
@@ -26,14 +29,25 @@ const Canvas = styled.div`
 `;
 
 export function MainView() {
+  const [color, setColor] = useState(
+    "vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0)"
+  ); // Default color
+
+  const onChanged: OnGraphChanged = useCallback((editor) => {
+    const context = compileGraph(editor);
+    setColor(
+      context?.mainOutput ? context.mainOutput : "vec4(0.0, 0.0, 0.0, 1.0)"
+    );
+  }, []);
+
   return (
     <Layout>
       <Canvas>
-        <EditorView />
+        <EditorView onChanged={onChanged} />
       </Canvas>
 
       <Result>
-        <PropertyView />
+        <PropertyView color={color} />
       </Result>
     </Layout>
   );

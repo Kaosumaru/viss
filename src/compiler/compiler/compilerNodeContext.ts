@@ -3,14 +3,22 @@ import type { Context } from "./context";
 import type { NodeContext } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { Compiler } from "./compiler";
+import type { GraphHelper } from "./graphHelper";
 
 export class CompileNodeContext implements NodeContext {
-  constructor(compiler: Compiler, node: Node) {
+  constructor(compiler: Compiler, graph: GraphHelper, node: Node) {
     this.compiler = compiler;
+    this.graph = graph;
     this.node = node;
   }
   getInput(name: string): Context {
-    return this.compiler.compile(name);
+    const node = this.graph.getInputNode(this.node.identifier, name);
+    if (!node) {
+      throw new Error(
+        `Input node ${name} not found for ${this.node.identifier}`
+      );
+    }
+    return this.compiler.compile(node.identifier);
   }
   tryGetParamValue<T extends ParameterValueType>(name: string, type: T) {
     const param = this.node.parameters[name];
@@ -36,4 +44,5 @@ export class CompileNodeContext implements NodeContext {
 
   protected compiler: Compiler;
   protected node: Node;
+  protected graph: GraphHelper;
 }

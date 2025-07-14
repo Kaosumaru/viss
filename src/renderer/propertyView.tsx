@@ -8,14 +8,18 @@ void main() {
 }
 `;
 
-const fragmentShader = `
+export interface PropertyViewProps {
+  color: string;
+}
+
+export function PropertyView({ color }: PropertyViewProps) {
+  const fragmentShader = `
 precision mediump float;
 void main() {
-  gl_FragColor = vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0);
+  gl_FragColor = ${color}; 
 }
 `;
 
-export function PropertyView() {
   return (
     <Paper elevation={3} style={{ padding: "1em", height: "100%" }}>
       <h2>Properties</h2>

@@ -13,9 +13,13 @@ import {
 import type { AreaExtra, Schemes } from "./graph/node";
 import { createContextMenu } from "./contextMenu";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
-import { preview } from "@compiler/nodes/out/preview";
 
-export async function createEditor(container: HTMLElement) {
+export type OnGraphChanged = (editor: NodeEditor<Schemes>) => void;
+
+export async function createEditor(
+  container: HTMLElement,
+  onChanged?: OnGraphChanged
+) {
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
@@ -41,9 +45,21 @@ export async function createEditor(container: HTMLElement) {
   area.use(render);
   area.use(arrange);
 
+  editor.addPipe((context) => {
+    if (
+      context.type === "nodecreated" ||
+      context.type === "noderemoved" ||
+      context.type === "connectioncreated" ||
+      context.type === "connectionremoved"
+    ) {
+      onChanged?.(editor);
+    }
+    return context;
+  });
+
   AreaExtensions.simpleNodesOrder(area);
 
-  const previewNode = new UICompilerNode(preview);
+  const previewNode = new UICompilerNode("preview");
 
   await editor.addNode(previewNode);
 

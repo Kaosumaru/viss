@@ -1,13 +1,17 @@
+import { getNode, type NodeType } from "@compiler/nodes/allNodes";
 import type { CompilerNode } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 
 export class UICompilerNode extends ClassicPreset.Node {
   height = 140;
   width = 200;
+  nodeType: NodeType;
 
-  constructor(compilerNode: CompilerNode) {
+  constructor(nodeType: NodeType) {
+    const compilerNode = getNode(nodeType);
     super(compilerNode.getLabel());
 
+    this.nodeType = nodeType;
     this.addInputs(compilerNode);
     this.addParams(compilerNode);
     this.addOutputs(compilerNode);

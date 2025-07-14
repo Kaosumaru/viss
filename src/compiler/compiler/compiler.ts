@@ -30,7 +30,7 @@ export class Compiler {
   }
 
   protected createNodeContextFor(node: Node): NodeContext {
-    return new CompileNodeContext(this, node);
+    return new CompileNodeContext(this, this.graph, node);
   }
 
   protected graph: GraphHelper;
