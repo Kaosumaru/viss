@@ -1,9 +1,9 @@
 import { ClassicPreset, type GetSchemes } from "rete";
 import type { ContextMenuExtra } from "rete-context-menu-plugin";
 import type { ReactArea2D } from "rete-react-plugin";
-import type { NodeA, NodeB } from "./nodes/test";
+import type { UICompilerNode } from "./nodes/compilerNode";
 
-export type Node = NodeA | NodeB;
+export type Node = UICompilerNode;
 export type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 export type AreaExtra = ReactArea2D<Schemes> | ContextMenuExtra;
 

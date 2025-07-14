@@ -3,16 +3,12 @@ import {
   Presets as ContextMenuPresets,
 } from "rete-context-menu-plugin";
 import type { Schemes } from "./graph/node";
-import { NodeA, NodeB } from "./graph/nodes/test";
 import type { ItemDefinition } from "rete-context-menu-plugin/_types/presets/classic/types";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import { nodes } from "@compiler/nodes/allNodes";
 
 export function createContextMenu(): ContextMenuPlugin<Schemes> {
   const def: ItemDefinition<Schemes>[] = [
-    ["NodeA", () => new NodeA()],
-    ["Extra", [["NodeB", () => new NodeB()]]],
-
     [
       "Literals",
       [
@@ -27,6 +23,8 @@ export function createContextMenu(): ContextMenuPlugin<Schemes> {
         ["Substract", () => new UICompilerNode(nodes.substract)],
       ],
     ],
+
+    ["Output", [["Preview", () => new UICompilerNode(nodes.preview)]]],
   ];
   return new ContextMenuPlugin<Schemes>({
     items: ContextMenuPresets.classic.setup(def),

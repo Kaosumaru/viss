@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { NodeEditor, ClassicPreset } from "rete";
+import { NodeEditor } from "rete";
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
 import {
   ConnectionPlugin,
@@ -11,8 +11,9 @@ import {
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
 import type { AreaExtra, Schemes } from "./graph/node";
-import { NodeA, NodeB } from "./graph/nodes/test";
 import { createContextMenu } from "./contextMenu";
+import { UICompilerNode } from "./graph/nodes/compilerNode";
+import { preview } from "@compiler/nodes/out/preview";
 
 export async function createEditor(container: HTMLElement) {
   const editor = new NodeEditor<Schemes>();
@@ -42,13 +43,9 @@ export async function createEditor(container: HTMLElement) {
 
   AreaExtensions.simpleNodesOrder(area);
 
-  const a = new NodeA();
-  const b = new NodeB();
+  const previewNode = new UICompilerNode(preview);
 
-  await editor.addNode(a);
-  await editor.addNode(b);
-
-  await editor.addConnection(new ClassicPreset.Connection(a, "a", b, "b"));
+  await editor.addNode(previewNode);
 
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());

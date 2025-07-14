@@ -3,6 +3,7 @@ import { LiteralNode } from "./basic/literal";
 import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
 import { substract } from "./operators/substract";
+import { preview } from "./out/preview";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -13,6 +14,8 @@ export const nodes = {
 
   add,
   substract,
+
+  preview,
 };
 
 export type NodeType = keyof typeof nodes;
