@@ -15,6 +15,8 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.addInputs(compilerNode);
     this.addParams(compilerNode);
     this.addOutputs(compilerNode);
+
+    this.updateSize();
   }
 
   protected addOutputs(compilerNode: CompilerNode) {
@@ -44,5 +46,19 @@ export class UICompilerNode extends ClassicPreset.Node {
         })
       );
     });
+  }
+
+  updateSize() {
+    const inputs = Object.entries(this.inputs);
+    const outputs = Object.entries(this.outputs);
+    const controls = Object.entries(this.controls);
+
+    this.height =
+      40 +
+      4 +
+      5 +
+      inputs.length * 36 +
+      outputs.length * 36 +
+      controls.length * 36;
   }
 }
