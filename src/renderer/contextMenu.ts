@@ -12,7 +12,7 @@ export function createContextMenu(): ContextMenuPlugin<Schemes> {
       "Literals",
       [
         ["Float", () => new UICompilerNode("float")],
-        ["Vector2", () => new UICompilerNode("vector2")],
+        // ["Vector2", () => new UICompilerNode("vector2")],
       ],
     ],
     [
@@ -20,6 +20,15 @@ export function createContextMenu(): ContextMenuPlugin<Schemes> {
       [
         ["Add", () => new UICompilerNode("add")],
         ["Substract", () => new UICompilerNode("substract")],
+      ],
+    ],
+
+    ["Uniforms", [["Time", () => new UICompilerNode("time")]]],
+    [
+      "Functions",
+      [
+        ["Sin", () => new UICompilerNode("sin")],
+        ["Abs", () => new UICompilerNode("abs")],
       ],
     ],
 

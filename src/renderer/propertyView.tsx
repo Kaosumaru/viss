@@ -15,6 +15,7 @@ export interface PropertyViewProps {
 export function PropertyView({ color }: PropertyViewProps) {
   const fragmentShader = `
 precision mediump float;
+uniform float u_time;
 void main() {
   gl_FragColor = ${color}; 
 }

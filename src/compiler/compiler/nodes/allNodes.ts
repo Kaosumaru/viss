@@ -1,21 +1,29 @@
-import { scalar, vector } from "@glsl/types";
+import { scalar } from "@glsl/types";
 import { LiteralNode } from "./basic/literal";
 import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
 import { substract } from "./operators/substract";
 import { preview } from "./out/preview";
+import { sin } from "./functions/sin";
+import { UniformNode } from "./uniforms/uniform";
+import { abs } from "./functions/abs";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
 
-  vector2: new LiteralNode(vector("float", 2)),
-  vector3: new LiteralNode(vector("float", 3)),
-  vector4: new LiteralNode(vector("float", 4)),
+  // vector2: new LiteralNode(vector("float", 2)),
+  // vector3: new LiteralNode(vector("float", 3)),
+  // vector4: new LiteralNode(vector("float", 4)),
 
   add,
   substract,
 
   preview,
+
+  sin,
+  abs,
+
+  time: new UniformNode("u_time", scalar("float")),
 };
 
 export type NodeType = keyof typeof nodes;

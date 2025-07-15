@@ -10,6 +10,7 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
   fragmentShader,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,6 +37,9 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
       }
       return shader;
     };
+
+    console.log("Compiling shaders");
+    console.log(fragmentShader);
 
     const vs = compileShader(gl.VERTEX_SHADER, vertexShader);
     const fs = compileShader(gl.FRAGMENT_SHADER, fragmentShader);
@@ -66,15 +70,34 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-    const draw = () => {
+    const uTimeLocation = gl.getUniformLocation(program, "u_time");
+
+    const startTime = performance.now();
+
+    const render = () => {
+      const currentTime = performance.now();
+      const elapsedSeconds = (currentTime - startTime) / 1000;
+
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.clear(gl.COLOR_BUFFER_BIT);
+
+      if (uTimeLocation) {
+        gl.uniform1f(uTimeLocation, elapsedSeconds);
+      }
+
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      if (uTimeLocation) {
+        animationFrameRef.current = requestAnimationFrame(render);
+      }
     };
 
-    draw();
+    render();
 
     return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       gl.deleteProgram(program);
       gl.deleteShader(vs);
       gl.deleteShader(fs);
