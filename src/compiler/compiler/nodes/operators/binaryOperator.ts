@@ -26,9 +26,9 @@ export abstract class BinaryOperator extends CompilerNode {
 
     return {
       type: ctxA.type,
-      mainOutput: `${ctxA.mainOutput} ${this.operationSymbol()} ${
+      mainOutput: `(${ctxA.mainOutput}) ${this.operationSymbol()} (${
         ctxB.mainOutput
-      }`,
+      })`,
     };
   }
 

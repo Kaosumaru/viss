@@ -14,7 +14,7 @@ export interface ScalarType {
 }
 
 export interface VectorType {
-  id: "scalar";
+  id: "vector";
   type: ScalarTypeName;
   size: number;
 }
@@ -30,7 +30,7 @@ export function scalar(type: ScalarTypeName): ScalarType {
 
 export function vector(type: ScalarTypeName, size: number): VectorType {
   return {
-    id: "scalar",
+    id: "vector",
     size,
     type,
   };
