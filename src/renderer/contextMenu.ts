@@ -20,15 +20,31 @@ export function createContextMenu(): ContextMenuPlugin<Schemes> {
       [
         ["Add", () => new UICompilerNode("add")],
         ["Substract", () => new UICompilerNode("substract")],
+        ["Divide", () => new UICompilerNode("divide")],
       ],
     ],
 
-    ["Uniforms", [["Time", () => new UICompilerNode("time")]]],
+    [
+      "Uniforms",
+      [
+        ["Time", () => new UICompilerNode("time")],
+        ["FragCoord", () => new UICompilerNode("fragCoord")],
+      ],
+    ],
     [
       "Functions",
       [
         ["Sin", () => new UICompilerNode("sin")],
         ["Abs", () => new UICompilerNode("abs")],
+      ],
+    ],
+
+    [
+      "Vectors",
+      [
+        ["Compose Vec4", () => new UICompilerNode("composeVector4")],
+        ["Get X", () => new UICompilerNode("getX")],
+        ["Get Y", () => new UICompilerNode("getY")],
       ],
     ],
 

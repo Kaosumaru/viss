@@ -14,11 +14,13 @@ export abstract class BinaryOperator extends CompilerNode {
     const ctxA = node.getInput("a");
     const ctxB = node.getInput("b");
 
+    // TODO this needs either a cache or a type check
+    /*
     if (ctxA.type !== ctxB.type) {
       throw new Error(
         `Type mismatch: cannot add ${ctxA.type} and ${ctxB.type}`
       );
-    }
+    }*/
 
     if (ctxA.type.id !== "scalar") {
       throw new Error("AddNode only supports scalar types");

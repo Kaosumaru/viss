@@ -14,7 +14,7 @@ class PreviewNode extends CompilerNode {
     if (ctx.type.id === "scalar") {
       return {
         type: vector(ctx.type.type, 4),
-        mainOutput: `vec4(${ctx.mainOutput}, ${ctx.mainOutput}, ${ctx.mainOutput},1.0)`,
+        mainOutput: `vec4(vec3(${ctx.mainOutput}), 1.0)`,
       };
     }
 

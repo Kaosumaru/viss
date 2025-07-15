@@ -1,4 +1,4 @@
-import { scalar } from "@glsl/types";
+import { scalar, vector } from "@glsl/types";
 import { LiteralNode } from "./basic/literal";
 import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
@@ -7,6 +7,9 @@ import { preview } from "./out/preview";
 import { sin } from "./functions/sin";
 import { UniformNode } from "./uniforms/uniform";
 import { abs } from "./functions/abs";
+import { divide } from "./operators/divide";
+import { GetMember } from "./vector/getMember";
+import { composeVector4 } from "./vector/composeVector4";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -17,6 +20,7 @@ export const nodes = {
 
   add,
   substract,
+  divide,
 
   preview,
 
@@ -24,6 +28,12 @@ export const nodes = {
   abs,
 
   time: new UniformNode("u_time", scalar("float")),
+  fragCoord: new UniformNode("gl_FragCoord", vector("float", 2)),
+
+  getX: new GetMember("x"),
+  getY: new GetMember("y"),
+
+  composeVector4,
 };
 
 export type NodeType = keyof typeof nodes;

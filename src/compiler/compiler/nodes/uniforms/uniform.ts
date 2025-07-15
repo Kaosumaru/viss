@@ -1,9 +1,9 @@
-import type { ScalarType } from "@glsl/types";
+import type { Type } from "@glsl/types";
 import { CompilerNode } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 export class UniformNode extends CompilerNode {
-  constructor(uniformName: string, type: ScalarType) {
+  constructor(uniformName: string, type: Type) {
     super();
     this.uniformName = uniformName;
     this.type = type;
@@ -21,5 +21,5 @@ export class UniformNode extends CompilerNode {
   }
 
   uniformName: string;
-  type: ScalarType;
+  type: Type;
 }
