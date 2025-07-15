@@ -12,5 +12,5 @@ test("FloatLiteral", () => {
     },
   }).compile("floatNode");
 
-  expect(c).toEqual(expectedOutput("1", scalar("float")));
+  expect(c).toEqual(expectedOutput("1.0", scalar("float")));
 });

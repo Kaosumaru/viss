@@ -19,7 +19,10 @@ test("substract floats", () => {
     substract: {
       type: "substract",
     },
-  }).compile("substract");
+  })
+    .connect("substract", "a", "a")
+    .connect("substract", "b", "b")
+    .compile("substract");
 
-  expect(c).toEqual(expectedOutput("1 - 2", scalar("float")));
+  expect(c).toEqual(expectedOutput("(1.0) - (2.0)", scalar("float")));
 });

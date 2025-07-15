@@ -48,12 +48,12 @@ export function setup<T extends Descriptors>(
       output = output || "out"; // Default output name
       this.graph.connections.push({
         from: {
-          nodeId: inputNode,
-          socketId: input,
-        },
-        to: {
           nodeId: outputNode,
           socketId: output,
+        },
+        to: {
+          nodeId: inputNode,
+          socketId: input,
         },
       });
       return this;
