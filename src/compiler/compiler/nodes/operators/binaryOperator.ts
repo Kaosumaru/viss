@@ -11,8 +11,8 @@ export abstract class BinaryOperator extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const ctxA = node.getInput("a");
-    const ctxB = node.getInput("b");
+    const ctxA = this.getInput(node, "a");
+    const ctxB = this.getInput(node, "b");
 
     // TODO this needs either a cache or a type check
     /*

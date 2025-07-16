@@ -16,7 +16,7 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
     this.outputs.out = type;
   }
   override compile(node: NodeContext): Context {
-    const value = node.getParamValue("value", "number");
+    const value = this.getParamValue(node, "value", "number");
     const v = value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
     return {
       type: this.type,

@@ -11,10 +11,7 @@ export class CompileNodeContext implements NodeContext {
     this.graph = graph;
     this.node = node;
   }
-  hasInput(name: string): boolean {
-    const node = this.graph.getInputNode(this.node.identifier, name);
-    return node !== undefined;
-  }
+
   tryGetInput(name: string): Context | undefined {
     const node = this.graph.getInputNode(this.node.identifier, name);
     if (!node) {
@@ -22,15 +19,7 @@ export class CompileNodeContext implements NodeContext {
     }
     return this.compiler.compile(node.identifier);
   }
-  getInput(name: string): Context {
-    const node = this.graph.getInputNode(this.node.identifier, name);
-    if (!node) {
-      throw new Error(
-        `Input node ${name} not found for ${this.node.identifier}`
-      );
-    }
-    return this.compiler.compile(node.identifier);
-  }
+
   tryGetParamValue<T extends ParameterValueType>(name: string, type: T) {
     const param = this.node.parameters[name];
     if (!param) {
@@ -42,15 +31,6 @@ export class CompileNodeContext implements NodeContext {
       );
     }
     return param.value;
-  }
-  getParamValue<T extends ParameterValueType>(name: string, type: T) {
-    const value = this.tryGetParamValue(name, type);
-    if (value === undefined) {
-      throw new Error(
-        `Parameter ${name} not found or of incorrect type in node ${this.node.identifier}`
-      );
-    }
-    return value;
   }
 
   protected compiler: Compiler;

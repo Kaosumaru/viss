@@ -10,7 +10,7 @@ class PreviewNode extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const ctx = node.getInput("in");
+    const ctx = this.getInput(node, "in");
     if (ctx.type.id === "scalar") {
       return {
         type: vector(ctx.type.type, 4),

@@ -4,12 +4,11 @@ import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
 import { substract } from "./operators/substract";
 import { preview } from "./out/preview";
-import { sin } from "./functions/sin";
 import { UniformNode } from "./uniforms/uniform";
-import { abs } from "./functions/abs";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
 import { composeVector4 } from "./vector/composeVector4";
+import { FunctionNode } from "./functions/functionNode";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -24,14 +23,14 @@ export const nodes = {
 
   preview,
 
-  sin,
-  abs,
+  sin: new FunctionNode("sin", scalar("float"), [["in", scalar("float")]]),
+  abs: new FunctionNode("abs", scalar("float"), [["in", scalar("float")]]),
 
   time: new UniformNode("u_time", scalar("float")),
   fragCoord: new UniformNode("gl_FragCoord", vector("float", 2)),
 
-  getX: new GetMember("x"),
-  getY: new GetMember("y"),
+  getX: new GetMember("x", vector("float", 2), scalar("float")),
+  getY: new GetMember("y", vector("float", 2), scalar("float")),
 
   composeVector4,
 };
