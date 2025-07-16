@@ -5,9 +5,9 @@ import type { Context } from "@compiler/context";
 export abstract class BinaryOperator extends CompilerNode {
   constructor() {
     super();
-    this.inputs.a = Any;
-    this.inputs.b = Any;
-    this.outputs.out = Any;
+    this.addInput("a", Any);
+    this.addInput("b", Any);
+    this.addOutput("out", Any);
   }
 
   override compile(node: NodeContext): Context {

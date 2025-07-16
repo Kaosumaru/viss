@@ -7,7 +7,7 @@ export class UniformNode extends CompilerNode {
     super();
     this.uniformName = uniformName;
     this.type = type;
-    this.outputs.out = type;
+    this.addOutput("out", type);
   }
   override compile(): Context {
     return {

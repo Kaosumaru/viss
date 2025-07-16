@@ -5,8 +5,8 @@ import type { Context } from "@compiler/context";
 class PreviewNode extends CompilerNode {
   constructor() {
     super();
-    this.inputs.in = Any;
-    this.outputs.out = Any;
+    this.addInput("in", Any);
+    this.addOutput("out", Any);
   }
 
   override compile(node: NodeContext): Context {

@@ -13,7 +13,7 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
       defaultValue: { type: "number", value: 0 },
     };
 
-    this.outputs.out = type;
+    this.addOutput("out", type);
   }
   override compile(node: NodeContext): Context {
     const value = this.getParamValue(node, "value", "number");

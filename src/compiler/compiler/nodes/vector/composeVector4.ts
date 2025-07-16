@@ -1,5 +1,6 @@
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
+import { vector } from "@glsl/types";
 
 class ComposeVector4 extends CompilerNode {
   constructor() {
@@ -9,6 +10,7 @@ class ComposeVector4 extends CompilerNode {
     this.addFloat("y");
     this.addFloat("z");
     this.addFloat("w");
+    this.addOutput("out", vector("float", 4));
   }
 
   override compile(node: NodeContext): Context {
@@ -18,7 +20,7 @@ class ComposeVector4 extends CompilerNode {
     const w = this.getFloat(node, "w");
 
     return {
-      type: this.outputs.out,
+      type: this.getOutputType("out")!,
       mainOutput: `vec4(${x}, ${y}, ${z}, ${w})`,
     };
   }

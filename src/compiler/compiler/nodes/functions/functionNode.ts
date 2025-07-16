@@ -9,9 +9,9 @@ export class FunctionNode extends CompilerNode {
     super();
     this.name = name;
     for (const [name, type] of params) {
-      this.inputs[name] = type;
+      this.addInput(name, type);
     }
-    this.outputs.out = outType;
+    this.addOutput("out", outType);
     this.params = params;
   }
 
@@ -20,7 +20,7 @@ export class FunctionNode extends CompilerNode {
       ([name]) => this.getInput(node, name).mainOutput
     );
     return {
-      type: this.outputs.out,
+      type: this.getOutputType("out")!,
       mainOutput: `${this.name}(${inputs.join(", ")})`,
     };
   }
