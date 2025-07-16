@@ -7,9 +7,6 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
     super();
     this.type = type;
 
-    // Add input for value (so it can be connected)
-    this.inputs.value = type;
-
     // Add parameter for value (so it can be manually entered)
     this.parameters.value = {
       type: "number",
@@ -19,20 +16,12 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
     this.outputs.out = type;
   }
   override compile(node: NodeContext): Context {
-    // Try to get input first, fall back to parameter
-    const inputContext = node.tryGetInput("value");
-    if (inputContext) {
-      // If there's a connection, use the input
-      return inputContext;
-    } else {
-      // If no connection, use the parameter value
-      const value = node.getParamValue("value", "number");
-      const v = value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
-      return {
-        type: this.type,
-        mainOutput: v,
-      };
-    }
+    const value = node.getParamValue("value", "number");
+    const v = value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
+    return {
+      type: this.type,
+      mainOutput: v,
+    };
   }
 
   override getLabel(): string {
