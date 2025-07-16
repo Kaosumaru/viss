@@ -19,7 +19,10 @@ import { CustomSocket } from "./graph/nodes/customSocket";
 import { CustomConnection } from "./graph/nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
 
-export type OnGraphChanged = (editor: NodeEditor<Schemes>) => void;
+export type OnGraphChanged = (
+  editor: NodeEditor<Schemes>,
+  area: AreaPlugin<Schemes, AreaExtra>
+) => void;
 
 export async function createEditor(
   container: HTMLElement,
@@ -82,7 +85,7 @@ export async function createEditor(
       context.type === "connectioncreated" ||
       context.type === "connectionremoved"
     ) {
-      onChanged?.(editor);
+      onChanged?.(editor, area);
     }
     return context;
   });
