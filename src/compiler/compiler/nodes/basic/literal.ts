@@ -8,10 +8,7 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
     this.type = type;
 
     // Add parameter for value (so it can be manually entered)
-    this.parameters.value = {
-      type: "number",
-      defaultValue: { type: "number", value: 0 },
-    };
+    this.addParameter("value", "number", { type: "number", value: 0 });
 
     this.addOutput("out", type);
   }

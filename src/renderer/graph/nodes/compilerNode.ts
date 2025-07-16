@@ -20,7 +20,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addOutputs(compilerNode: CompilerNode) {
-    Object.entries(compilerNode.outputs).forEach(([name]) => {
+    compilerNode.outputs.forEach(({ name }) => {
       this.addOutput(
         name,
         new ClassicPreset.Output(new ClassicPreset.Socket(name), name)
@@ -29,15 +29,15 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addInputs(compilerNode: CompilerNode) {
-    Object.entries(compilerNode.inputs).forEach(([name]) => {
+    compilerNode.inputs.forEach(({ name }) => {
       const input = new ClassicPreset.Input(
         new ClassicPreset.Socket(name),
         name
       );
 
       // If there's a parameter with the same name, add control to the input
-      if (compilerNode.parameters[name]) {
-        const param = compilerNode.parameters[name];
+      const param = compilerNode.parameters.find((p) => p.name === name);
+      if (param) {
         input.addControl(
           new ClassicPreset.InputControl("number", {
             initial: param.defaultValue?.value || 0,
@@ -50,13 +50,14 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addParams(compilerNode: CompilerNode) {
-    Object.entries(compilerNode.parameters).forEach(([name, value]) => {
+    compilerNode.parameters.forEach(({ name, defaultValue }) => {
       // Only add as standalone control if there's no input with the same name
-      if (!compilerNode.inputs[name]) {
+      const hasInput = compilerNode.inputs.some((input) => input.name === name);
+      if (!hasInput) {
         this.addControl(
           name,
           new ClassicPreset.InputControl("number", {
-            initial: value.defaultValue?.value || 0,
+            initial: defaultValue?.value || 0,
           })
         );
       }

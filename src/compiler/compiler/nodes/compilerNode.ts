@@ -22,17 +22,16 @@ export interface Pin {
 
 export type Pins = Pin[];
 
-export interface ParameterInfo {
+export interface Parameter {
+  name: string;
   type: ParameterValueType;
   defaultValue?: ParameterValue;
 }
 
-export interface Parameters {
-  [key: string]: ParameterInfo;
-}
+export type Parameters = Parameter[];
 export abstract class CompilerNode {
   inputs: Pins = [];
-  parameters: Parameters = {};
+  parameters: Parameters = [];
   outputs: Pins = [];
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
@@ -55,12 +54,21 @@ export abstract class CompilerNode {
     return pin?.type;
   }
 
+  protected addParameter(
+    name: string,
+    type: ParameterValueType,
+    defaultValue?: ParameterValue
+  ): void {
+    this.parameters.push({ name, type, defaultValue });
+  }
+
+  protected getParameter(name: string): Parameter | undefined {
+    return this.parameters.find((param) => param.name === name);
+  }
+
   protected addFloat(name: string): void {
     this.addInput(name, scalar("float"));
-    this.parameters[name] = {
-      type: "number",
-      defaultValue: { type: "number", value: 0 },
-    };
+    this.addParameter(name, "number", { type: "number", value: 0 });
   }
 
   protected getInput(node: NodeContext, name: string): Context {
