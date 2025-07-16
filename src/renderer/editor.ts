@@ -17,6 +17,7 @@ import { Node } from "./graph/nodes/customNode";
 import { addCustomBackground } from "./graph/nodes/customBackground";
 import { CustomSocket } from "./graph/nodes/customSocket";
 import { CustomConnection } from "./graph/nodes/customConnection";
+import { getDOMSocketPosition } from "rete-render-utils";
 
 export type OnGraphChanged = (editor: NodeEditor<Schemes>) => void;
 
@@ -42,6 +43,14 @@ export async function createEditor(
 
   render.addPreset(
     Presets.classic.setup({
+      socketPositionWatcher: getDOMSocketPosition({
+        offset({ x, y }, _nodeId, side) {
+          return {
+            x: x + 10 * (side === "input" ? -1 : 1),
+            y: y,
+          };
+        },
+      }),
       customize: {
         node() {
           return Node;
