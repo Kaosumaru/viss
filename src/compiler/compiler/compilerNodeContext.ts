@@ -11,6 +11,17 @@ export class CompileNodeContext implements NodeContext {
     this.graph = graph;
     this.node = node;
   }
+  hasInput(name: string): boolean {
+    const node = this.graph.getInputNode(this.node.identifier, name);
+    return node !== undefined;
+  }
+  tryGetInput(name: string): Context | undefined {
+    const node = this.graph.getInputNode(this.node.identifier, name);
+    if (!node) {
+      return undefined;
+    }
+    return this.compiler.compile(node.identifier);
+  }
   getInput(name: string): Context {
     const node = this.graph.getInputNode(this.node.identifier, name);
     if (!node) {

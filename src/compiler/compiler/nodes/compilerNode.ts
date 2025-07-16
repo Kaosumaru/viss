@@ -9,6 +9,8 @@ export type ParamExtractedValue<T> = Extract<
 
 export interface NodeContext {
   getInput(name: string): Context;
+  hasInput(name: string): boolean;
+  tryGetInput(name: string): Context | undefined;
   getParamValue<T extends ParameterValueType>(
     name: string,
     type: T

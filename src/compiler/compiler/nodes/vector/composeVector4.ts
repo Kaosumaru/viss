@@ -9,6 +9,10 @@ class ComposeVector4 extends CompilerNode {
     this.inputs.y = scalar("float");
     this.inputs.z = scalar("float");
     this.inputs.w = scalar("float");
+    this.parameters.x = {
+      type: "number",
+      defaultValue: { type: "number", value: 0 },
+    };
     this.outputs.out = vector("float", 4);
   }
 

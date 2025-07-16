@@ -30,21 +30,36 @@ export class UICompilerNode extends ClassicPreset.Node {
 
   protected addInputs(compilerNode: CompilerNode) {
     Object.entries(compilerNode.inputs).forEach(([name]) => {
-      this.addInput(
-        name,
-        new ClassicPreset.Input(new ClassicPreset.Socket(name), name)
+      const input = new ClassicPreset.Input(
+        new ClassicPreset.Socket(name),
+        name
       );
+
+      // If there's a parameter with the same name, add control to the input
+      if (compilerNode.parameters[name]) {
+        const param = compilerNode.parameters[name];
+        input.addControl(
+          new ClassicPreset.InputControl("number", {
+            initial: param.defaultValue?.value || 0,
+          })
+        );
+      }
+
+      this.addInput(name, input);
     });
   }
 
   protected addParams(compilerNode: CompilerNode) {
     Object.entries(compilerNode.parameters).forEach(([name, value]) => {
-      this.addControl(
-        name,
-        new ClassicPreset.InputControl("number", {
-          initial: value.defaultValue?.value || 0,
-        })
-      );
+      // Only add as standalone control if there's no input with the same name
+      if (!compilerNode.inputs[name]) {
+        this.addControl(
+          name,
+          new ClassicPreset.InputControl("number", {
+            initial: value.defaultValue?.value || 0,
+          })
+        );
+      }
     });
   }
 
