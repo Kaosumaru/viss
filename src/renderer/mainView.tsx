@@ -4,6 +4,8 @@ import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./editor";
 import { compileGraph } from "./compileGraph";
+import type { NodeEditor } from "rete";
+import type { Schemes } from "./graph/node";
 
 const Layout = styled.div`
   display: grid;
@@ -32,8 +34,11 @@ export function MainView() {
   const [color, setColor] = useState(
     "vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0)"
   ); // Default color
+  
+  const [editor, setEditor] = useState<NodeEditor<Schemes> | undefined>(undefined);
 
   const onChanged: OnGraphChanged = useCallback((editor) => {
+    setEditor(editor);
     const context = compileGraph(editor);
     setColor(
       context?.mainOutput ? context.mainOutput : "vec4(0.0, 0.0, 0.0, 1.0)"
@@ -47,7 +52,7 @@ export function MainView() {
       </Canvas>
 
       <Result>
-        <PropertyView color={color} />
+        <PropertyView color={color} editor={editor} />
       </Result>
     </Layout>
   );

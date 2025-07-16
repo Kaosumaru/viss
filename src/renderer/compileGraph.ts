@@ -6,7 +6,7 @@ import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { Graph } from "@graph/graph";
 import { Compiler } from "@compiler/compiler";
 
-export function compileGraph(editor: NodeEditor<Schemes>): Context | undefined {
+export function editorToGraph(editor: NodeEditor<Schemes>): Graph {
   const graph: Graph = {
     nodes: [],
     connections: [],
@@ -48,7 +48,11 @@ export function compileGraph(editor: NodeEditor<Schemes>): Context | undefined {
       },
     });
   });
+  return graph;
+}
 
+export function compileGraph(editor: NodeEditor<Schemes>): Context | undefined {
+  const graph = editorToGraph(editor);
   try {
     const compiler = new Compiler(graph);
     const node = graph.nodes.find((n) => n.nodeType === "preview");
