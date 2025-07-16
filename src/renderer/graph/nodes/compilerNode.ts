@@ -57,8 +57,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       40 +
       4 +
       5 +
-      inputs.length * 36 +
-      outputs.length * 36 +
+      Math.max(inputs.length, outputs.length) * 36 +
       controls.length * 36;
   }
 }

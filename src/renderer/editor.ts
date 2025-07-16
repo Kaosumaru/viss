@@ -13,6 +13,10 @@ import {
 import type { AreaExtra, Schemes } from "./graph/node";
 import { createContextMenu } from "./contextMenu";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
+import { Node } from "./graph/nodes/customNode";
+import { addCustomBackground } from "./graph/nodes/customBackground";
+import { CustomSocket } from "./graph/nodes/customSocket";
+import { CustomConnection } from "./graph/nodes/customConnection";
 
 export type OnGraphChanged = (editor: NodeEditor<Schemes>) => void;
 
@@ -34,8 +38,25 @@ export async function createEditor(
   });
 
   render.addPreset(Presets.contextMenu.setup());
-  render.addPreset(Presets.classic.setup());
+  //render.addPreset(Presets.classic.setup());
 
+  render.addPreset(
+    Presets.classic.setup({
+      customize: {
+        node() {
+          return Node;
+        },
+        socket() {
+          return CustomSocket;
+        },
+        connection() {
+          return CustomConnection;
+        },
+      },
+    })
+  );
+
+  addCustomBackground(area);
   connection.addPreset(ConnectionPresets.classic.setup());
 
   arrange.addPreset(ArrangePresets.classic.setup());
