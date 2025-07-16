@@ -23,7 +23,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     Object.entries(compilerNode.outputs).forEach(([name]) => {
       this.addOutput(
         name,
-        new ClassicPreset.Output(new ClassicPreset.Socket(name))
+        new ClassicPreset.Output(new ClassicPreset.Socket(name), name)
       );
     });
   }
@@ -32,7 +32,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     Object.entries(compilerNode.inputs).forEach(([name]) => {
       this.addInput(
         name,
-        new ClassicPreset.Input(new ClassicPreset.Socket(name))
+        new ClassicPreset.Input(new ClassicPreset.Socket(name), name)
       );
     });
   }

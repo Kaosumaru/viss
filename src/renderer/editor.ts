@@ -88,6 +88,9 @@ export async function createEditor(
   });
 
   AreaExtensions.simpleNodesOrder(area);
+  AreaExtensions.showInputControl<Schemes>(area, ({ hasAnyConnection }) => {
+    return !hasAnyConnection;
+  });
 
   const previewNode = new UICompilerNode("preview");
 
