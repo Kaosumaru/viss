@@ -11,7 +11,6 @@ import {
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
 import type { AreaExtra, Schemes } from "./graph/node";
-import { createContextMenu } from "./contextMenu";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import { Node } from "./graph/nodes/customNode";
 import { addCustomBackground } from "./graph/nodes/customBackground";
@@ -33,16 +32,16 @@ export async function createEditor(
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<Schemes>();
-  const contextMenu = createContextMenu();
+  // const contextMenu = createContextMenu();
 
-  area.use(contextMenu);
+  // area.use(contextMenu);
 
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
 
-  render.addPreset(Presets.contextMenu.setup());
-  //render.addPreset(Presets.classic.setup());
+  // Disable the built-in context menu to use our custom Material UI one
+  // render.addPreset(Presets.contextMenu.setup());
 
   render.addPreset(
     Presets.classic.setup({
@@ -102,7 +101,30 @@ export async function createEditor(
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
 
+  // Function to add a node at the mouse position
+  const addNodeAtPosition = async (
+    node: UICompilerNode,
+    x?: number,
+    y?: number
+  ) => {
+    await editor.addNode(node);
+
+    if (x !== undefined && y !== undefined) {
+      // Convert screen coordinates to area coordinates
+      const transform = area.area.transform;
+      const areaX = (x - transform.x) / transform.k;
+      const areaY = (y - transform.y) / transform.k;
+
+      await area.translate(node.id, { x: areaX, y: areaY });
+    }
+
+    return node;
+  };
+
   return {
     destroy: () => area.destroy(),
+    addNode: addNodeAtPosition,
+    editor,
+    area,
   };
 }
