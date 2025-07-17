@@ -1,7 +1,7 @@
 import { useRete } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./editor";
 import { useCallback, useRef, useState } from "react";
-import { MaterialContextMenuProvider } from "./components/materialContextMenuProvider";
+import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
 import type { AreaPlugin } from "rete-area-plugin";

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { MaterialContextMenu } from "./materialContextMenu";
-import { UICompilerNode } from "../graph/nodes/compilerNode";
+import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { NodeType } from "@compiler/nodes/allNodes";
 
 interface ContextMenuState {

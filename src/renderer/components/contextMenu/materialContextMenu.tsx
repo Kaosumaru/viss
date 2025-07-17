@@ -15,14 +15,11 @@ import {
   Search as SearchIcon,
   ExpandMore,
   ExpandLess,
-  Functions as FunctionsIcon,
-  Calculate as CalculateIcon,
-  Timeline as TimelineIcon,
-  Settings as SettingsIcon,
-  Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { NodeType } from "@compiler/nodes/allNodes";
+import type { MenuCategory } from "./interface";
+import { menuElements } from "./menuElements";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -106,120 +103,11 @@ const CategoryIcon = styled(Box)(() => ({
   color: "#cccccc",
 }));
 
-interface MenuCategory {
-  name: string;
-  icon: React.ReactNode;
-  items: {
-    name: string;
-    nodeType: NodeType;
-    description?: string;
-  }[];
-}
-
 interface MaterialContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
   onNodeCreate: (nodeType: NodeType) => void;
 }
-
-const categories: MenuCategory[] = [
-  {
-    name: "Literals",
-    icon: <CalculateIcon fontSize="small" />,
-    items: [
-      {
-        name: "Float",
-        nodeType: "float",
-        description: "Single floating point value",
-      },
-    ],
-  },
-  {
-    name: "Operators",
-    icon: <FunctionsIcon fontSize="small" />,
-    items: [
-      {
-        name: "Add",
-        nodeType: "add",
-        description: "Addition operation",
-      },
-      {
-        name: "Subtract",
-        nodeType: "substract",
-        description: "Subtraction operation",
-      },
-      {
-        name: "Divide",
-        nodeType: "divide",
-        description: "Division operation",
-      },
-    ],
-  },
-  {
-    name: "Uniforms",
-    icon: <SettingsIcon fontSize="small" />,
-    items: [
-      {
-        name: "Time",
-        nodeType: "time",
-        description: "Global time uniform",
-      },
-      {
-        name: "FragCoord",
-        nodeType: "fragCoord",
-        description: "Fragment coordinates",
-      },
-    ],
-  },
-  {
-    name: "Functions",
-    icon: <FunctionsIcon fontSize="small" />,
-    items: [
-      {
-        name: "Sin",
-        nodeType: "sin",
-        description: "Sine function",
-      },
-      {
-        name: "Abs",
-        nodeType: "abs",
-        description: "Absolute value function",
-      },
-    ],
-  },
-  {
-    name: "Vectors",
-    icon: <TimelineIcon fontSize="small" />,
-    items: [
-      {
-        name: "Compose Vec4",
-        nodeType: "composeVector4",
-        description: "Create a 4-component vector",
-      },
-      {
-        name: "Get X",
-        nodeType: "getX",
-        description: "Extract X component",
-      },
-      {
-        name: "Get Y",
-        nodeType: "getY",
-        description: "Extract Y component",
-      },
-    ],
-  },
-  {
-    name: "Output",
-    icon: <VisibilityIcon fontSize="small" />,
-    items: [
-      {
-        name: "Preview",
-        nodeType: "preview",
-        description: "Preview the result",
-      },
-    ],
-  },
-];
 
 export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   position,
@@ -228,7 +116,7 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(categories.map((cat) => cat.name))
+    new Set(menuElements.map((cat) => cat.name))
   );
   const menuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -287,8 +175,8 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   };
 
   const getFilteredCategories = () => {
-    if (!searchTerm) return categories;
-    return categories
+    if (!searchTerm) return menuElements;
+    return menuElements
       .map((category) => ({
         ...category,
         items: filterItems(category.items),
