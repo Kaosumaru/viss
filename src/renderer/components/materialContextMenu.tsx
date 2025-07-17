@@ -129,7 +129,7 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Float",
-        nodeType: "float" as NodeType,
+        nodeType: "float",
         description: "Single floating point value",
       },
     ],
@@ -140,17 +140,17 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Add",
-        nodeType: "add" as NodeType,
+        nodeType: "add",
         description: "Addition operation",
       },
       {
         name: "Subtract",
-        nodeType: "substract" as NodeType,
+        nodeType: "substract",
         description: "Subtraction operation",
       },
       {
         name: "Divide",
-        nodeType: "divide" as NodeType,
+        nodeType: "divide",
         description: "Division operation",
       },
     ],
@@ -161,12 +161,12 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Time",
-        nodeType: "time" as NodeType,
+        nodeType: "time",
         description: "Global time uniform",
       },
       {
         name: "FragCoord",
-        nodeType: "fragCoord" as NodeType,
+        nodeType: "fragCoord",
         description: "Fragment coordinates",
       },
     ],
@@ -177,12 +177,12 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Sin",
-        nodeType: "sin" as NodeType,
+        nodeType: "sin",
         description: "Sine function",
       },
       {
         name: "Abs",
-        nodeType: "abs" as NodeType,
+        nodeType: "abs",
         description: "Absolute value function",
       },
     ],
@@ -193,17 +193,17 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Compose Vec4",
-        nodeType: "composeVector4" as NodeType,
+        nodeType: "composeVector4",
         description: "Create a 4-component vector",
       },
       {
         name: "Get X",
-        nodeType: "getX" as NodeType,
+        nodeType: "getX",
         description: "Extract X component",
       },
       {
         name: "Get Y",
-        nodeType: "getY" as NodeType,
+        nodeType: "getY",
         description: "Extract Y component",
       },
     ],
@@ -214,7 +214,7 @@ const categories: MenuCategory[] = [
     items: [
       {
         name: "Preview",
-        nodeType: "preview" as NodeType,
+        nodeType: "preview",
         description: "Preview the result",
       },
     ],
