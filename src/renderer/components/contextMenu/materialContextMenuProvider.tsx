@@ -61,17 +61,9 @@ export const MaterialContextMenuProvider: React.FC<
     [onNodeCreate, hideContextMenu]
   );
 
-  // Handle clicks to close context menu
-  const handleClick = useCallback(() => {
-    if (contextMenuState.visible) {
-      hideContextMenu();
-    }
-  }, [contextMenuState.visible, hideContextMenu]);
-
   return (
     <div
       onContextMenu={showContextMenu}
-      onClick={handleClick}
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
       {children}
