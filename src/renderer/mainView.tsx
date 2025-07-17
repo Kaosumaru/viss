@@ -3,7 +3,7 @@ import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./editor";
-import { compileGraph } from "./compileGraph";
+import { compileGraph } from "./utils/compileGraph";
 import type { NodeEditor } from "rete";
 import type { Schemes, AreaExtra } from "./graph/node";
 import type { AreaPlugin } from "rete-area-plugin";
