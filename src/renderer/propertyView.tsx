@@ -58,6 +58,11 @@ export function PropertyView({ color, editor, area }: PropertyViewProps) {
         await editor.removeNode(node.id);
       }
 
+      const currentConnections = editor.getConnections();
+      for (const connection of currentConnections) {
+        await editor.removeConnection(connection.id);
+      }
+
       // Add nodes from graph
       for (const graphNode of graph.nodes) {
         const uiNode = new UICompilerNode(graphNode.nodeType as NodeType);
@@ -73,9 +78,22 @@ export function PropertyView({ color, editor, area }: PropertyViewProps) {
           if (control && param.type === "number") {
             control.setValue(param.value);
           }
+
+          if (uiNode.inputs[key]?.control) {
+            const control = uiNode.inputs[key]
+              .control as ClassicPreset.InputControl<"number">;
+            if (param.type === "number") {
+              control.setValue(param.value);
+            }
+          }
         });
 
         await editor.addNode(uiNode);
+
+        // Set the node position from the saved graph
+        if (area) {
+          await area.translate(uiNode.id, graphNode.position);
+        }
       }
 
       // Add connections
