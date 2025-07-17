@@ -5,52 +5,57 @@ import {
 import type { Schemes } from "./graph/node";
 import type { ItemDefinition } from "rete-context-menu-plugin/_types/presets/classic/types";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
+import type { NodeType } from "@compiler/nodes/allNodes";
 
 export function createContextMenu(): ContextMenuPlugin<Schemes> {
   const def: ItemDefinition<Schemes>[] = [
     [
       "Literals",
       [
-        ["Float", () => new UICompilerNode("float")],
+        ["Float", () => n("float")],
         // ["Vector2", () => new UICompilerNode("vector2")],
       ],
     ],
     [
       "Operators",
       [
-        ["Add", () => new UICompilerNode("add")],
-        ["Substract", () => new UICompilerNode("substract")],
-        ["Divide", () => new UICompilerNode("divide")],
+        ["Add", () => n("add")],
+        ["Substract", () => n("substract")],
+        ["Divide", () => n("divide")],
       ],
     ],
 
     [
       "Uniforms",
       [
-        ["Time", () => new UICompilerNode("time")],
-        ["FragCoord", () => new UICompilerNode("fragCoord")],
+        ["Time", () => n("time")],
+        ["FragCoord", () => n("fragCoord")],
       ],
     ],
     [
       "Functions",
       [
-        ["Sin", () => new UICompilerNode("sin")],
-        ["Abs", () => new UICompilerNode("abs")],
+        ["Sin", () => n("sin")],
+        ["Abs", () => n("abs")],
       ],
     ],
 
     [
       "Vectors",
       [
-        ["Compose Vec4", () => new UICompilerNode("composeVector4")],
-        ["Get X", () => new UICompilerNode("getX")],
-        ["Get Y", () => new UICompilerNode("getY")],
+        ["Compose Vec4", () => n("composeVector4")],
+        ["Get X", () => n("getX")],
+        ["Get Y", () => n("getY")],
       ],
     ],
 
-    ["Output", [["Preview", () => new UICompilerNode("preview")]]],
+    ["Output", [["Preview", () => n("preview")]]],
   ];
   return new ContextMenuPlugin<Schemes>({
     items: ContextMenuPresets.classic.setup(def),
   });
+}
+
+function n(type: NodeType) {
+  return new UICompilerNode(type);
 }
