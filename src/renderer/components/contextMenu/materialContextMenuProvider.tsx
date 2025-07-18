@@ -13,7 +13,7 @@ interface ContextMenuState {
 
 interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
-  onNodeCreate?: (node: UICompilerNode) => void;
+  onNodeCreate?: (node: NodeType) => void;
   onNodeDelete?: (nodeId: string) => void;
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
@@ -86,9 +86,8 @@ export const MaterialContextMenuProvider: React.FC<
 
   const handleNodeCreate = useCallback(
     (nodeType: NodeType) => {
-      const node = new UICompilerNode(nodeType);
       if (onNodeCreate) {
-        onNodeCreate(node);
+        onNodeCreate(nodeType);
       }
       hideContextMenu();
     },

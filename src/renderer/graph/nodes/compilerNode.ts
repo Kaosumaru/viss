@@ -2,21 +2,38 @@ import { getNode, type NodeType } from "@compiler/nodes/allNodes";
 import type { CompilerNode } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 
+export type ControlChangeCallback = (
+  nodeId: string,
+  controlKey: string,
+  value: unknown
+) => void;
+
 export class UICompilerNode extends ClassicPreset.Node {
   height = 140;
   width = 200;
   nodeType: NodeType;
+  private controlChangeCallback?: ControlChangeCallback;
 
-  constructor(nodeType: NodeType) {
+  constructor(
+    nodeType: NodeType,
+    controlChangeCallback?: ControlChangeCallback
+  ) {
     const compilerNode = getNode(nodeType);
     super(compilerNode.getLabel());
 
     this.nodeType = nodeType;
+    this.controlChangeCallback = controlChangeCallback;
     this.addInputs(compilerNode);
     this.addParams(compilerNode);
     this.addOutputs(compilerNode);
 
     this.updateSize();
+  }
+
+  setControlChangeCallback(callback: ControlChangeCallback) {
+    this.controlChangeCallback = callback;
+    // Note: Controls created after this will use the new callback,
+    // but existing controls won't be updated unless the node is recreated
   }
 
   protected addOutputs(compilerNode: CompilerNode) {
@@ -38,11 +55,13 @@ export class UICompilerNode extends ClassicPreset.Node {
       // If there's a parameter with the same name, add control to the input
       const param = compilerNode.parameters.find((p) => p.name === name);
       if (param) {
-        input.addControl(
-          new ClassicPreset.InputControl("number", {
-            initial: param.defaultValue?.value || 0,
-          })
-        );
+        const control = new ClassicPreset.InputControl("number", {
+          initial: param.defaultValue?.value || 0,
+          change: (value: unknown) => {
+            this.controlChangeCallback?.(this.id, name, value);
+          },
+        });
+        input.addControl(control);
       }
 
       this.addInput(name, input);
@@ -54,12 +73,13 @@ export class UICompilerNode extends ClassicPreset.Node {
       // Only add as standalone control if there's no input with the same name
       const hasInput = compilerNode.inputs.some((input) => input.name === name);
       if (!hasInput) {
-        this.addControl(
-          name,
-          new ClassicPreset.InputControl("number", {
-            initial: defaultValue?.value || 0,
-          })
-        );
+        const control = new ClassicPreset.InputControl("number", {
+          initial: defaultValue?.value || 0,
+          change: (value: unknown) => {
+            this.controlChangeCallback?.(this.id, name, value);
+          },
+        });
+        this.addControl(name, control);
       }
     });
   }

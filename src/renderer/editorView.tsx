@@ -1,21 +1,27 @@
 import { useRete } from "rete-react-plugin";
-import { createEditor, type OnGraphChanged } from "./editor";
+import {
+  createEditor,
+  type OnGraphChanged,
+  type OnControlChanged,
+} from "./editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
 import type { AreaPlugin } from "rete-area-plugin";
 import type { Schemes, AreaExtra } from "./graph/node";
+import type { NodeType } from "@compiler/nodes/allNodes";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
+  onControlChanged?: OnControlChanged;
 }
 
-export function EditorView({ onChanged }: EditorViewProps) {
+export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
   const editorRef = useRef<{
     destroy: () => void;
-    addNode: (
-      node: UICompilerNode,
+    createNode: (
+      nodeType: NodeType,
       x?: number,
       y?: number
     ) => Promise<UICompilerNode>;
@@ -30,17 +36,17 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const create = useCallback(
     async (container: HTMLElement) => {
-      const editor = await createEditor(container, onChanged);
+      const editor = await createEditor(container, onChanged, onControlChanged);
       editorRef.current = editor;
       return editor;
     },
-    [onChanged]
+    [onChanged, onControlChanged]
   );
 
   const [ref] = useRete(create);
 
   const handleNodeCreate = useCallback(
-    (node: UICompilerNode) => {
+    (node: NodeType) => {
       let positionX = 200;
       let positionY = 200;
 
@@ -58,7 +64,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
         positionY = rect.height / 2;
       }
 
-      editorRef.current.addNode(node, positionX, positionY);
+      editorRef.current.createNode(node, positionX, positionY);
     },
     [lastContextMenuPosition, ref]
   );

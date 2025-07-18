@@ -17,15 +17,25 @@ import { addCustomBackground } from "./graph/nodes/customBackground";
 import { CustomSocket } from "./graph/nodes/customSocket";
 import { CustomConnection } from "./graph/nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
+import type { NodeType } from "@compiler/nodes/allNodes";
 
 export type OnGraphChanged = (
   editor: NodeEditor<Schemes>,
   area: AreaPlugin<Schemes, AreaExtra>
 ) => void;
 
+export type OnControlChanged = (
+  nodeId: string,
+  controlKey: string,
+  value: unknown,
+  editor: NodeEditor<Schemes>,
+  area: AreaPlugin<Schemes, AreaExtra>
+) => void;
+
 export async function createEditor(
   container: HTMLElement,
-  onChanged?: OnGraphChanged
+  onChanged?: OnGraphChanged,
+  onControlChanged?: OnControlChanged
 ) {
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -94,19 +104,23 @@ export async function createEditor(
     return !hasAnyConnection;
   });
 
-  const previewNode = new UICompilerNode("preview");
-
-  await editor.addNode(previewNode);
-
-  await arrange.layout();
-  AreaExtensions.zoomAt(area, editor.getNodes());
-
   // Function to add a node at the mouse position
-  const addNodeAtPosition = async (
-    node: UICompilerNode,
-    x?: number,
-    y?: number
-  ) => {
+  const createNode = async (nodeType: NodeType, x?: number, y?: number) => {
+    const node = new UICompilerNode(
+      nodeType,
+      onControlChanged
+        ? (nodeId, controlKey, value) => {
+            onControlChanged(nodeId, controlKey, value, editor, area);
+          }
+        : undefined
+    );
+    // Set the control change callback for the node if it doesn't already have one
+    if (onControlChanged && node.setControlChangeCallback) {
+      node.setControlChangeCallback((nodeId, controlKey, value) => {
+        onControlChanged(nodeId, controlKey, value, editor, area);
+      });
+    }
+
     await editor.addNode(node);
 
     if (x !== undefined && y !== undefined) {
@@ -121,9 +135,13 @@ export async function createEditor(
     return node;
   };
 
+  await createNode("preview");
+  await arrange.layout();
+  AreaExtensions.zoomAt(area, editor.getNodes());
+
   return {
     destroy: () => area.destroy(),
-    addNode: addNodeAtPosition,
+    createNode,
     editor,
     area,
   };

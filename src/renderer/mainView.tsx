@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
-import type { OnGraphChanged } from "./editor";
+import type { OnGraphChanged, OnControlChanged } from "./editor";
 import { compileGraph } from "./utils/compileGraph";
 import type { NodeEditor } from "rete";
 import type { Schemes, AreaExtra } from "./graph/node";
@@ -31,6 +31,8 @@ const Canvas = styled.div`
   position: relative;
 `;
 
+const defaultColor = "vec4(0.0, 0.0, 0.0, 1.0)";
+
 export function MainView() {
   const [color, setColor] = useState(
     "vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0)"
@@ -47,15 +49,25 @@ export function MainView() {
     setEditor(editor);
     setArea(area);
     const context = compileGraph(editor, area);
-    setColor(
-      context?.mainOutput ? context.mainOutput : "vec4(0.0, 0.0, 0.0, 1.0)"
-    );
+    setColor(context?.mainOutput ? context.mainOutput : defaultColor);
   }, []);
+
+  const onControlChanged: OnControlChanged = useCallback(
+    (nodeId, controlKey, value, editor, area) => {
+      console.log(
+        `Control changed on node ${nodeId}, control ${controlKey}: ${value}`
+      );
+      // Recompile the graph when a control changes
+      const context = compileGraph(editor, area);
+      setColor(context?.mainOutput ? context.mainOutput : defaultColor);
+    },
+    []
+  );
 
   return (
     <Layout>
       <Canvas>
-        <EditorView onChanged={onChanged} />
+        <EditorView onChanged={onChanged} onControlChanged={onControlChanged} />
       </Canvas>
 
       <Result>
