@@ -131,9 +131,10 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
       selected={selected}
       style={{ width: props.data.width, height: props.data.height }}
       styles={props.styles}
+      data-node-id={props.data.id}
     >
       {/* <div style={{ position: 'absolute', top: '-1em', right: '1em' }}>{props.data.id}</div> */}
-      <div className="glossy"></div>
+      <div className="glossy rete-node"></div>
       <div className="title">{props.data.label}</div>
       <div className="columns">
         <div className="column">

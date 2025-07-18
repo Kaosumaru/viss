@@ -60,10 +60,29 @@ export function EditorView({ onChanged }: EditorViewProps) {
     [lastContextMenuPosition, ref]
   );
 
+  const handleNodeDelete = useCallback((nodeId: string) => {
+    if (editorRef.current) {
+      editorRef.current.editor.removeNode(nodeId);
+    }
+  }, []);
+
+  const getNodeById = useCallback(
+    (nodeId: string): UICompilerNode | undefined => {
+      if (editorRef.current) {
+        const node = editorRef.current.editor.getNode(nodeId);
+        return node instanceof UICompilerNode ? node : undefined;
+      }
+      return undefined;
+    },
+    []
+  );
+
   const contextMenuProvider = (
     <MaterialContextMenuProvider
       onNodeCreate={handleNodeCreate}
+      onNodeDelete={handleNodeDelete}
       onContextMenuOpen={setLastContextMenuPosition}
+      getNodeById={getNodeById}
     >
       <div ref={ref} style={{ height: "100vh" }} />
     </MaterialContextMenuProvider>
