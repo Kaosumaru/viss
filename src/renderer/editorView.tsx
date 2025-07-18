@@ -62,7 +62,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const handleNodeDelete = useCallback((nodeId: string) => {
     if (editorRef.current) {
-      editorRef.current.editor.removeNode(nodeId);
+      removeNodeWithConnections(editorRef.current.editor, nodeId);
     }
   }, []);
 
@@ -89,4 +89,25 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   return contextMenuProvider;
+}
+
+function removeNodeWithConnections(
+  editor: NodeEditor<Schemes>,
+  nodeId: string
+) {
+  // Get all connections that involve this node
+  const connectionsToRemove = editor
+    .getConnections()
+    .filter(
+      (connection) =>
+        connection.source === nodeId || connection.target === nodeId
+    );
+
+  // Remove all connections involving this node
+  for (const connection of connectionsToRemove) {
+    editor.removeConnection(connection.id);
+  }
+
+  // Finally remove the node itself
+  editor.removeNode(nodeId);
 }
