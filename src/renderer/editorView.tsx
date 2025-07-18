@@ -41,21 +41,24 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const handleNodeCreate = useCallback(
     (node: UICompilerNode) => {
-      if (editorRef.current && lastContextMenuPosition) {
+      let positionX = 200;
+      let positionY = 200;
+
+      if (!editorRef.current || !ref.current) return;
+      const container = ref.current as HTMLElement;
+
+      if (lastContextMenuPosition) {
         // Convert screen coordinates to area coordinates relative to the container
-        const container = ref.current as HTMLElement | null;
-        if (container) {
-          const rect = container.getBoundingClientRect();
-          const relativeX = lastContextMenuPosition.x - rect.left;
-          const relativeY = lastContextMenuPosition.y - rect.top;
-          editorRef.current.addNode(node, relativeX, relativeY);
-        } else {
-          editorRef.current.addNode(node, 200, 200);
-        }
-      } else if (editorRef.current) {
-        // Fallback to center position
-        editorRef.current.addNode(node, 200, 200);
+        const rect = container.getBoundingClientRect();
+        positionX = lastContextMenuPosition.x - rect.left;
+        positionY = lastContextMenuPosition.y - rect.top;
+      } else {
+        const rect = container.getBoundingClientRect();
+        positionX = rect.width / 2;
+        positionY = rect.height / 2;
       }
+
+      editorRef.current.addNode(node, positionX, positionY);
     },
     [lastContextMenuPosition, ref]
   );
