@@ -19,10 +19,8 @@ export class FunctionNode extends CompilerNode {
     const inputs = this.params.map(
       ([name]) => this.getInput(node, name).mainOutput
     );
-    return {
-      type: this.getOutputType("out")!,
-      mainOutput: `${this.name}(${inputs.join(", ")})`,
-    };
+
+    return this.createSingleOutput(node, `${this.name}(${inputs.join(", ")})`);
   }
 
   override getLabel(): string {

@@ -26,12 +26,11 @@ export abstract class BinaryOperator extends CompilerNode {
       throw new Error("AddNode only supports scalar types");
     }
 
-    return {
-      type: ctxA.type,
-      mainOutput: `(${ctxA.mainOutput}) ${this.operationSymbol()} (${
-        ctxB.mainOutput
-      })`,
-    };
+    const out = `(${ctxA.mainOutput}) ${this.operationSymbol()} (${
+      ctxB.mainOutput
+    })`;
+
+    return this.createSingleOutput(node, out, ctxA.type);
   }
 
   protected abstract operationSymbol(): string;

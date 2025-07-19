@@ -12,10 +12,11 @@ export class GetMember extends CompilerNode {
 
   override compile(node: NodeContext): Context {
     const ctx = this.getInput(node, "in");
-    return {
-      type: this.getOutputType("out")!,
-      mainOutput: `${ctx.mainOutput}.${this.member}`,
-    };
+    return this.createSingleOutput(node, `${ctx.mainOutput}.${this.member}`);
+  }
+
+  override isTrivial(): boolean {
+    return true;
   }
 
   override getLabel(): string {

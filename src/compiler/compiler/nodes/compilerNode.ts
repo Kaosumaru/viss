@@ -36,6 +36,12 @@ export abstract class CompilerNode {
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
 
+  // a node is trivial if it doesn't make sense to cache it's value
+  // e.g. a node that just returns a constant value
+  isTrivial(): boolean {
+    return false;
+  }
+
   protected addInput(name: string, type: Type): void {
     this.inputs.push({ name, type });
   }
@@ -52,6 +58,23 @@ export abstract class CompilerNode {
   protected getOutputType(name: string): Type | undefined {
     const pin = this.outputs.find((pin) => pin.name === name);
     return pin?.type;
+  }
+
+  protected createSingleOutput(
+    _node: NodeContext,
+    output: string,
+    type?: Type
+  ): Context {
+    if (!type) {
+      if (this.outputs.length !== 1) {
+        throw new Error("Single output expected but multiple outputs found.");
+      }
+      type = this.getOutputType(this.outputs[0].name);
+    }
+    return {
+      type: type!,
+      mainOutput: output,
+    };
   }
 
   protected addParameter(

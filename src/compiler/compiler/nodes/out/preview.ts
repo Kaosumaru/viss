@@ -11,25 +11,30 @@ class PreviewNode extends CompilerNode {
 
   override compile(node: NodeContext): Context {
     const ctx = this.getInput(node, "in");
+
     if (ctx.type.id === "scalar") {
-      return {
-        type: vector(ctx.type.type, 4),
-        mainOutput: `vec4(vec3(${ctx.mainOutput}), 1.0)`,
-      };
+      return this.createSingleOutput(
+        node,
+        `vec4(vec3(${ctx.mainOutput}), 1.0)`,
+        ctx.type
+      );
     }
 
     if (ctx.type.id === "vector") {
+      const type = vector(ctx.type.type, 4);
       if (ctx.type.size === 2) {
-        return {
-          type: vector(ctx.type.type, 4),
-          mainOutput: `vec4(${ctx.mainOutput}.xy, 0.0, 1.0)`,
-        };
+        return this.createSingleOutput(
+          node,
+          `vec4(${ctx.mainOutput}.xy, 0.0, 1.0)`,
+          type
+        );
       }
       if (ctx.type.size === 3) {
-        return {
-          type: vector(ctx.type.type, 4),
-          mainOutput: `vec4(${ctx.mainOutput}.xyz, 1.0)`,
-        };
+        return this.createSingleOutput(
+          node,
+          `vec4(${ctx.mainOutput}.xyz, 1.0)`,
+          type
+        );
       }
 
       if (ctx.type.size === 4) {
