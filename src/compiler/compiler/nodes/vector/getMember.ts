@@ -11,8 +11,8 @@ export class GetMember extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const ctx = this.getInput(node, "in");
-    return this.createSingleOutput(node, `${ctx.mainOutput}.${this.member}`);
+    const in_ = this.getInput(node, "in");
+    return this.createSingleOutput(node, `${in_.mainOutput}.${this.member}`);
   }
 
   override isTrivial(): boolean {

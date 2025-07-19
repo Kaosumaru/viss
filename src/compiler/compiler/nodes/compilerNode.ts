@@ -1,5 +1,5 @@
 import type { ParameterValue, ParameterValueType } from "@graph/parameter";
-import type { Context } from "../context";
+import type { Context, OutputData } from "../context";
 import { scalar, type Type } from "@glsl/types";
 
 export type ParamExtractedValue<T> = Extract<
@@ -8,7 +8,7 @@ export type ParamExtractedValue<T> = Extract<
 >["value"];
 
 export interface NodeContext {
-  tryGetInput(name: string): Context | undefined;
+  tryGetInput(name: string): OutputData | undefined;
   tryGetParamValue<T extends ParameterValueType>(
     name: string,
     type: T
@@ -65,15 +65,21 @@ export abstract class CompilerNode {
     output: string,
     type?: Type
   ): Context {
+    if (this.outputs.length !== 1) {
+      throw new Error("Single output expected but multiple outputs found.");
+    }
+    const outputName = this.outputs[0].name;
     if (!type) {
-      if (this.outputs.length !== 1) {
-        throw new Error("Single output expected but multiple outputs found.");
-      }
       type = this.getOutputType(this.outputs[0].name);
     }
     return {
       type: type!,
-      mainOutput: output,
+      outputs: {
+        [outputName]: {
+          type: type!,
+          mainOutput: output,
+        },
+      },
     };
   }
 
@@ -94,7 +100,7 @@ export abstract class CompilerNode {
     this.addParameter(name, "number", { type: "number", value: 0 });
   }
 
-  protected getInput(node: NodeContext, name: string): Context {
+  protected getInput(node: NodeContext, name: string): OutputData {
     const input = node.tryGetInput(name);
     // TODO check type
     if (input) {

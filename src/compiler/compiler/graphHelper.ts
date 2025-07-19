@@ -1,6 +1,11 @@
 import type { Graph } from "@graph/graph";
 import type { Node } from "@graph/node";
 
+export interface InputConnection {
+  node: Node;
+  socketId: string;
+}
+
 export class GraphHelper {
   protected graph: Graph;
   constructor(graph: Graph) {
@@ -13,13 +18,16 @@ export class GraphHelper {
       if (fromNode && toNode) {
         this.getConnectedNode.set(
           `${toNode.identifier}///${connection.to.socketId}`,
-          fromNode
+          { node: fromNode, socketId: connection.from.socketId }
         );
       }
     });
   }
 
-  getInputNode(inputNodeId: string, inputSocketId: string): Node | undefined {
+  getInputNode(
+    inputNodeId: string,
+    inputSocketId: string
+  ): InputConnection | undefined {
     return this.getConnectedNode.get(`${inputNodeId}///${inputSocketId}`);
   }
 
@@ -27,6 +35,6 @@ export class GraphHelper {
     return this.nodes.get(id);
   }
 
-  protected getConnectedNode: Map<string, Node> = new Map();
+  protected getConnectedNode: Map<string, InputConnection> = new Map();
   protected nodes: Map<string, Node> = new Map();
 }

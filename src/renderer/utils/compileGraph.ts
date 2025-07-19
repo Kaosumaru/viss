@@ -1,4 +1,4 @@
-import type { Context } from "@compiler/context";
+import type { OutputData } from "@compiler/context";
 import type { NodeEditor } from "rete";
 import type { Schemes, AreaExtra } from "../graph/node";
 import { Compiler } from "@compiler/compiler";
@@ -8,7 +8,7 @@ import { editorToGraph } from "./saveGraph";
 export function compileGraph(
   editor: NodeEditor<Schemes>,
   area?: AreaPlugin<Schemes, AreaExtra>
-): Context | undefined {
+): OutputData | undefined {
   const graph = editorToGraph(editor, area);
   try {
     const compiler = new Compiler(graph);
@@ -16,7 +16,8 @@ export function compileGraph(
     if (!node) {
       throw new Error("Preview node not found in graph");
     }
-    return compiler.compile(node.identifier);
+    const output = compiler.compile(node.identifier);
+    return output.outputs["out"];
   } catch (error) {
     console.error("Compilation error:", error);
     return undefined;

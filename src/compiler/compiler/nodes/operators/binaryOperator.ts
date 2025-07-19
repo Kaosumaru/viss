@@ -11,8 +11,8 @@ export abstract class BinaryOperator extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const ctxA = this.getInput(node, "a");
-    const ctxB = this.getInput(node, "b");
+    const inA = this.getInput(node, "a");
+    const inB = this.getInput(node, "b");
 
     // TODO this needs either a cache or a type check
     /*
@@ -22,15 +22,15 @@ export abstract class BinaryOperator extends CompilerNode {
       );
     }*/
 
-    if (ctxA.type.id !== "scalar") {
+    if (inA.type.id !== "scalar") {
       throw new Error("AddNode only supports scalar types");
     }
 
-    const out = `(${ctxA.mainOutput}) ${this.operationSymbol()} (${
-      ctxB.mainOutput
+    const out = `(${inA.mainOutput}) ${this.operationSymbol()} (${
+      inB.mainOutput
     })`;
 
-    return this.createSingleOutput(node, out, ctxA.type);
+    return this.createSingleOutput(node, out, inA.type);
   }
 
   protected abstract operationSymbol(): string;

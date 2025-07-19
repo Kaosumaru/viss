@@ -1,5 +1,5 @@
 import type { ParameterValueType } from "@graph/parameter";
-import type { Context } from "./context";
+import type { OutputData } from "./context";
 import type { NodeContext } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { Compiler } from "./compiler";
@@ -12,12 +12,17 @@ export class CompileNodeContext implements NodeContext {
     this.node = node;
   }
 
-  tryGetInput(name: string): Context | undefined {
-    const node = this.graph.getInputNode(this.node.identifier, name);
-    if (!node) {
+  tryGetInput(name: string): OutputData | undefined {
+    const input = this.graph.getInputNode(this.node.identifier, name);
+    if (!input) {
       return undefined;
     }
-    return this.compiler.compile(node.identifier);
+    const ctx = this.compiler.compile(input.node.identifier);
+    const out = ctx.outputs[input.socketId];
+    if (!out) {
+      return undefined;
+    }
+    return out;
   }
 
   tryGetParamValue<T extends ParameterValueType>(name: string, type: T) {
