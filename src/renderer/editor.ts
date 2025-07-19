@@ -18,25 +18,25 @@ import { CustomSocket } from "./graph/nodes/customSocket";
 import { CustomConnection } from "./graph/nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
 import type { NodeType } from "@compiler/nodes/allNodes";
+import type { EditorData } from "./editorView";
 
 export type OnGraphChanged = (
-  editor: NodeEditor<Schemes>,
+  editorData: EditorData,
   area: AreaPlugin<Schemes, AreaExtra>
 ) => void;
 
 export type OnControlChanged = (
+  editorData: EditorData,
   nodeId: string,
   controlKey: string,
-  value: unknown,
-  editor: NodeEditor<Schemes>,
-  area: AreaPlugin<Schemes, AreaExtra>
+  value: unknown
 ) => void;
 
 export async function createEditor(
   container: HTMLElement,
   onChanged?: OnGraphChanged,
   onControlChanged?: OnControlChanged
-) {
+): Promise<EditorData> {
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
@@ -87,37 +87,33 @@ export async function createEditor(
   area.use(render);
   area.use(arrange);
 
-  editor.addPipe((context) => {
-    if (
-      context.type === "nodecreated" ||
-      context.type === "noderemoved" ||
-      context.type === "connectioncreated" ||
-      context.type === "connectionremoved"
-    ) {
-      onChanged?.(editor, area);
-    }
-    return context;
-  });
-
   AreaExtensions.simpleNodesOrder(area);
   AreaExtensions.showInputControl<Schemes>(area, ({ hasAnyConnection }) => {
     return !hasAnyConnection;
   });
 
+  let data: EditorData | undefined = undefined;
+
   // Function to add a node at the mouse position
-  const createNode = async (nodeType: NodeType, x?: number, y?: number) => {
+  const createNode = async (
+    nodeType: NodeType,
+    x?: number,
+    y?: number,
+    id?: string
+  ) => {
     const node = new UICompilerNode(
       nodeType,
       onControlChanged
         ? (nodeId, controlKey, value) => {
-            onControlChanged(nodeId, controlKey, value, editor, area);
+            onControlChanged(data!, nodeId, controlKey, value);
           }
         : undefined
     );
+    node.id = id || node.id; // Use provided ID or generate a new one
     // Set the control change callback for the node if it doesn't already have one
     if (onControlChanged && node.setControlChangeCallback) {
       node.setControlChangeCallback((nodeId, controlKey, value) => {
-        onControlChanged(nodeId, controlKey, value, editor, area);
+        onControlChanged(data!, nodeId, controlKey, value);
       });
     }
 
@@ -135,14 +131,33 @@ export async function createEditor(
     return node;
   };
 
+  const clear = () => {
+    editor.clear();
+  };
+
   await createNode("preview");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
 
-  return {
+  data = {
     destroy: () => area.destroy(),
     createNode,
+    clear,
     editor,
     area,
   };
+
+  editor.addPipe((context) => {
+    if (
+      context.type === "nodecreated" ||
+      context.type === "noderemoved" ||
+      context.type === "connectioncreated" ||
+      context.type === "connectionremoved"
+    ) {
+      onChanged?.(data, area);
+    }
+    return context;
+  });
+
+  return data;
 }

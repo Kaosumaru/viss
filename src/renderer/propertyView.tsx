@@ -1,10 +1,8 @@
 import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
-import type { NodeEditor } from "rete";
-import type { Schemes, AreaExtra } from "./graph/node";
-import type { AreaPlugin } from "rete-area-plugin";
 import { loadGraph } from "./utils/loadGraph";
 import { editorToGraph } from "./utils/saveGraph";
+import type { EditorData } from "./editorView";
 
 const vertexShader = `
 attribute vec2 a_position;
@@ -15,19 +13,18 @@ void main() {
 
 export interface PropertyViewProps {
   color: string;
-  editor?: NodeEditor<Schemes>;
-  area?: AreaPlugin<Schemes, AreaExtra>;
+  editorData?: EditorData;
 }
 
-export function PropertyView({ color, editor, area }: PropertyViewProps) {
+export function PropertyView({ color, editorData }: PropertyViewProps) {
   const handleSaveGraph = async () => {
-    if (!editor) {
+    if (!editorData?.editor) {
       console.warn("No editor available");
       return;
     }
 
     try {
-      const graph = editorToGraph(editor, area);
+      const graph = editorToGraph(editorData);
       const graphJson = JSON.stringify(graph, null, 2);
 
       // Copy to clipboard
@@ -39,7 +36,7 @@ export function PropertyView({ color, editor, area }: PropertyViewProps) {
   };
 
   const handleLoadGraph = async () => {
-    if (!editor) {
+    if (!editorData) {
       console.warn("No editor available");
       return;
     }
@@ -47,7 +44,7 @@ export function PropertyView({ color, editor, area }: PropertyViewProps) {
     try {
       // Read from clipboard
       const graphJson = await navigator.clipboard.readText();
-      await loadGraph(graphJson, editor, area);
+      await loadGraph(graphJson, editorData);
 
       console.log("Graph loaded successfully from clipboard");
     } catch (error) {
@@ -68,7 +65,7 @@ void main() {
         <Button
           variant="contained"
           onClick={handleSaveGraph}
-          disabled={!editor}
+          disabled={!editorData}
           size="small"
         >
           Save Graph to Clipboard
@@ -76,7 +73,7 @@ void main() {
         <Button
           variant="outlined"
           onClick={handleLoadGraph}
-          disabled={!editor}
+          disabled={!editorData}
           size="small"
         >
           Load Graph from Clipboard

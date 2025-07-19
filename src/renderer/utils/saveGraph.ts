@@ -1,18 +1,17 @@
 import type { Node } from "@graph/node";
-import type { ClassicPreset, NodeEditor } from "rete";
-import type { Schemes, AreaExtra } from "../graph/node";
+import type { ClassicPreset } from "rete";
 import { UICompilerNode } from "../graph/nodes/compilerNode";
 import type { Graph } from "@graph/graph";
-import type { AreaPlugin } from "rete-area-plugin";
+import type { EditorData } from "renderer/editorView";
 
-export function editorToGraph(
-  editor: NodeEditor<Schemes>,
-  area?: AreaPlugin<Schemes, AreaExtra>
-): Graph {
+export function editorToGraph(editorData: EditorData): Graph {
   const graph: Graph = {
     nodes: [],
     connections: [],
   };
+
+  const editor = editorData.editor;
+  const area = editorData.area;
 
   editor.getNodes().forEach((node) => {
     if (node instanceof UICompilerNode) {

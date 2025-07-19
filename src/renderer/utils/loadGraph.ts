@@ -1,31 +1,20 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { Graph } from "@graph/graph";
-import type { AreaExtra, Schemes } from "../graph/node";
-import { UICompilerNode } from "../graph/nodes/compilerNode";
-import { ClassicPreset, type NodeEditor } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
+import { ClassicPreset } from "rete";
+import type { EditorData } from "renderer/editorView";
 
-export async function loadGraph(
-  graphJson: string,
-  editor: NodeEditor<Schemes>,
-  area?: AreaPlugin<Schemes, AreaExtra>
-) {
+export async function loadGraph(graphJson: string, editorData: EditorData) {
   const graph: Graph = JSON.parse(graphJson);
-
-  // Clear current nodes
-  const currentNodes = editor.getNodes();
-  for (const node of currentNodes) {
-    await editor.removeNode(node.id);
-  }
-
-  const currentConnections = editor.getConnections();
-  for (const connection of currentConnections) {
-    await editor.removeConnection(connection.id);
-  }
+  editorData.clear();
 
   // Add nodes from graph
   for (const graphNode of graph.nodes) {
-    const uiNode = new UICompilerNode(graphNode.nodeType as NodeType);
+    const uiNode = await editorData.createNode(
+      graphNode.nodeType as NodeType,
+      graphNode.position.x,
+      graphNode.position.y,
+      graphNode.identifier
+    );
 
     // Set the node ID to preserve original IDs
     uiNode.id = graphNode.identifier;
@@ -47,22 +36,15 @@ export async function loadGraph(
         }
       }
     });
-
-    await editor.addNode(uiNode);
-
-    // Set the node position from the saved graph
-    if (area) {
-      await area.translate(uiNode.id, graphNode.position);
-    }
   }
 
   // Add connections
   for (const connection of graph.connections) {
-    const sourceNode = editor.getNode(connection.from.nodeId);
-    const targetNode = editor.getNode(connection.to.nodeId);
+    const sourceNode = editorData.editor.getNode(connection.from.nodeId);
+    const targetNode = editorData.editor.getNode(connection.to.nodeId);
 
     if (sourceNode && targetNode) {
-      await editor.addConnection(
+      await editorData.editor.addConnection(
         new ClassicPreset.Connection(
           sourceNode,
           connection.from.socketId,

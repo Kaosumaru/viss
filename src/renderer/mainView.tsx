@@ -1,12 +1,9 @@
 import styled from "styled-components";
-import { EditorView } from "./editorView";
+import { EditorView, type EditorData } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged, OnControlChanged } from "./editor";
 import { compileGraph } from "./utils/compileGraph";
-import type { NodeEditor } from "rete";
-import type { Schemes, AreaExtra } from "./graph/node";
-import type { AreaPlugin } from "rete-area-plugin";
 
 const Layout = styled.div`
   display: grid;
@@ -38,27 +35,23 @@ export function MainView() {
     "vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0)"
   ); // Default color
 
-  const [editor, setEditor] = useState<NodeEditor<Schemes> | undefined>(
-    undefined
-  );
-  const [area, setArea] = useState<AreaPlugin<Schemes, AreaExtra> | undefined>(
+  const [editorData, setEditorData] = useState<EditorData | undefined>(
     undefined
   );
 
-  const onChanged: OnGraphChanged = useCallback((editor, area) => {
-    setEditor(editor);
-    setArea(area);
-    const context = compileGraph(editor, area);
+  const onChanged: OnGraphChanged = useCallback((editorData) => {
+    setEditorData(editorData);
+    const context = compileGraph(editorData);
     setColor(context?.mainOutput ? context.mainOutput : defaultColor);
   }, []);
 
   const onControlChanged: OnControlChanged = useCallback(
-    (nodeId, controlKey, value, editor, area) => {
+    (editorData, nodeId, controlKey, value) => {
       console.log(
         `Control changed on node ${nodeId}, control ${controlKey}: ${value}`
       );
       // Recompile the graph when a control changes
-      const context = compileGraph(editor, area);
+      const context = compileGraph(editorData);
       setColor(context?.mainOutput ? context.mainOutput : defaultColor);
     },
     []
@@ -71,7 +64,7 @@ export function MainView() {
       </Canvas>
 
       <Result>
-        <PropertyView color={color} editor={editor} area={area} />
+        <PropertyView color={color} editorData={editorData} />
       </Result>
     </Layout>
   );

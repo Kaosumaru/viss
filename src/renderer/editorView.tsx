@@ -17,17 +17,21 @@ export interface EditorViewProps {
   onControlChanged?: OnControlChanged;
 }
 
+export interface EditorData {
+  destroy: () => void;
+  clear: () => void;
+  createNode: (
+    nodeType: NodeType,
+    x?: number,
+    y?: number,
+    id?: string
+  ) => Promise<UICompilerNode>;
+  editor: NodeEditor<Schemes>;
+  area: AreaPlugin<Schemes, AreaExtra>;
+}
+
 export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
-  const editorRef = useRef<{
-    destroy: () => void;
-    createNode: (
-      nodeType: NodeType,
-      x?: number,
-      y?: number
-    ) => Promise<UICompilerNode>;
-    editor: NodeEditor<Schemes>;
-    area: AreaPlugin<Schemes, AreaExtra>;
-  } | null>(null);
+  const editorRef = useRef<EditorData | null>(null);
 
   const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
     x: number;
