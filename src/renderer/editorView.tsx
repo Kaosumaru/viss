@@ -42,6 +42,7 @@ export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
     async (container: HTMLElement) => {
       const editor = await createEditor(container, onChanged, onControlChanged);
       editorRef.current = editor;
+      onChanged?.(editor);
       return editor;
     },
     [onChanged, onControlChanged]

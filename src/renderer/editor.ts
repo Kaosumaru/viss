@@ -20,10 +20,7 @@ import { getDOMSocketPosition } from "rete-render-utils";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorData } from "./editorView";
 
-export type OnGraphChanged = (
-  editorData: EditorData,
-  area: AreaPlugin<Schemes, AreaExtra>
-) => void;
+export type OnGraphChanged = (editorData: EditorData) => void;
 
 export type OnControlChanged = (
   editorData: EditorData,
@@ -154,7 +151,7 @@ export async function createEditor(
       context.type === "connectioncreated" ||
       context.type === "connectionremoved"
     ) {
-      onChanged?.(data, area);
+      onChanged?.(data);
     }
     return context;
   });
