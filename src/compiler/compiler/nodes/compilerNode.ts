@@ -8,6 +8,7 @@ export type ParamExtractedValue<T> = Extract<
 >["value"];
 
 export interface NodeContext {
+  info(): string;
   tryGetInput(name: string): OutputData | undefined;
   tryGetParamValue<T extends ParameterValueType>(
     name: string,
@@ -27,6 +28,8 @@ export interface Parameter {
   type: ParameterValueType;
   defaultValue?: ParameterValue;
 }
+
+type OutputText = [string] | [string, Type];
 
 export type Parameters = Parameter[];
 export abstract class CompilerNode {
@@ -60,7 +63,7 @@ export abstract class CompilerNode {
     return pin?.type;
   }
 
-  protected createSingleOutput(
+  protected createOutput(
     _node: NodeContext,
     output: string,
     type?: Type
@@ -73,7 +76,6 @@ export abstract class CompilerNode {
       type = this.getOutputType(this.outputs[0].name);
     }
     return {
-      type: type!,
       outputs: {
         [outputName]: {
           type: type!,
@@ -81,6 +83,25 @@ export abstract class CompilerNode {
         },
       },
     };
+  }
+
+  protected createOutputs(_node: NodeContext, outputs: OutputText[]): Context {
+    const result: Context = {
+      outputs: {},
+    };
+    if (this.outputs.length !== outputs.length) {
+      throw new Error("Mismatch between outputs and expected outputs.");
+    }
+    let i = 0;
+    for (const [outputText, type] of outputs) {
+      const output = this.outputs[i];
+      i++;
+      result.outputs[output.name] = {
+        type: type ?? output.type,
+        mainOutput: outputText,
+      };
+    }
+    return result;
   }
 
   protected addParameter(
@@ -106,7 +127,7 @@ export abstract class CompilerNode {
     if (input) {
       return input;
     }
-    throw new Error(`Input ${name} not found`);
+    throw new Error(`Input '${name}' not found in node ${node.info()}`);
   }
 
   getParamValue(node: NodeContext, name: string, type: "number"): number {

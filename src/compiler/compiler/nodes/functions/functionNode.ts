@@ -20,7 +20,7 @@ export class FunctionNode extends CompilerNode {
       ([name]) => this.getInput(node, name).mainOutput
     );
 
-    return this.createSingleOutput(node, `${this.name}(${inputs.join(", ")})`);
+    return this.createOutput(node, `${this.name}(${inputs.join(", ")})`);
   }
 
   override getLabel(): string {

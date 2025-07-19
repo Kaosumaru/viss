@@ -3,3 +3,4 @@
  - when output is connected to multimple things
  - when we would want to use input more than once (is that necessary?)
 3. multiple outputs
+4. loading causes multiple recompilations after addition of each node

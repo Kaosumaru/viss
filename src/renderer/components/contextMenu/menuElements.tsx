@@ -82,6 +82,16 @@ export const menuElements: MenuCategory[] = [
         description: "Create a 4-component vector",
       },
       {
+        name: "Decompose Vec2",
+        nodeType: "decomposeVector2",
+        description: "Decompose a 2-component vector",
+      },
+      {
+        name: "Decompose Vec4",
+        nodeType: "decomposeVector4",
+        description: "Decompose a 4-component vector",
+      },
+      {
         name: "Get X",
         nodeType: "getX",
         description: "Extract X component",

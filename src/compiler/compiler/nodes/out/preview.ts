@@ -13,24 +13,24 @@ class PreviewNode extends CompilerNode {
     const in_ = this.getInput(node, "in");
 
     if (in_.type.id === "scalar") {
-      return this.createSingleOutput(
+      return this.createOutput(
         node,
         `vec4(vec3(${in_.mainOutput}), 1.0)`,
-        in_.type
+        vector(in_.type.type, 4)
       );
     }
 
     if (in_.type.id === "vector") {
       const type = vector(in_.type.type, 4);
       if (in_.type.size === 2) {
-        return this.createSingleOutput(
+        return this.createOutput(
           node,
           `vec4(${in_.mainOutput}.xy, 0.0, 1.0)`,
           type
         );
       }
       if (in_.type.size === 3) {
-        return this.createSingleOutput(
+        return this.createOutput(
           node,
           `vec4(${in_.mainOutput}.xyz, 1.0)`,
           type
@@ -38,7 +38,7 @@ class PreviewNode extends CompilerNode {
       }
 
       if (in_.type.size === 4) {
-        return this.createSingleOutput(node, in_.mainOutput, in_.type);
+        return this.createOutput(node, in_.mainOutput, in_.type);
       }
     }
     throw new Error("Preview node only supports scalar inputs");

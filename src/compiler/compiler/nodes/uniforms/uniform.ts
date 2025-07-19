@@ -10,7 +10,7 @@ export class UniformNode extends CompilerNode {
     this.addOutput("out", type);
   }
   override compile(node: NodeContext): Context {
-    return this.createSingleOutput(node, this.uniformName, this.type);
+    return this.createOutput(node, this.uniformName, this.type);
   }
 
   override isTrivial(): boolean {

@@ -20,7 +20,7 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
   override compile(node: NodeContext): Context {
     const value = this.getParamValue(node, "value", "number");
     const v = value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
-    return this.createSingleOutput(node, v);
+    return this.createOutput(node, v);
   }
 
   override getLabel(): string {

@@ -19,7 +19,7 @@ class ComposeVector4 extends CompilerNode {
     const z = this.getFloat(node, "z");
     const w = this.getFloat(node, "w");
 
-    return this.createSingleOutput(node, `vec4(${x}, ${y}, ${z}, ${w})`);
+    return this.createOutput(node, `vec4(${x}, ${y}, ${z}, ${w})`);
   }
 
   override getLabel(): string {

@@ -6,6 +6,5 @@ export interface OutputData {
 }
 
 export interface Context {
-  type: Type;
   outputs: Record<string, OutputData>;
 }

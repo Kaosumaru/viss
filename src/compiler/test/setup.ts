@@ -67,7 +67,11 @@ export function setup<T extends Descriptors>(
 
 export function expectedOutput(main: string, type: Type): Context {
   return {
-    mainOutput: main,
-    type: type,
+    outputs: {
+      out: {
+        mainOutput: main,
+        type: type,
+      },
+    },
   };
 }

@@ -12,7 +12,7 @@ export class GetMember extends CompilerNode {
 
   override compile(node: NodeContext): Context {
     const in_ = this.getInput(node, "in");
-    return this.createSingleOutput(node, `${in_.mainOutput}.${this.member}`);
+    return this.createOutput(node, `${in_.mainOutput}.${this.member}`);
   }
 
   override isTrivial(): boolean {

@@ -38,6 +38,10 @@ export class CompileNodeContext implements NodeContext {
     return param.value;
   }
 
+  info(): string {
+    return `${this.node.nodeType}/${this.node.identifier}`;
+  }
+
   protected compiler: Compiler;
   protected node: Node;
   protected graph: GraphHelper;

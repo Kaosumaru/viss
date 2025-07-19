@@ -9,6 +9,8 @@ import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
 import { composeVector4 } from "./vector/composeVector4";
 import { FunctionNode } from "./functions/functionNode";
+import { decomposeVector4 } from "./vector/decomposeVector4";
+import { decomposeVector2 } from "./vector/decomposeVector2";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
@@ -33,6 +35,8 @@ export const nodes = {
   getY: new GetMember("y", vector("float", 2), scalar("float")),
 
   composeVector4,
+  decomposeVector2,
+  decomposeVector4,
 };
 
 export type NodeType = keyof typeof nodes;
