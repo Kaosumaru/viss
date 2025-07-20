@@ -1,11 +1,17 @@
 import type { Type } from "../glsl/types";
 
-export interface OutputData {
+export interface Variable {
+  name: string;
   type: Type;
-  expression: string;
+  data: string;
+}
+
+export interface Expression {
+  type: Type;
+  data: string;
   trivial: boolean;
 }
 
 export interface Context {
-  outputs: Record<string, OutputData>;
+  outputs: Record<string, Expression>;
 }

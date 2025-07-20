@@ -42,7 +42,7 @@ export function MainView() {
   const onChanged: OnGraphChanged = useCallback((editorData) => {
     setEditorData(editorData);
     const context = compileGraph(editorData);
-    setColor(context?.expression ? context.expression : defaultColor);
+    setColor(context?.data ? context.data : defaultColor);
   }, []);
 
   const onControlChanged: OnControlChanged = useCallback(
@@ -52,7 +52,7 @@ export function MainView() {
       );
       // Recompile the graph when a control changes
       const context = compileGraph(editorData);
-      setColor(context?.expression ? context.expression : defaultColor);
+      setColor(context?.data ? context.data : defaultColor);
     },
     []
   );

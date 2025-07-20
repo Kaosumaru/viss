@@ -1,5 +1,5 @@
 import type { ParameterValueType } from "@graph/parameter";
-import type { OutputData } from "./context";
+import type { Expression as Expression, Variable } from "./context";
 import type { NodeContext } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { Compiler } from "./compiler";
@@ -12,7 +12,7 @@ export class CompileNodeContext implements NodeContext {
     this.node = node;
   }
 
-  tryGetInput(name: string): OutputData | undefined {
+  tryGetInput(name: string): Expression | undefined {
     const input = this.graph.getInputNode(this.node.identifier, name);
     if (!input) {
       return undefined;
@@ -38,6 +38,21 @@ export class CompileNodeContext implements NodeContext {
     return param.value;
   }
 
+  createVariable(expr: Expression): Expression {
+    const variableName = `var_${this.node.identifier}_${this.variables.length}`;
+    const variable: Variable = {
+      name: variableName,
+      type: expr.type,
+      data: expr.data,
+    };
+    this.variables.push(variable);
+    return {
+      data: variableName,
+      type: expr.type,
+      trivial: true,
+    };
+  }
+
   info(): string {
     return `${this.node.nodeType}/${this.node.identifier}`;
   }
@@ -45,4 +60,5 @@ export class CompileNodeContext implements NodeContext {
   protected compiler: Compiler;
   protected node: Node;
   protected graph: GraphHelper;
+  protected variables: Variable[] = [];
 }

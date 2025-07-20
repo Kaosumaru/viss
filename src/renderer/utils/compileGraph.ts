@@ -1,9 +1,9 @@
-import type { OutputData } from "@compiler/context";
+import type { Expression } from "@compiler/context";
 import { Compiler } from "@compiler/compiler";
 import { editorToGraph } from "./saveGraph";
 import type { EditorData } from "renderer/editorView";
 
-export function compileGraph(editorData: EditorData): OutputData | undefined {
+export function compileGraph(editorData: EditorData): Expression | undefined {
   const graph = editorToGraph(editorData);
   try {
     const compiler = new Compiler(graph);

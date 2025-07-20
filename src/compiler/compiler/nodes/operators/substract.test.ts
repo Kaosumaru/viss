@@ -24,5 +24,5 @@ test("substract floats", () => {
     .connect("substract", "b", "b")
     .compile("substract");
 
-  expect(c).toEqual(expectedOutput("(1.0) - (2.0)", scalar("float")));
+  expect(c).toEqual(expectedOutput("(1.0 - 2.0)", scalar("float")));
 });

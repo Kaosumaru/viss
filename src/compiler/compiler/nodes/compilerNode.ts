@@ -1,5 +1,5 @@
 import type { ParameterValue, ParameterValueType } from "@graph/parameter";
-import type { Context, OutputData } from "../context";
+import type { Context, Expression } from "../context";
 import { scalar, type Type } from "@glsl/types";
 
 export type ParamExtractedValue<T> = Extract<
@@ -8,8 +8,9 @@ export type ParamExtractedValue<T> = Extract<
 >["value"];
 
 export interface NodeContext {
+  createVariable(outputData: Expression): Expression;
   info(): string;
-  tryGetInput(name: string): OutputData | undefined;
+  tryGetInput(name: string): Expression | undefined;
   tryGetParamValue<T extends ParameterValueType>(
     name: string,
     type: T
@@ -77,7 +78,7 @@ export abstract class CompilerNode {
       outputs: {
         [outputName]: {
           type: type!,
-          expression: expression,
+          data: expression,
           trivial: false,
         },
       },
@@ -100,7 +101,7 @@ export abstract class CompilerNode {
       i++;
       result.outputs[output.name] = {
         type: type ?? output.type,
-        expression: text,
+        data: text,
         trivial: trivial ?? false,
       };
     }
@@ -124,7 +125,7 @@ export abstract class CompilerNode {
     this.addParameter(name, "number", { type: "number", value: 0 });
   }
 
-  protected getInput(node: NodeContext, name: string): OutputData {
+  protected getInput(node: NodeContext, name: string): Expression {
     const input = node.tryGetInput(name);
     // TODO check type
     if (input) {
@@ -145,7 +146,7 @@ export abstract class CompilerNode {
     const input = node.tryGetInput(name);
     if (input) {
       if (input.type.id === "scalar" && input.type.type === "float") {
-        return input.expression;
+        return input.data;
       }
       throw new Error(`Input ${name} is not of type number`);
     }
@@ -156,5 +157,12 @@ export abstract class CompilerNode {
       return value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
     }
     throw new Error(`Input or parameter ${name} not found`);
+  }
+
+  protected toVariable(node: NodeContext, outputData: Expression): Expression {
+    if (outputData.trivial) {
+      return outputData;
+    }
+    return node.createVariable(outputData);
   }
 }

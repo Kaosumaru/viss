@@ -24,5 +24,5 @@ test("add floats", () => {
     .connect("add", "b", "b")
     .compile("add");
 
-  expect(c).toEqual(expectedOutput("(1.0) + (2.0)", scalar("float")));
+  expect(c).toEqual(expectedOutput("(1.0 + 2.0)", scalar("float")));
 });

@@ -16,9 +16,7 @@ export class FunctionNode extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const inputs = this.params.map(
-      ([name]) => this.getInput(node, name).expression
-    );
+    const inputs = this.params.map(([name]) => this.getInput(node, name).data);
 
     return this.createOutput(node, `${this.name}(${inputs.join(", ")})`);
   }
