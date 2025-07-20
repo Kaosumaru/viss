@@ -33,6 +33,7 @@ const defaultColor = "vec4(0.0, 0.0, 0.0, 1.0)";
 const fragmentShader = `
 precision mediump float;
 uniform float u_time;
+uniform vec2 u_resolution;
 void main() {
   gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); 
 }

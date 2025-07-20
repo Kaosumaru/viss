@@ -71,6 +71,7 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
     const uTimeLocation = gl.getUniformLocation(program, "u_time");
+    const uResolutionLocation = gl.getUniformLocation(program, "u_resolution");
 
     const startTime = performance.now();
 
@@ -83,6 +84,9 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
 
       if (uTimeLocation) {
         gl.uniform1f(uTimeLocation, elapsedSeconds);
+      }
+      if (uResolutionLocation) {
+        gl.uniform2f(uResolutionLocation, canvas.width, canvas.height);
       }
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);

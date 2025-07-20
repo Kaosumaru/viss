@@ -16,15 +16,16 @@ export function compileGraph(editorData: EditorData): string | undefined {
     const outExpression = output.outputs["out"];
 
     const variables = output.variables
-      .map((variable: Variable) => compileVariable(variable))
+      .map((variable: Variable) => compileVariable(variable, 1))
       .join("\n");
     const fragmentShader = `
-    precision mediump float;
-    uniform float u_time;
-    void main() {
-      ${variables};
-      gl_FragColor = ${outExpression.data}; 
-    }`;
+precision mediump float;
+uniform float u_time;
+uniform vec2 u_resolution;
+void main() {
+${variables}
+  gl_FragColor = ${outExpression.data}; 
+}`;
 
     return fragmentShader;
   } catch (error) {
@@ -33,7 +34,8 @@ export function compileGraph(editorData: EditorData): string | undefined {
   }
 }
 
-function compileVariable(variable: Variable): string {
+function compileVariable(variable: Variable, level: number): string {
   const type = typeToGlsl(variable.type);
-  return `${type} ${variable.name} = ${variable.data};`;
+  const indent = " ".repeat(level * 2);
+  return `${indent}${type} ${variable.name} = ${variable.data};`;
 }

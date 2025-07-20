@@ -17,6 +17,11 @@ export const menuElements: MenuCategory[] = [
         nodeType: "float",
         description: "Single floating point value",
       },
+      {
+        name: "Bool",
+        nodeType: "bool",
+        description: "Boolean value (true/false)",
+      },
     ],
   },
   {
@@ -70,6 +75,11 @@ export const menuElements: MenuCategory[] = [
         nodeType: "abs",
         description: "Absolute value function",
       },
+      {
+        name: "Length",
+        nodeType: "length",
+        description: "Length of a vector",
+      },
     ],
   },
   {
@@ -100,6 +110,17 @@ export const menuElements: MenuCategory[] = [
         name: "Get Y",
         nodeType: "getY",
         description: "Extract Y component",
+      },
+    ],
+  },
+  {
+    name: "Utilities",
+    icon: <SettingsIcon fontSize="small" />,
+    items: [
+      {
+        name: "Coords",
+        nodeType: "coords",
+        description: "Normalized coordinates from fragment position",
       },
     ],
   },

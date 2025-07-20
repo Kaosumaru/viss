@@ -3,7 +3,12 @@ export interface NumberValue {
   value: number;
 }
 
-export type ParameterValue = NumberValue;
+export interface BooleanValue {
+  type: "boolean";
+  value: boolean;
+}
+
+export type ParameterValue = NumberValue | BooleanValue;
 export type ParameterValueType = ParameterValue["type"];
 
 export interface Parameters {

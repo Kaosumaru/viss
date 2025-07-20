@@ -1,6 +1,7 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { Graph } from "@graph/graph";
 import { ClassicPreset } from "rete";
+import { BooleanControl } from "../graph/nodes/customBooleanControl";
 import type { EditorData } from "renderer/editorView";
 
 export async function loadGraph(graphJson: string, editorData: EditorData) {
@@ -21,18 +22,21 @@ export async function loadGraph(graphJson: string, editorData: EditorData) {
 
     // Set parameters
     Object.entries(graphNode.parameters).forEach(([key, param]) => {
-      const control = uiNode.controls[
-        key
-      ] as ClassicPreset.InputControl<"number">;
-      if (control && param.type === "number") {
+      // Check for standalone controls
+      const control = uiNode.controls[key];
+      if (control instanceof BooleanControl && param.type === "boolean") {
+        control.value = param.value as boolean;
+      } else if (control instanceof ClassicPreset.InputControl && param.type === "number") {
         control.setValue(param.value);
       }
 
+      // Check for input controls
       if (uiNode.inputs[key]?.control) {
-        const control = uiNode.inputs[key]
-          .control as ClassicPreset.InputControl<"number">;
-        if (param.type === "number") {
-          control.setValue(param.value);
+        const inputControl = uiNode.inputs[key].control;
+        if (inputControl instanceof BooleanControl && param.type === "boolean") {
+          inputControl.value = param.value as boolean;
+        } else if (inputControl instanceof ClassicPreset.InputControl && param.type === "number") {
+          inputControl.setValue(param.value);
         }
       }
     });

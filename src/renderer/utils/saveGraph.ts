@@ -1,6 +1,7 @@
 import type { Node } from "@graph/node";
 import type { ClassicPreset } from "rete";
 import { UICompilerNode } from "../graph/nodes/compilerNode";
+import { BooleanControl } from "../graph/nodes/customBooleanControl";
 import type { Graph } from "@graph/graph";
 import type { EditorData } from "renderer/editorView";
 
@@ -69,11 +70,18 @@ function addParameterFromControlToNode(
   key: string,
   control: ClassicPreset.Control
 ) {
-  const inputControl = control as ClassicPreset.InputControl<"number" | "text">;
-  if (inputControl?.type === "number") {
+  if (control instanceof BooleanControl) {
     gnode.parameters[key] = {
-      type: "number",
-      value: inputControl.value ? Number(inputControl.value) : 0,
+      type: "boolean",
+      value: control.value,
     };
+  } else {
+    const inputControl = control as ClassicPreset.InputControl<"number" | "text">;
+    if (inputControl?.type === "number") {
+      gnode.parameters[key] = {
+        type: "number",
+        value: inputControl.value ? Number(inputControl.value) : 0,
+      };
+    }
   }
 }

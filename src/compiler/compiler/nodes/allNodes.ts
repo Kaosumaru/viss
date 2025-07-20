@@ -1,5 +1,6 @@
-import { scalar, vector } from "@glsl/types";
+import { Any, scalar, vector } from "@glsl/types";
 import { LiteralNode } from "./basic/literal";
+import { BooleanLiteralNode } from "./basic/booleanLiteral";
 import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
 import { substract } from "./operators/substract";
@@ -11,9 +12,11 @@ import { composeVector4 } from "./vector/composeVector4";
 import { FunctionNode } from "./functions/functionNode";
 import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
+import { coords } from "./utils/coords";
 
 export const nodes = {
   float: new LiteralNode(scalar("float")),
+  bool: new BooleanLiteralNode(),
 
   // vector2: new LiteralNode(vector("float", 2)),
   // vector3: new LiteralNode(vector("float", 3)),
@@ -25,11 +28,13 @@ export const nodes = {
 
   preview,
 
+  length: new FunctionNode("length", scalar("float"), [["in", Any]]),
   sin: new FunctionNode("sin", scalar("float"), [["in", scalar("float")]]),
   abs: new FunctionNode("abs", scalar("float"), [["in", scalar("float")]]),
 
-  time: new UniformNode("u_time", scalar("float")),
-  fragCoord: new UniformNode("gl_FragCoord", vector("float", 4)),
+  time: new UniformNode("time", "u_time", scalar("float")),
+  resolution: new UniformNode("resolution", "u_resolution", vector("float", 2)),
+  fragCoord: new UniformNode("fragCoord", "gl_FragCoord", vector("float", 4)),
 
   getX: new GetMember("x", vector("float", 2), scalar("float")),
   getY: new GetMember("y", vector("float", 2), scalar("float")),
@@ -37,6 +42,9 @@ export const nodes = {
   composeVector4,
   decomposeVector2,
   decomposeVector4,
+
+  // special utils
+  coords,
 };
 
 export type NodeType = keyof typeof nodes;

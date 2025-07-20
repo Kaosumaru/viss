@@ -3,10 +3,11 @@ import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 export class UniformNode extends CompilerNode {
-  constructor(uniformName: string, type: Type) {
+  constructor(name: string, uniformName: string, type: Type) {
     super();
     this.uniformName = uniformName;
     this.type = type;
+    this.name = name;
     this.addOutput("out", type);
   }
   override compile(node: NodeContext): Context {
@@ -18,9 +19,10 @@ export class UniformNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return this.uniformName;
+    return this.name;
   }
 
   uniformName: string;
   type: Type;
+  name: string = "Uniform";
 }

@@ -1,12 +1,37 @@
 /* eslint-disable no-constant-binary-expression */
 import { type RenderEmit, Presets } from "rete-react-plugin";
+import { ClassicPreset } from "rete";
 import styled from "styled-components";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
+import { BooleanControl, CustomBooleanControl } from "./customBooleanControl";
 
 type NodeExtraData = { width?: number; height?: number };
 
-const { RefSocket, RefControl } = Presets.classic;
+const { RefSocket } = Presets.classic;
+
+// Custom RefControl that handles BooleanControl
+function CustomRefControl<S extends Schemes>(props: {
+  name: string;
+  emit: RenderEmit<S>;
+  payload: ClassicPreset.Control;
+  "data-testid"?: string;
+}) {
+  if (props.payload instanceof BooleanControl) {
+    return (
+      <CustomBooleanControl
+        emit={props.emit as RenderEmit<Schemes>}
+        payload={props.payload}
+      />
+    );
+  }
+  // Check if it's an InputControl before using classic control
+  if (props.payload instanceof ClassicPreset.InputControl) {
+    return <Presets.classic.Control data={props.payload} />;
+  }
+  // For other control types, return null or a fallback
+  return null;
+}
 
 function sortByIndex<T extends [string, undefined | { index?: number }][]>(
   entries: T
@@ -156,7 +181,7 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
                     <div className="input-title">{input?.label}</div>
                   )}
                   {input?.control && input?.showControl && (
-                    <RefControl
+                    <CustomRefControl
                       key={key}
                       name="input-control"
                       emit={props.emit}
@@ -204,7 +229,7 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
       <div className="controls">
         {controls.map(([key, control]) => {
           return control ? (
-            <RefControl
+            <CustomRefControl
               key={key}
               name="control"
               emit={props.emit}
