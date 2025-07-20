@@ -2,7 +2,8 @@ import type { Type } from "../glsl/types";
 
 export interface OutputData {
   type: Type;
-  mainOutput: string;
+  expression: string;
+  trivial: boolean;
 }
 
 export interface Context {

@@ -22,12 +22,16 @@ export abstract class BinaryOperator extends CompilerNode {
       );
     }*/
 
-    const out = `(${inA.mainOutput} ${this.operationSymbol()} ${
-      inB.mainOutput
+    const out = `(${inA.expression} ${this.operationSymbol()} ${
+      inB.expression
     })`;
 
     // TODO better typing
-    return this.createOutput(node, out, inA.type);
+    return this.createOutput(node, {
+      expression: out,
+      type: inA.type, // Assuming both inputs have the same type
+      trivial: false,
+    });
   }
 
   protected abstract operationSymbol(): string;

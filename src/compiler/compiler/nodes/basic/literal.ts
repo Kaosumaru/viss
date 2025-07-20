@@ -13,14 +13,16 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
     this.addOutput("out", type);
   }
 
-  override isTrivial(): boolean {
-    return true;
-  }
-
   override compile(node: NodeContext): Context {
     const value = this.getParamValue(node, "value", "number");
-    const v = value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
-    return this.createOutput(node, v);
+    const expression = value.toLocaleString("en-GB", {
+      minimumFractionDigits: 1,
+    });
+    return this.createOutput(node, {
+      expression,
+      type: this.type,
+      trivial: true,
+    });
   }
 
   override getLabel(): string {

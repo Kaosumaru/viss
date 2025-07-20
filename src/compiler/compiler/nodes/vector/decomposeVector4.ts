@@ -17,10 +17,10 @@ class DecomposeVector4 extends CompilerNode {
     const inVec = this.getInput(node, "in");
 
     return this.createOutputs(node, [
-      [inVec.mainOutput + ".x"],
-      [inVec.mainOutput + ".y"],
-      [inVec.mainOutput + ".z"],
-      [inVec.mainOutput + ".w"],
+      { expression: inVec.expression + ".x", trivial: true },
+      { expression: inVec.expression + ".y", trivial: true },
+      { expression: inVec.expression + ".z", trivial: true },
+      { expression: inVec.expression + ".w", trivial: true },
     ]);
   }
 

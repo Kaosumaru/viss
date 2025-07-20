@@ -29,7 +29,11 @@ export interface Parameter {
   defaultValue?: ParameterValue;
 }
 
-type OutputText = [string] | [string, Type];
+export interface OutputExpression {
+  expression: string;
+  type?: Type;
+  trivial?: boolean;
+}
 
 export type Parameters = Parameter[];
 export abstract class CompilerNode {
@@ -38,12 +42,6 @@ export abstract class CompilerNode {
   outputs: Pins = [];
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
-
-  // a node is trivial if it doesn't make sense to cache it's value
-  // e.g. a node that just returns a constant value
-  isTrivial(): boolean {
-    return false;
-  }
 
   protected addInput(name: string, type: Type): void {
     this.inputs.push({ name, type });
@@ -65,27 +63,31 @@ export abstract class CompilerNode {
 
   protected createOutput(
     _node: NodeContext,
-    output: string,
-    type?: Type
+    expression: string | OutputExpression
   ): Context {
     if (this.outputs.length !== 1) {
       throw new Error("Single output expected but multiple outputs found.");
     }
     const outputName = this.outputs[0].name;
-    if (!type) {
-      type = this.getOutputType(this.outputs[0].name);
+    if (typeof expression === "object") {
+      return this.createOutputs(_node, [expression]);
     }
+    const type = this.getOutputType(this.outputs[0].name);
     return {
       outputs: {
         [outputName]: {
           type: type!,
-          mainOutput: output,
+          expression: expression,
+          trivial: false,
         },
       },
     };
   }
 
-  protected createOutputs(_node: NodeContext, outputs: OutputText[]): Context {
+  protected createOutputs(
+    _node: NodeContext,
+    outputs: OutputExpression[]
+  ): Context {
     const result: Context = {
       outputs: {},
     };
@@ -93,12 +95,13 @@ export abstract class CompilerNode {
       throw new Error("Mismatch between outputs and expected outputs.");
     }
     let i = 0;
-    for (const [outputText, type] of outputs) {
+    for (const { expression: text, type, trivial } of outputs) {
       const output = this.outputs[i];
       i++;
       result.outputs[output.name] = {
         type: type ?? output.type,
-        mainOutput: outputText,
+        expression: text,
+        trivial: trivial ?? false,
       };
     }
     return result;
@@ -142,7 +145,7 @@ export abstract class CompilerNode {
     const input = node.tryGetInput(name);
     if (input) {
       if (input.type.id === "scalar" && input.type.type === "float") {
-        return input.mainOutput;
+        return input.expression;
       }
       throw new Error(`Input ${name} is not of type number`);
     }

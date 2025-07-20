@@ -15,8 +15,8 @@ class DecomposeVector2 extends CompilerNode {
     const inVec = this.getInput(node, "in");
 
     return this.createOutputs(node, [
-      [inVec.mainOutput + ".x"],
-      [inVec.mainOutput + ".y"],
+      { expression: inVec.expression + ".x", trivial: true },
+      { expression: inVec.expression + ".y", trivial: true },
     ]);
   }
 

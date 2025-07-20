@@ -69,7 +69,7 @@ export function expectedOutput(main: string, type: Type): Context {
   return {
     outputs: {
       out: {
-        mainOutput: main,
+        expression: main,
         type: type,
       },
     },
