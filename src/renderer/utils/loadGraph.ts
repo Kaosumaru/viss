@@ -26,16 +26,25 @@ export async function loadGraph(graphJson: string, editorData: EditorData) {
       const control = uiNode.controls[key];
       if (control instanceof BooleanControl && param.type === "boolean") {
         control.value = param.value as boolean;
-      } else if (control instanceof ClassicPreset.InputControl && param.type === "number") {
+      } else if (
+        control instanceof ClassicPreset.InputControl &&
+        param.type === "number"
+      ) {
         control.setValue(param.value);
       }
 
       // Check for input controls
       if (uiNode.inputs[key]?.control) {
         const inputControl = uiNode.inputs[key].control;
-        if (inputControl instanceof BooleanControl && param.type === "boolean") {
+        if (
+          inputControl instanceof BooleanControl &&
+          param.type === "boolean"
+        ) {
           inputControl.value = param.value as boolean;
-        } else if (inputControl instanceof ClassicPreset.InputControl && param.type === "number") {
+        } else if (
+          inputControl instanceof ClassicPreset.InputControl &&
+          param.type === "number"
+        ) {
           inputControl.setValue(param.value);
         }
       }

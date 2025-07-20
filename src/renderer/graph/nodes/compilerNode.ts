@@ -58,7 +58,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       if (param) {
         if (param.type === "boolean") {
           const control = new BooleanControl(
-            param.defaultValue?.value as boolean || false,
+            (param.defaultValue?.value as boolean) || false,
             (value: boolean) => {
               this.controlChangeCallback?.(this.id, name, value);
             }
@@ -86,7 +86,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       if (!hasInput) {
         if (type === "boolean") {
           const control = new BooleanControl(
-            defaultValue?.value as boolean || false,
+            (defaultValue?.value as boolean) || false,
             (value: boolean) => {
               this.controlChangeCallback?.(this.id, name, value);
             }

@@ -45,11 +45,11 @@ export function CustomBooleanControl({ payload }: Props) {
             onChange={handleChange}
             size="small"
             sx={{
-              '& .MuiSwitch-switchBase.Mui-checked': {
-                color: '#c9b144',
+              "& .MuiSwitch-switchBase.Mui-checked": {
+                color: "#c9b144",
               },
-              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                backgroundColor: '#c9b144',
+              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                backgroundColor: "#c9b144",
               },
             }}
           />
@@ -57,9 +57,9 @@ export function CustomBooleanControl({ payload }: Props) {
         label=""
         sx={{
           margin: 0,
-          '& .MuiFormControlLabel-label': {
-            fontSize: '14px',
-            color: 'white',
+          "& .MuiFormControlLabel-label": {
+            fontSize: "14px",
+            color: "white",
           },
         }}
       />

@@ -76,7 +76,9 @@ function addParameterFromControlToNode(
       value: control.value,
     };
   } else {
-    const inputControl = control as ClassicPreset.InputControl<"number" | "text">;
+    const inputControl = control as ClassicPreset.InputControl<
+      "number" | "text"
+    >;
     if (inputControl?.type === "number") {
       gnode.parameters[key] = {
         type: "number",

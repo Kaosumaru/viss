@@ -149,7 +149,11 @@ export abstract class CompilerNode {
 
   getParamValue(node: NodeContext, name: string, type: "number"): number;
   getParamValue(node: NodeContext, name: string, type: "boolean"): boolean;
-  getParamValue(node: NodeContext, name: string, type: ParameterValueType): ParamExtractedValue<ParameterValueType> {
+  getParamValue(
+    node: NodeContext,
+    name: string,
+    type: ParameterValueType
+  ): ParamExtractedValue<ParameterValueType> {
     const value = node.tryGetParamValue(name, type);
     if (value === undefined) {
       throw new Error(`Parameter ${name} not found`);
