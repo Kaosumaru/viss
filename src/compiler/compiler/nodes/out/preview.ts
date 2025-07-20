@@ -14,7 +14,7 @@ class PreviewNode extends CompilerNode {
 
     if (in_.type.id === "scalar") {
       return this.createOutput(node, {
-        expression: `vec4(vec3(${in_.data}), 1.0)`,
+        data: `vec4(vec3(${in_.data}), 1.0)`,
         type: vector(in_.type.type, 4),
       });
     }
@@ -23,21 +23,20 @@ class PreviewNode extends CompilerNode {
       const type = vector(in_.type.type, 4);
       if (in_.type.size === 2) {
         return this.createOutput(node, {
-          expression: `vec4(${in_.data}.xy, 0.0, 1.0)`,
+          data: `vec4(${in_.data}.xy, 0.0, 1.0)`,
           type,
         });
       }
       if (in_.type.size === 3) {
         return this.createOutput(node, {
-          expression: `vec4(${in_.data}.xyz, 1.0)`,
+          data: `vec4(${in_.data}.xyz, 1.0)`,
           type,
         });
       }
 
       if (in_.type.size === 4) {
         return this.createOutput(node, {
-          expression: in_.data,
-          type: in_.type,
+          ...in_,
         });
       }
     }

@@ -18,6 +18,7 @@ export class CompileNodeContext implements NodeContext {
       return undefined;
     }
     const ctx = this.compiler.compile(input.node.identifier);
+    this.mergeVariables(ctx.variables);
     const out = ctx.outputs[input.socketId];
     if (!out) {
       return undefined;
@@ -53,12 +54,27 @@ export class CompileNodeContext implements NodeContext {
     };
   }
 
+  getVariables(): Variable[] {
+    return this.variables;
+  }
+
   info(): string {
     return `${this.node.nodeType}/${this.node.identifier}`;
+  }
+
+  private mergeVariables(variables: Variable[]): void {
+    for (const variable of variables) {
+      if (!this.allVariableNames.has(variable.name)) {
+        this.allVariableNames.add(variable.name);
+        this.variables.push(variable);
+      }
+    }
   }
 
   protected compiler: Compiler;
   protected node: Node;
   protected graph: GraphHelper;
+
+  protected allVariableNames: Set<string> = new Set();
   protected variables: Variable[] = [];
 }

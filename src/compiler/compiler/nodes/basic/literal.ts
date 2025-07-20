@@ -19,7 +19,7 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
       minimumFractionDigits: 1,
     });
     return this.createOutput(node, {
-      expression,
+      data: expression,
       type: this.type,
       trivial: true,
     });

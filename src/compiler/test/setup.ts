@@ -71,6 +71,7 @@ export function expectedOutput(
   trivial = false
 ): Context {
   return {
+    variables: [],
     outputs: {
       out: {
         data: main,

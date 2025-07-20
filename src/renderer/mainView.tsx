@@ -30,10 +30,16 @@ const Canvas = styled.div`
 
 const defaultColor = "vec4(0.0, 0.0, 0.0, 1.0)";
 
+const fragmentShader = `
+precision mediump float;
+uniform float u_time;
+void main() {
+  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); 
+}
+`;
+
 export function MainView() {
-  const [color, setColor] = useState(
-    "vec4(gl_FragCoord.x/500.0, gl_FragCoord.y/500.0, 0.5, 1.0)"
-  ); // Default color
+  const [shader, setShader] = useState(fragmentShader); // Default color
 
   const [editorData, setEditorData] = useState<EditorData | undefined>(
     undefined
@@ -41,8 +47,8 @@ export function MainView() {
 
   const onChanged: OnGraphChanged = useCallback((editorData) => {
     setEditorData(editorData);
-    const context = compileGraph(editorData);
-    setColor(context?.data ? context.data : defaultColor);
+    const newShader = compileGraph(editorData);
+    setShader(newShader ? newShader : defaultColor);
   }, []);
 
   const onControlChanged: OnControlChanged = useCallback(
@@ -51,8 +57,8 @@ export function MainView() {
         `Control changed on node ${nodeId}, control ${controlKey}: ${value}`
       );
       // Recompile the graph when a control changes
-      const context = compileGraph(editorData);
-      setColor(context?.data ? context.data : defaultColor);
+      const newShader = compileGraph(editorData);
+      setShader(newShader ? newShader : defaultColor);
     },
     []
   );
@@ -64,7 +70,7 @@ export function MainView() {
       </Canvas>
 
       <Result>
-        <PropertyView color={color} editorData={editorData} />
+        <PropertyView fragmentShader={shader} editorData={editorData} />
       </Result>
     </Layout>
   );

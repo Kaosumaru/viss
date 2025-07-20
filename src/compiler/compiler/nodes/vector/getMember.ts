@@ -13,7 +13,7 @@ export class GetMember extends CompilerNode {
   override compile(node: NodeContext): Context {
     const in_ = this.getInput(node, "in");
     return this.createOutput(node, {
-      expression: `${in_.data}.${this.member}`,
+      data: `${in_.data}.${this.member}`,
       trivial: true, // Uniforms are typically trivial
     });
   }

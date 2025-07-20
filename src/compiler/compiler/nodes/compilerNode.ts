@@ -1,5 +1,5 @@
 import type { ParameterValue, ParameterValueType } from "@graph/parameter";
-import type { Context, Expression } from "../context";
+import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
 
 export type ParamExtractedValue<T> = Extract<
@@ -8,6 +8,7 @@ export type ParamExtractedValue<T> = Extract<
 >["value"];
 
 export interface NodeContext {
+  getVariables(): Variable[];
   createVariable(outputData: Expression): Expression;
   info(): string;
   tryGetInput(name: string): Expression | undefined;
@@ -31,7 +32,7 @@ export interface Parameter {
 }
 
 export interface OutputExpression {
-  expression: string;
+  data: string;
   type?: Type;
   trivial?: boolean;
 }
@@ -63,7 +64,7 @@ export abstract class CompilerNode {
   }
 
   protected createOutput(
-    _node: NodeContext,
+    node: NodeContext,
     expression: string | OutputExpression
   ): Context {
     if (this.outputs.length !== 1) {
@@ -71,39 +72,49 @@ export abstract class CompilerNode {
     }
     const outputName = this.outputs[0].name;
     if (typeof expression === "object") {
-      return this.createOutputs(_node, [expression]);
+      return this.createOutputs(node, [expression]);
     }
     const type = this.getOutputType(this.outputs[0].name);
+
+    let outExpression: Expression = {
+      data: expression,
+      type: type!,
+      trivial: false,
+    };
+    outExpression = this.toVariable(node, outExpression);
+
     return {
+      variables: node.getVariables(),
       outputs: {
-        [outputName]: {
-          type: type!,
-          data: expression,
-          trivial: false,
-        },
+        [outputName]: outExpression,
       },
     };
   }
 
   protected createOutputs(
-    _node: NodeContext,
+    node: NodeContext,
     outputs: OutputExpression[]
   ): Context {
     const result: Context = {
+      variables: node.getVariables(),
       outputs: {},
     };
     if (this.outputs.length !== outputs.length) {
       throw new Error("Mismatch between outputs and expected outputs.");
     }
     let i = 0;
-    for (const { expression: text, type, trivial } of outputs) {
+    for (const { data, type, trivial } of outputs) {
       const output = this.outputs[i];
       i++;
-      result.outputs[output.name] = {
+
+      let outExpression: Expression = {
         type: type ?? output.type,
-        data: text,
+        data,
         trivial: trivial ?? false,
       };
+      outExpression = this.toVariable(node, outExpression);
+
+      result.outputs[output.name] = outExpression;
     }
     return result;
   }

@@ -11,7 +11,7 @@ export class UniformNode extends CompilerNode {
   }
   override compile(node: NodeContext): Context {
     return this.createOutput(node, {
-      expression: this.uniformName,
+      data: this.uniformName,
       type: this.type,
       trivial: true, // Uniforms are typically trivial
     });

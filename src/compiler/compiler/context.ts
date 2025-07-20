@@ -13,5 +13,6 @@ export interface Expression {
 }
 
 export interface Context {
+  variables: Variable[];
   outputs: Record<string, Expression>;
 }

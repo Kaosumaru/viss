@@ -26,7 +26,7 @@ export abstract class BinaryOperator extends CompilerNode {
 
     // TODO better typing
     return this.createOutput(node, {
-      expression: out,
+      data: out,
       type: inA.type, // Assuming both inputs have the same type
       trivial: false,
     });

@@ -29,7 +29,7 @@ export const nodes = {
   abs: new FunctionNode("abs", scalar("float"), [["in", scalar("float")]]),
 
   time: new UniformNode("u_time", scalar("float")),
-  fragCoord: new UniformNode("gl_FragCoord", vector("float", 2)),
+  fragCoord: new UniformNode("gl_FragCoord", vector("float", 4)),
 
   getX: new GetMember("x", vector("float", 2), scalar("float")),
   getY: new GetMember("y", vector("float", 2), scalar("float")),

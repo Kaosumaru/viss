@@ -12,11 +12,14 @@ void main() {
 `;
 
 export interface PropertyViewProps {
-  color: string;
+  fragmentShader: string;
   editorData?: EditorData;
 }
 
-export function PropertyView({ color, editorData }: PropertyViewProps) {
+export function PropertyView({
+  fragmentShader: shader,
+  editorData,
+}: PropertyViewProps) {
   const handleSaveGraph = async () => {
     if (!editorData?.editor) {
       console.warn("No editor available");
@@ -51,13 +54,6 @@ export function PropertyView({ color, editorData }: PropertyViewProps) {
       console.error("Failed to load graph from clipboard:", error);
     }
   };
-  const fragmentShader = `
-precision mediump float;
-uniform float u_time;
-void main() {
-  gl_FragColor = ${color}; 
-}
-`;
 
   return (
     <Paper elevation={3} style={{ padding: "1em", height: "100%" }}>
@@ -79,10 +75,7 @@ void main() {
           Load Graph from Clipboard
         </Button>
       </div>
-      <ShaderCanvas
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-      />
+      <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />
     </Paper>
   );
 }
