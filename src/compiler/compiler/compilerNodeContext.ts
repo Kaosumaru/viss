@@ -2,13 +2,19 @@ import type { ParameterValueType } from "@graph/parameter";
 import type { Expression as Expression, Variable } from "./context";
 import type { NodeContext } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
-import type { Compiler } from "./compiler";
+import type { CompilationOptions, Compiler } from "./compiler";
 import type { GraphHelper } from "./graphHelper";
 
 export class CompileNodeContext implements NodeContext {
-  constructor(compiler: Compiler, graph: GraphHelper, node: Node) {
+  constructor(
+    compiler: Compiler,
+    options: CompilationOptions,
+    graph: GraphHelper,
+    node: Node
+  ) {
     this.compiler = compiler;
     this.graph = graph;
+    this.compilationOptions = options;
     this.node = node;
   }
 
@@ -62,6 +68,10 @@ export class CompileNodeContext implements NodeContext {
     return `${this.node.nodeType}/${this.node.identifier}`;
   }
 
+  options(): CompilationOptions {
+    return this.compilationOptions;
+  }
+
   private mergeVariables(variables: Variable[]): void {
     for (const variable of variables) {
       if (!this.allVariableNames.has(variable.name)) {
@@ -77,4 +87,5 @@ export class CompileNodeContext implements NodeContext {
 
   protected allVariableNames: Set<string> = new Set();
   protected variables: Variable[] = [];
+  protected compilationOptions: CompilationOptions;
 }

@@ -1,6 +1,7 @@
 import type { ParameterValue, ParameterValueType } from "@graph/parameter";
 import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
+import type { CompilationOptions } from "@compiler/compiler";
 
 export type ParamExtractedValue<T> = Extract<
   ParameterValue,
@@ -11,6 +12,7 @@ export interface NodeContext {
   getVariables(): Variable[];
   createVariable(outputData: Expression): Expression;
   info(): string;
+  options(): CompilationOptions;
   tryGetInput(name: string): Expression | undefined;
   tryGetParamValue<T extends ParameterValueType>(
     name: string,
@@ -171,7 +173,7 @@ export abstract class CompilerNode {
   }
 
   protected toVariable(node: NodeContext, outputData: Expression): Expression {
-    if (outputData.trivial) {
+    if (outputData.trivial || node.options().noVariables) {
       return outputData;
     }
     return node.createVariable(outputData);

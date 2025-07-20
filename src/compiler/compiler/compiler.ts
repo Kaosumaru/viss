@@ -6,9 +6,14 @@ import { GraphHelper } from "./graphHelper";
 import type { Graph } from "@graph/graph";
 import { CompileNodeContext } from "./compilerNodeContext";
 
+export interface CompilationOptions {
+  noVariables?: boolean;
+}
+
 export class Compiler {
-  constructor(graph: Graph) {
+  constructor(graph: Graph, options?: CompilationOptions) {
     this.graph = new GraphHelper(graph);
+    this.options = options ?? {};
   }
 
   compile(nodeId: string): Context {
@@ -30,9 +35,10 @@ export class Compiler {
   }
 
   protected createNodeContextFor(node: Node): NodeContext {
-    return new CompileNodeContext(this, this.graph, node);
+    return new CompileNodeContext(this, this.options, this.graph, node);
   }
 
   protected graph: GraphHelper;
   protected cachedContexts: Map<string, Context> = new Map();
+  protected options: CompilationOptions;
 }
