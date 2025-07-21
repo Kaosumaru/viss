@@ -1,14 +1,21 @@
 const g_vertexShaderSrc = `
   attribute vec2 a_position;
+  uniform vec2 u_resolution;
+  uniform vec4 u_rect; // x, y, width, height in pixels
   void main() {
-    gl_Position = vec4(a_position, 0.0, 1.0);
+    // Transform from pixel coordinates to NDC
+    vec2 pixelPos = a_position * u_rect.zw + u_rect.xy;
+    vec2 clipSpace = ((pixelPos / u_resolution) * 2.0) - 1.0;
+    gl_Position = vec4(clipSpace * vec2(1, -1), 0.0, 1.0);
   }
 `;
 
 const g_fragmentShaderSrc = `
   precision mediump float;
+  uniform vec2 u_resolution;
+  uniform vec4 u_rect; // x, y, width, height in pixels
   void main() {
-    gl_FragColor = vec4(0.1, 0.1, 0.0, 0.01); // Dark green with 10% alpha
+    gl_FragColor = vec4(0.5, 0.5, 0.0, 1.0); // Dark green with 10% alpha
   }
 `;
 
@@ -18,7 +25,12 @@ export class ShaderEntry {
     this.vertexShaderSrc = vertexShaderSrc || g_vertexShaderSrc;
   }
 
-  render(gl: WebGLRenderingContext, time: number) {
+  render(
+    gl: WebGLRenderingContext,
+    time: number,
+    canvasWidth: number,
+    canvasHeight: number
+  ) {
     if (this.broken) {
       return;
     }
@@ -39,8 +51,24 @@ export class ShaderEntry {
     gl.enableVertexAttribArray(posAttrib);
     gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 0, 0);
 
+    // Set uniforms
     const timeUniform = gl.getUniformLocation(this.program, "u_time");
-    gl.uniform1f(timeUniform, time);
+    const resolutionUniform = gl.getUniformLocation(
+      this.program,
+      "u_resolution"
+    );
+    const rectUniform = gl.getUniformLocation(this.program, "u_rect");
+
+    if (timeUniform) {
+      gl.uniform1f(timeUniform, time);
+    }
+    if (resolutionUniform) {
+      gl.uniform2f(resolutionUniform, canvasWidth, canvasHeight);
+    }
+    if (rectUniform) {
+      gl.uniform4f(rectUniform, this.x, this.y, this.w, this.h);
+    }
+
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
   createProgram(gl: WebGLRenderingContext): WebGLProgram | null {
@@ -66,11 +94,12 @@ export class ShaderEntry {
     return program;
   }
 
-  setPosition(x: number, y: number, w: number, h: number) {
+  setPosition(x: number, y: number, w: number, h: number): ShaderEntry {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    return this;
   }
 
   x: number = 0;

@@ -9,7 +9,9 @@ export const ShaderOverlay: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const entries: ShaderEntry[] = [new ShaderEntry()];
+    const entries: ShaderEntry[] = [
+      new ShaderEntry().setPosition(100, 100, 50, 50), // Example: 200x150 rect at (100,100)
+    ];
 
     const gl = canvas.getContext("webgl", { alpha: true });
     if (!gl) {
@@ -19,9 +21,10 @@ export const ShaderOverlay: React.FC = () => {
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // Use unit quad (0,0 to 1,1) instead of NDC coordinates
     gl.bufferData(
       gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]),
       gl.STATIC_DRAW
     );
 
@@ -40,7 +43,7 @@ export const ShaderOverlay: React.FC = () => {
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       for (const entry of entries) {
-        entry.render(gl, elapsed);
+        entry.render(gl, elapsed, canvas.width, canvas.height);
       }
 
       requestAnimationFrame(loop);
