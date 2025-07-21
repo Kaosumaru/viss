@@ -29,6 +29,10 @@ class CoordsNode extends CompilerNode {
   override getLabel(): string {
     return "Coords";
   }
+
+  override getDescription(): string {
+    return "Coordinates of the current fragment, normalized to [0, 1] or [-1, 1]";
+  }
 }
 
 export const coords = new CoordsNode();

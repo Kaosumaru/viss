@@ -25,6 +25,10 @@ class ComposeVector4 extends CompilerNode {
   override getLabel(): string {
     return "Compose Vec4";
   }
+
+  override getDescription(): string {
+    return "Compose a vec4 from four float inputs";
+  }
 }
 
 export const composeVector4 = new ComposeVector4();

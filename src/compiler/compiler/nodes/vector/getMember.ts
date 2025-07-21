@@ -22,5 +22,9 @@ export class GetMember extends CompilerNode {
     return `Get ${this.member.toUpperCase()}`;
   }
 
+  override getDescription(): string {
+    return `Get the ${this.member} member from the input`;
+  }
+
   member: string;
 }

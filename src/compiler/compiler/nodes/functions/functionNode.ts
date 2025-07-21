@@ -5,9 +5,10 @@ import type { Context } from "@compiler/context";
 type Param = [string, Type];
 
 export class FunctionNode extends CompilerNode {
-  constructor(name: string, outType: Type, params: Param[]) {
+  constructor(name: string, description: string,  outType: Type, params: Param[]) {
     super();
     this.name = name;
+    this.description = description;
     for (const [name, type] of params) {
       this.addInput(name, type);
     }
@@ -25,6 +26,11 @@ export class FunctionNode extends CompilerNode {
     return this.name;
   }
 
+  override getDescription(): string {
+    return this.description;
+  }
+
   params: Param[];
   name: string;
+  description: string;
 }

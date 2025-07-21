@@ -25,4 +25,8 @@ export class BooleanLiteralNode extends CompilerNode {
   override getLabel(): string {
     return "Bool";
   }
+
+  override getDescription(): string {
+    return "Boolean value (true/false)";
+  }
 }

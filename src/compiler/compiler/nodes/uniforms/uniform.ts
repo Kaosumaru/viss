@@ -3,11 +3,12 @@ import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 export class UniformNode extends CompilerNode {
-  constructor(name: string, uniformName: string, type: Type) {
+  constructor(name: string, description: string, uniformName: string, type: Type) {
     super();
     this.uniformName = uniformName;
     this.type = type;
     this.name = name;
+    this.description = description;
     this.addOutput("out", type);
   }
   override compile(node: NodeContext): Context {
@@ -22,7 +23,12 @@ export class UniformNode extends CompilerNode {
     return this.name;
   }
 
+  override getDescription(): string {
+    return this.description;
+  }
+
   uniformName: string;
   type: Type;
-  name: string = "Uniform";
+  name: string;
+  description: string;
 }

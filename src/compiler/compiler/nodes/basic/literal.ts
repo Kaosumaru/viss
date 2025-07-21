@@ -28,5 +28,9 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
   override getLabel(): string {
     return `${this.type.type}`;
   }
+
+  override getDescription(): string {
+    return `Literal value of type ${this.type.type}`;
+  }
   type: T;
 }

@@ -23,6 +23,10 @@ class DecomposeVector2 extends CompilerNode {
   override getLabel(): string {
     return "Decompose Vec2";
   }
+
+  override getDescription(): string {
+    return "Decompose a vec2 into its x and y components";
+  }
 }
 
 export const decomposeVector2 = new DecomposeVector2();

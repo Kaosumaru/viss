@@ -47,6 +47,7 @@ export abstract class CompilerNode {
   outputs: Pins = [];
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
+  abstract getDescription(): string;
 
   protected addInput(name: string, type: Type): void {
     this.inputs.push({ name, type });
