@@ -1,5 +1,5 @@
 import { getNode, type NodeType } from "@compiler/nodes/allNodes";
-import type { CompilerNode } from "@compiler/nodes/compilerNode";
+import type { CompilerNode, Parameter } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./customBooleanControl";
 
@@ -56,23 +56,8 @@ export class UICompilerNode extends ClassicPreset.Node {
       // If there's a parameter with the same name, add control to the input
       const param = compilerNode.parameters.find((p) => p.name === name);
       if (param) {
-        if (param.type === "boolean") {
-          const control = new BooleanControl(
-            (param.defaultValue?.value as boolean) || false,
-            (value: boolean) => {
-              this.controlChangeCallback?.(this.id, name, value);
-            }
-          );
-          input.addControl(control);
-        } else {
-          const control = new ClassicPreset.InputControl("number", {
-            initial: param.defaultValue?.value || 0,
-            change: (value: unknown) => {
-              this.controlChangeCallback?.(this.id, name, value);
-            },
-          });
-          input.addControl(control);
-        }
+        const control = this.createControl(param);
+        input.addControl(control);
       }
 
       this.addInput(name, input);
@@ -80,29 +65,34 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addParams(compilerNode: CompilerNode) {
-    compilerNode.parameters.forEach(({ name, defaultValue, type }) => {
+    compilerNode.parameters.forEach((param) => {
       // Only add as standalone control if there's no input with the same name
-      const hasInput = compilerNode.inputs.some((input) => input.name === name);
+      const hasInput = compilerNode.inputs.some(
+        (input) => input.name === param.name
+      );
       if (!hasInput) {
-        if (type === "boolean") {
-          const control = new BooleanControl(
-            (defaultValue?.value as boolean) || false,
-            (value: boolean) => {
-              this.controlChangeCallback?.(this.id, name, value);
-            }
-          );
-          this.addControl(name, control);
-        } else {
-          const control = new ClassicPreset.InputControl("number", {
-            initial: defaultValue?.value || 0,
-            change: (value: unknown) => {
-              this.controlChangeCallback?.(this.id, name, value);
-            },
-          });
-          this.addControl(name, control);
-        }
+        const control = this.createControl(param);
+        this.addControl(control.id, control);
       }
     });
+  }
+
+  protected createControl(param: Parameter): ClassicPreset.Control {
+    const callback = (value: unknown) => {
+      this.controlChangeCallback?.(this.id, param.name, value);
+    };
+    switch (param.type) {
+      case "boolean":
+        return new BooleanControl(
+          (param.defaultValue?.value as boolean) || false,
+          callback
+        );
+      case "number":
+        return new ClassicPreset.InputControl("number", {
+          initial: param.defaultValue?.value || 0,
+          change: callback,
+        });
+    }
   }
 
   updateSize() {
