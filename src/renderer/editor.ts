@@ -99,7 +99,7 @@ export async function createEditor(
   area.use(render);
   area.use(arrange);
 
-  AreaExtensions.simpleNodesOrder(area);
+  // AreaExtensions.simpleNodesOrder(area); TODO breaks the boolean control
   AreaExtensions.showInputControl<Schemes>(area, ({ hasAnyConnection }) => {
     return !hasAnyConnection;
   });

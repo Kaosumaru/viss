@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Switch } from "@mui/material";
 import { ClassicPreset } from "rete";
 
@@ -13,7 +13,7 @@ export class BooleanControl extends ClassicPreset.Control {
   }
 }
 
-export function CustomBooleanControl(props: { data: BooleanControl }) {
+function CustomBooleanControlInternal(props: { data: BooleanControl }) {
   const control = props.data;
   const [value, setValue] = useState(control.value);
 
@@ -22,7 +22,6 @@ export function CustomBooleanControl(props: { data: BooleanControl }) {
   }, [control.value]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("BooleanControl changed:", event.target.checked);
     const newValue = event.target.checked;
     setValue(newValue);
     control.value = newValue;
@@ -45,3 +44,5 @@ export function CustomBooleanControl(props: { data: BooleanControl }) {
     />
   );
 }
+
+export const CustomBooleanControl = memo(CustomBooleanControlInternal);
