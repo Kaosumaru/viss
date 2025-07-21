@@ -11,6 +11,7 @@ import type { NodeEditor } from "rete";
 import type { AreaPlugin } from "rete-area-plugin";
 import type { Schemes, AreaExtra } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
+import { ShaderOverlay } from "./components/shaderOverlay/ShaderOverlay";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -99,6 +100,7 @@ export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
       getNodeById={getNodeById}
     >
       <div ref={ref} style={{ height: "100vh" }} />
+      <ShaderOverlay/>
     </MaterialContextMenuProvider>
   );
 
