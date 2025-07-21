@@ -1,13 +1,6 @@
-import { useRef, useState, useEffect } from "react";
-import { Switch, FormControlLabel } from "@mui/material";
-import type { RenderEmit } from "rete-react-plugin";
-import type { Schemes } from "../node";
+import { useState, useEffect } from "react";
+import { Switch } from "@mui/material";
 import { ClassicPreset } from "rete";
-
-type Props = {
-  emit: RenderEmit<Schemes>;
-  payload: ClassicPreset.Control;
-};
 
 export class BooleanControl extends ClassicPreset.Control {
   value: boolean;
@@ -20,9 +13,8 @@ export class BooleanControl extends ClassicPreset.Control {
   }
 }
 
-export function CustomBooleanControl({ payload }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-  const control = payload as BooleanControl;
+export function CustomBooleanControl(props: { data: BooleanControl }) {
+  const control = props.data;
   const [value, setValue] = useState(control.value);
 
   useEffect(() => {
@@ -30,6 +22,7 @@ export function CustomBooleanControl({ payload }: Props) {
   }, [control.value]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("BooleanControl changed:", event.target.checked);
     const newValue = event.target.checked;
     setValue(newValue);
     control.value = newValue;
@@ -37,32 +30,18 @@ export function CustomBooleanControl({ payload }: Props) {
   };
 
   return (
-    <div ref={ref} style={{ padding: "4px 8px" }}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={value}
-            onChange={handleChange}
-            size="small"
-            sx={{
-              "& .MuiSwitch-switchBase.Mui-checked": {
-                color: "#c9b144",
-              },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "#c9b144",
-              },
-            }}
-          />
-        }
-        label=""
-        sx={{
-          margin: 0,
-          "& .MuiFormControlLabel-label": {
-            fontSize: "14px",
-            color: "white",
-          },
-        }}
-      />
-    </div>
+    <Switch
+      checked={value}
+      onChange={handleChange}
+      size="small"
+      sx={{
+        "& .MuiSwitch-switchBase.Mui-checked": {
+          color: "#c9b144",
+        },
+        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+          backgroundColor: "#c9b144",
+        },
+      }}
+    />
   );
 }

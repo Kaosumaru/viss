@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { NodeEditor } from "rete";
+import { ClassicPreset, NodeEditor } from "rete";
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
 import {
   ConnectionPlugin,
@@ -19,6 +19,10 @@ import { CustomConnection } from "./graph/nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorData } from "./editorView";
+import {
+  BooleanControl,
+  CustomBooleanControl,
+} from "./graph/nodes/customBooleanControl";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 
@@ -69,6 +73,17 @@ export async function createEditor(
         },
         connection() {
           return CustomConnection;
+        },
+        control(data) {
+          if (data.payload instanceof BooleanControl) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return CustomBooleanControl as any;
+          }
+          if (data.payload instanceof ClassicPreset.InputControl) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return Presets.classic.Control as any;
+          }
+          return null;
         },
       },
     })
