@@ -5,7 +5,12 @@ import type { Context } from "@compiler/context";
 class CoordsNode extends CompilerNode {
   constructor() {
     super();
-    this.addParameter("center", "boolean", { type: "boolean", value: true });
+    this.addParameter(
+      "center",
+      "boolean",
+      { type: "boolean", value: true },
+      "center"
+    );
     this.addOutput("out", vector("float", 2));
   }
   override compile(node: NodeContext): Context {

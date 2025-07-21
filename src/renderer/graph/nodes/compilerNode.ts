@@ -72,7 +72,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       );
       if (!hasInput) {
         const control = this.createControl(param);
-        this.addControl(control.id, control);
+        this.addControl(param.name, control);
       }
     });
   }
@@ -85,6 +85,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       case "boolean":
         return new BooleanControl(
           (param.defaultValue?.value as boolean) || false,
+          param,
           callback
         );
       case "number":

@@ -29,6 +29,7 @@ export type Pins = Pin[];
 
 export interface Parameter {
   name: string;
+  description?: string;
   type: ParameterValueType;
   defaultValue?: ParameterValue;
 }
@@ -124,9 +125,10 @@ export abstract class CompilerNode {
   protected addParameter(
     name: string,
     type: ParameterValueType,
-    defaultValue?: ParameterValue
+    defaultValue?: ParameterValue,
+    description?: string
   ): void {
-    this.parameters.push({ name, type, defaultValue });
+    this.parameters.push({ name, type, defaultValue, description });
   }
 
   protected getParameter(name: string): Parameter | undefined {
