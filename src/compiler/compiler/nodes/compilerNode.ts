@@ -3,10 +3,17 @@ import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
 import type { CompilationOptions } from "@compiler/compiler";
 
+/*
 export type ParamExtractedValue<T> = Extract<
   ParameterValue,
   { type: T }
 >["value"];
+*/
+
+export type ParamExtractedValue<T extends ParameterValueType> = 
+  T extends "number" ? number :
+  T extends "boolean" ? boolean :
+  never;
 
 export interface NodeContext {
   getVariables(): Variable[];

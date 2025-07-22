@@ -10,39 +10,38 @@ import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
-import type { AreaExtra, Schemes } from "./graph/node";
-import { UICompilerNode } from "./graph/nodes/compilerNode";
-import { Node } from "./graph/nodes/customNode";
-import { addCustomBackground } from "./graph/nodes/customBackground";
-import { CustomSocket } from "./graph/nodes/customSocket";
-import { CustomConnection } from "./graph/nodes/customConnection";
+import type { AreaExtra, Schemes } from "./node";
+import { UICompilerNode } from "./nodes/compilerNode";
+import { Node } from "./nodes/customNode";
+import { addCustomBackground } from "./nodes/customBackground";
+import { CustomSocket } from "./nodes/customSocket";
+import { CustomConnection } from "./nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import type { EditorData } from "./editorView";
+import type { EditorData } from "./interface";
 import {
   BooleanControl,
   CustomBooleanControl,
-} from "./graph/nodes/customBooleanControl";
+} from "./nodes/customBooleanControl";
+
+import { loadGraph as internalLoadGraph } from "./utils/loadGraph";
+import { saveGraph as internalSaveGraph } from "./utils/saveGraph";
+import { CompilationHelper } from "./utils/compileGraph";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
-
-export type OnControlChanged = (
-  editorData: EditorData,
-  nodeId: string,
-  controlKey: string,
-  value: unknown
-) => void;
 
 export async function createEditor(
   container: HTMLElement,
   onChanged?: OnGraphChanged,
-  onControlChanged?: OnControlChanged
 ): Promise<EditorData> {
+  let deserializing = false;
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<Schemes>();
+
+  const compilationHelper = new CompilationHelper();
   // const contextMenu = createContextMenu();
 
   // area.use(contextMenu);
@@ -106,6 +105,19 @@ export async function createEditor(
 
   let data: EditorData | undefined = undefined;
 
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const scheduleGraphChange = () => {
+
+    if (timer) return;
+
+    timer = setTimeout(() => {
+      if (!data || !onChanged) return;
+      compilationHelper.updateGraph(data);
+      onChanged(data);
+      timer = undefined;
+    });
+  };
+
   // Function to add a node at the mouse position
   const createNode = async (
     nodeType: NodeType,
@@ -114,20 +126,12 @@ export async function createEditor(
     id?: string
   ) => {
     const node = new UICompilerNode(
-      nodeType,
-      onControlChanged
-        ? (nodeId, controlKey, value) => {
-            onControlChanged(data!, nodeId, controlKey, value);
-          }
-        : undefined
-    );
+      nodeType);
     node.id = id || node.id; // Use provided ID or generate a new one
     // Set the control change callback for the node if it doesn't already have one
-    if (onControlChanged && node.setControlChangeCallback) {
-      node.setControlChangeCallback((nodeId, controlKey, value) => {
-        onControlChanged(data!, nodeId, controlKey, value);
-      });
-    }
+    node.setControlChangeCallback(() => {
+      scheduleGraphChange();
+    });
 
     await editor.addNode(node);
 
@@ -147,6 +151,24 @@ export async function createEditor(
     editor.clear();
   };
 
+  const loadGraph = async (graphJson: string) => {
+    deserializing = true; // Set the flag to skip onChanged during deserialization
+    try {
+      await internalLoadGraph(graphJson, data!);
+    } finally {
+      deserializing = false; // Reset the flag after loading
+    }
+  };
+
+  const saveGraph = () => {
+    return internalSaveGraph(data!);
+  };
+
+  const compileNode = (nodeId?: string): string | undefined => {
+    return compilationHelper.compileNode(nodeId);
+  };
+
+
   await createNode("preview");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
@@ -155,6 +177,12 @@ export async function createEditor(
     destroy: () => area.destroy(),
     createNode,
     clear,
+  
+    loadGraph,
+    saveGraph,
+
+    compileNode,
+
     editor,
     area,
   };
@@ -166,7 +194,10 @@ export async function createEditor(
       context.type === "connectioncreated" ||
       context.type === "connectionremoved"
     ) {
-      onChanged?.(data);
+      if (deserializing) {
+        return context; // Skip during deserialization
+      }
+      scheduleGraphChange();
     }
     return context;
   });

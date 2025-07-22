@@ -1,6 +1,6 @@
 import type { ParameterValueType } from "@graph/parameter";
 import type { Expression as Expression, Variable } from "./context";
-import type { NodeContext } from "./nodes/compilerNode";
+import type { NodeContext, ParamExtractedValue } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { CompilationOptions, Compiler } from "./compiler";
 import type { GraphHelper } from "./graphHelper";
@@ -32,7 +32,7 @@ export class CompileNodeContext implements NodeContext {
     return out;
   }
 
-  tryGetParamValue<T extends ParameterValueType>(name: string, type: T) {
+  tryGetParamValue<T extends ParameterValueType>(name: string, type: T): ParamExtractedValue<T> | undefined {
     const param = this.node.parameters[name];
     if (!param) {
       return undefined;
@@ -42,7 +42,7 @@ export class CompileNodeContext implements NodeContext {
         `Parameter ${name} expected type ${type}, but got ${param.type}`
       );
     }
-    return param.value;
+    return param.value as ParamExtractedValue<T>;
   }
 
   createVariable(expr: Expression): Expression {

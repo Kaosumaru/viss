@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { EditorView, type EditorData } from "./editorView";
+import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
-import type { OnGraphChanged, OnControlChanged } from "./editor";
-import { compileGraph } from "./utils/compileGraph";
+import type { OnGraphChanged } from "./graph/editor";
+import type { EditorData } from "./graph/interface";
 
 const Layout = styled.div`
   display: grid;
@@ -48,26 +48,14 @@ export function MainView() {
 
   const onChanged: OnGraphChanged = useCallback((editorData) => {
     setEditorData(editorData);
-    const newShader = compileGraph(editorData);
+    const newShader = editorData.compileNode();
     setShader(newShader ? newShader : defaultColor);
   }, []);
-
-  const onControlChanged: OnControlChanged = useCallback(
-    (editorData, nodeId, controlKey, value) => {
-      console.log(
-        `Control changed on node ${nodeId}, control ${controlKey}: ${value}`
-      );
-      // Recompile the graph when a control changes
-      const newShader = compileGraph(editorData);
-      setShader(newShader ? newShader : defaultColor);
-    },
-    []
-  );
 
   return (
     <Layout>
       <Canvas>
-        <EditorView onChanged={onChanged} onControlChanged={onControlChanged} />
+        <EditorView onChanged={onChanged} />
       </Canvas>
 
       <Result>
