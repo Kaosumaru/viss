@@ -93,6 +93,7 @@ const ShaderOverlayRenderer: React.FC<{ entries: ShaderEntry[] }> = ({
   return (
     <canvas
       ref={canvasRef}
+      className="shader-overlay"
       style={{
         position: "fixed",
         top: 0,

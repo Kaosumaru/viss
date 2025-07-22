@@ -37,6 +37,7 @@ function CustomPreviewControlInternal(_props: { data: PreviewControl }) {
       if (!divRef.current || !shaderEntryRef.current) return;
 
       const rect = divRef.current.getBoundingClientRect();
+      console.log("Updating position:", rect);
       updateEntryPosition(
         shaderEntryRef.current,
         rect.left,

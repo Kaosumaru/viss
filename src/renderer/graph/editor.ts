@@ -10,6 +10,8 @@ import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
+import React from "react";
+import { ShaderEntryProvider } from "../context/ShaderEntryProvider";
 import type { AreaExtra, Schemes } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
 import { Node } from "./nodes/customNode";
@@ -42,7 +44,19 @@ export async function createEditor(
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
-  const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
+  const render = new ReactPlugin<Schemes, AreaExtra>({
+    createRoot: (container) => {
+      const root = createRoot(container);
+
+      // Wrap the rendering with ShaderEntryProvider context
+      return {
+        render: (element: React.ReactElement) => {
+          root.render(React.createElement(ShaderEntryProvider, null, element));
+        },
+        unmount: () => root.unmount(),
+      };
+    },
+  });
   const arrange = new AutoArrangePlugin<Schemes>();
 
   const compilationHelper = new CompilationHelper();

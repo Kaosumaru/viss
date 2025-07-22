@@ -6,7 +6,6 @@ import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
 import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import { ShaderEntryProvider } from "./context/ShaderEntryProvider";
 import type { EditorData } from "./graph/interface";
 
 export interface EditorViewProps {
@@ -75,16 +74,14 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   const contextMenuProvider = (
-    <ShaderEntryProvider>
-      <MaterialContextMenuProvider
-        onNodeCreate={handleNodeCreate}
-        onNodeDelete={handleNodeDelete}
-        onContextMenuOpen={setLastContextMenuPosition}
-        getNodeById={getNodeById}
-      >
-        <div ref={ref} style={{ height: "100vh" }} />
-      </MaterialContextMenuProvider>
-    </ShaderEntryProvider>
+    <MaterialContextMenuProvider
+      onNodeCreate={handleNodeCreate}
+      onNodeDelete={handleNodeDelete}
+      onContextMenuOpen={setLastContextMenuPosition}
+      getNodeById={getNodeById}
+    >
+      <div ref={ref} style={{ height: "100vh" }} />
+    </MaterialContextMenuProvider>
   );
 
   return contextMenuProvider;
