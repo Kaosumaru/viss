@@ -39,6 +39,13 @@ export function EditorView({ onChanged }: EditorViewProps) {
     []
   );
 
+  const updateEntryShader = useCallback(
+    (entry: ShaderEntry, fragment: string) => {
+      entry.setShader(fragment);
+    },
+    []
+  );
+
   const create = useCallback(
     async (container: HTMLElement) => {
       const editor = await createEditor(
@@ -47,6 +54,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
           addEntry,
           removeEntry,
           updateEntryPosition,
+          updateEntryShader,
         },
         onChanged
       );
@@ -54,7 +62,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onChanged?.(editor);
       return editor;
     },
-    [addEntry, onChanged, removeEntry, updateEntryPosition]
+    [addEntry, onChanged, removeEntry, updateEntryPosition, updateEntryShader]
   );
 
   const [ref] = useRete(create);

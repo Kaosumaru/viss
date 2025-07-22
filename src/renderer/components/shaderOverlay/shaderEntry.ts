@@ -15,11 +15,16 @@ const g_fragmentShaderSrc = `
   uniform vec2 u_resolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
   void main() {
-    gl_FragColor = vec4(0.5, 0.5, 0.0, 1.0); // Dark green with 10% alpha
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Dark green with 10% alpha
   }
 `;
 
 export class ShaderEntry {
+  setShader(fragment: string) {
+    this.fragmentShaderSrc = fragment;
+    this.broken = false; // Reset broken state
+    this.program = null; // Reset program to recompile with new shader
+  }
   constructor(fragmentShaderSrc?: string, vertexShaderSrc?: string) {
     this.fragmentShaderSrc = fragmentShaderSrc || g_fragmentShaderSrc;
     this.vertexShaderSrc = vertexShaderSrc || g_vertexShaderSrc;

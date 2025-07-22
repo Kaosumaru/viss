@@ -4,6 +4,7 @@ import { ShaderEntry } from "./shaderEntry";
 export interface ShaderEntryContextType {
   addEntry: (entry: ShaderEntry) => void;
   removeEntry: (entry: ShaderEntry) => void;
+  updateEntryShader: (entry: ShaderEntry, fragment: string) => void;
   updateEntryPosition: (
     entry: ShaderEntry,
     x: number,
