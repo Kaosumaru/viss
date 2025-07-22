@@ -2,7 +2,7 @@ import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
 import { loadGraph } from "./utils/loadGraph";
 import { editorToGraph } from "./utils/saveGraph";
-import type { EditorData } from "./editorView";
+import type { EditorData } from "./graph/interface";
 
 const vertexShader = `
 attribute vec2 a_position;

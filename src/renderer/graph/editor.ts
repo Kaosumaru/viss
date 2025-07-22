@@ -10,19 +10,19 @@ import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
-import type { AreaExtra, Schemes } from "./graph/node";
-import { UICompilerNode } from "./graph/nodes/compilerNode";
-import { Node } from "./graph/nodes/customNode";
-import { addCustomBackground } from "./graph/nodes/customBackground";
-import { CustomSocket } from "./graph/nodes/customSocket";
-import { CustomConnection } from "./graph/nodes/customConnection";
+import type { AreaExtra, Schemes } from "./node";
+import { UICompilerNode } from "./nodes/compilerNode";
+import { Node } from "./nodes/customNode";
+import { addCustomBackground } from "./nodes/customBackground";
+import { CustomSocket } from "./nodes/customSocket";
+import { CustomConnection } from "./nodes/customConnection";
 import { getDOMSocketPosition } from "rete-render-utils";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import type { EditorData } from "./editorView";
+import type { EditorData } from "./interface";
 import {
   BooleanControl,
   CustomBooleanControl,
-} from "./graph/nodes/customBooleanControl";
+} from "./nodes/customBooleanControl";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 

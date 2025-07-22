@@ -1,6 +1,6 @@
 import { Compiler } from "@compiler/compiler";
 import { editorToGraph } from "./saveGraph";
-import type { EditorData } from "renderer/editorView";
+import type { EditorData } from "renderer/graph/interface";
 import type { Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
 

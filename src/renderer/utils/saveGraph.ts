@@ -3,7 +3,7 @@ import type { ClassicPreset } from "rete";
 import { UICompilerNode } from "../graph/nodes/compilerNode";
 import { BooleanControl } from "../graph/nodes/customBooleanControl";
 import type { Graph } from "@graph/graph";
-import type { EditorData } from "renderer/editorView";
+import type { EditorData } from "renderer/graph/interface";
 
 export function editorToGraph(editorData: EditorData): Graph {
   const graph: Graph = {

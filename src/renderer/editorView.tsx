@@ -3,32 +3,19 @@ import {
   createEditor,
   type OnGraphChanged,
   type OnControlChanged,
-} from "./editor";
+} from "./graph/editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
-import type { Schemes, AreaExtra } from "./graph/node";
+import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import { ShaderOverlay } from "./components/shaderOverlay/ShaderOverlay";
+import type { EditorData } from "./graph/interface";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
   onControlChanged?: OnControlChanged;
-}
-
-export interface EditorData {
-  destroy: () => void;
-  clear: () => void;
-  createNode: (
-    nodeType: NodeType,
-    x?: number,
-    y?: number,
-    id?: string
-  ) => Promise<UICompilerNode>;
-  editor: NodeEditor<Schemes>;
-  area: AreaPlugin<Schemes, AreaExtra>;
 }
 
 export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {

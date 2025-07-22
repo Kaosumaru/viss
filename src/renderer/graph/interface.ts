@@ -1,0 +1,18 @@
+import type { NodeType } from "@compiler/nodes/allNodes";
+import type { AreaExtra, Schemes } from "renderer/graph/node";
+import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
+import type { NodeEditor } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
+
+export interface EditorData {
+  destroy: () => void;
+  clear: () => void;
+  createNode: (
+    nodeType: NodeType,
+    x?: number,
+    y?: number,
+    id?: string
+  ) => Promise<UICompilerNode>;
+  editor: NodeEditor<Schemes>;
+  area: AreaPlugin<Schemes, AreaExtra>;
+}

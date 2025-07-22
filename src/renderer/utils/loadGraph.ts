@@ -2,7 +2,7 @@ import type { NodeType } from "@compiler/nodes/allNodes";
 import type { Graph } from "@graph/graph";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "../graph/nodes/customBooleanControl";
-import type { EditorData } from "renderer/editorView";
+import type { EditorData } from "renderer/graph/interface";
 
 export async function loadGraph(graphJson: string, editorData: EditorData) {
   const graph: Graph = JSON.parse(graphJson);

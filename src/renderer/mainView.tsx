@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import { EditorView, type EditorData } from "./editorView";
+import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
-import type { OnGraphChanged, OnControlChanged } from "./editor";
+import type { OnGraphChanged, OnControlChanged } from "./graph/editor";
 import { compileGraph } from "./utils/compileGraph";
+import type { EditorData } from "./graph/interface";
 
 const Layout = styled.div`
   display: grid;
