@@ -14,6 +14,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   height = 140;
   width = 200;
   nodeType: NodeType;
+  previewControl?: PreviewControl;
   private controlChangeCallback?: ControlChangeCallback;
 
   constructor(
@@ -30,8 +31,8 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.addOutputs(compilerNode);
 
     if (compilerNode.showPreview()) {
-      const control = new PreviewControl(this.id);
-      this.addControl("preview", control);
+      this.previewControl = new PreviewControl(this.id);
+      this.addControl("preview", this.previewControl);
     }
 
     this.updateSize(compilerNode);

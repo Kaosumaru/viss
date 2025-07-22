@@ -43,6 +43,7 @@ export async function createEditor(
   onChanged?: OnGraphChanged
 ): Promise<EditorData> {
   let deserializing = false;
+  const nodeToPreviewControl = new Map<string, PreviewControl>();
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
@@ -142,6 +143,11 @@ export async function createEditor(
       if (!data || !onChanged) return;
       compilationHelper.updateGraph(data);
       onChanged(data);
+
+      for (const [node, control] of nodeToPreviewControl) {
+        control.shader = compilationHelper.compileNode(node);
+        area.update("control", control.id);
+      }
       timer = undefined;
     });
   };
@@ -155,6 +161,10 @@ export async function createEditor(
   ) => {
     const node = new UICompilerNode(nodeType);
     node.id = id || node.id; // Use provided ID or generate a new one
+
+    if (node.previewControl) {
+      nodeToPreviewControl.set(node.id, node.previewControl);
+    }
     // Set the control change callback for the node if it doesn't already have one
     node.setControlChangeCallback(() => {
       scheduleGraphChange();
@@ -175,11 +185,13 @@ export async function createEditor(
   };
 
   const clear = () => {
+    nodeToPreviewControl.clear();
     editor.clear();
   };
 
   const loadGraph = async (graphJson: string) => {
     deserializing = true; // Set the flag to skip onChanged during deserialization
+    nodeToPreviewControl.clear();
     try {
       await internalLoadGraph(graphJson, data!);
     } finally {
@@ -214,6 +226,9 @@ export async function createEditor(
   };
 
   editor.addPipe((context) => {
+    if (context.type === "noderemoved") {
+      nodeToPreviewControl.delete(context.data.id);
+    }
     if (
       context.type === "nodecreated" ||
       context.type === "noderemoved" ||

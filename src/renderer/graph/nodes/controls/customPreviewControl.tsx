@@ -1,10 +1,11 @@
-import { memo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ClassicPreset } from "rete";
 import { ShaderEntry } from "../../../components/shaderOverlay/shaderEntry";
 import { useShaderEntry } from "../../../components/shaderOverlay/ShaderEntryContext";
 
 export class PreviewControl extends ClassicPreset.Control {
   nodeId: string;
+  shader?: string;
 
   constructor(nodeId: string) {
     super();
@@ -12,11 +13,14 @@ export class PreviewControl extends ClassicPreset.Control {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function CustomPreviewControlInternal(_props: { data: PreviewControl }) {
+export function CustomPreviewControl(props: { data: PreviewControl }) {
   const divRef = useRef<HTMLDivElement>(null);
   const shaderEntryRef = useRef<ShaderEntry | null>(null);
   const { addEntry, removeEntry, updateEntryPosition } = useShaderEntry();
+
+  useEffect(() => {
+    shaderEntryRef.current?.setShader(props.data.shader);
+  }, [props.data.shader]);
 
   useEffect(() => {
     // Create shader entry
@@ -90,5 +94,3 @@ function CustomPreviewControlInternal(_props: { data: PreviewControl }) {
     />
   );
 }
-
-export const CustomPreviewControl = memo(CustomPreviewControlInternal);

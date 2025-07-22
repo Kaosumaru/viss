@@ -1,4 +1,5 @@
 const g_vertexShaderSrc = `
+  precision mediump float;
   attribute vec2 a_position;
   uniform vec2 u_resolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
@@ -20,8 +21,8 @@ const g_fragmentShaderSrc = `
 `;
 
 export class ShaderEntry {
-  setShader(fragment: string) {
-    this.fragmentShaderSrc = fragment;
+  setShader(fragment: string | undefined) {
+    this.fragmentShaderSrc = fragment ?? g_fragmentShaderSrc;
     this.broken = false; // Reset broken state
     this.program = null; // Reset program to recompile with new shader
   }
@@ -92,10 +93,18 @@ export class ShaderEntry {
     const vertexShader = compile(gl.VERTEX_SHADER, this.vertexShaderSrc);
     const fragmentShader = compile(gl.FRAGMENT_SHADER, this.fragmentShaderSrc);
 
-    const program = gl.createProgram()!;
-    gl.attachShader(program, vertexShader!);
-    gl.attachShader(program, fragmentShader!);
+    const program = gl.createProgram();
+    if (!program || !vertexShader || !fragmentShader) {
+      console.error("Failed to create shader program", this.fragmentShaderSrc);
+      return null;
+    }
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error("Program link error:", gl.getProgramInfoLog(program));
+      return null;
+    }
     return program;
   }
 

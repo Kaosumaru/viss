@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect } from "react";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { ClassicPreset } from "rete";
 import type { Parameter } from "@compiler/nodes/compilerNode";
@@ -20,7 +20,7 @@ export class BooleanControl extends ClassicPreset.Control {
   }
 }
 
-function CustomBooleanControlInternal(props: { data: BooleanControl }) {
+export function CustomBooleanControl(props: { data: BooleanControl }) {
   const control = props.data;
   const [value, setValue] = useState(control.value);
 
@@ -58,5 +58,3 @@ function CustomBooleanControlInternal(props: { data: BooleanControl }) {
     </FormGroup>
   );
 }
-
-export const CustomBooleanControl = memo(CustomBooleanControlInternal);
