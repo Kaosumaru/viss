@@ -84,9 +84,8 @@ function CustomPreviewControlInternal(_props: { data: PreviewControl }) {
     <div
       ref={divRef}
       style={{
-        width: "100px",
-        height: "100px",
-        backgroundColor: "white",
+        width: "165px",
+        height: "165px",
         borderRadius: "2px",
       }}
     />

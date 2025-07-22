@@ -195,7 +195,7 @@ export async function createEditor(
     return compilationHelper.compileNode(nodeId);
   };
 
-  await createNode("preview");
+  await createNode("output");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
 

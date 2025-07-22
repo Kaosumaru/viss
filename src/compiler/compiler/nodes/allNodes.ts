@@ -5,6 +5,7 @@ import type { CompilerNode } from "./compilerNode";
 import { add } from "./operators/add";
 import { substract } from "./operators/substract";
 import { preview } from "./out/preview";
+import { output as outputNode } from "./out/output";
 import { UniformNode } from "./uniforms/uniform";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
@@ -20,19 +21,25 @@ export interface NodeCategory {
   nodes: Record<string, CompilerNode>;
 }
 
-interface SpecializedNodeCategory<ID extends string, T extends Record<string, CompilerNode>> extends NodeCategory {
+interface SpecializedNodeCategory<
+  ID extends string,
+  T extends Record<string, CompilerNode>
+> extends NodeCategory {
   id: ID;
   name: string;
   nodes: T;
 }
 
-export function createCategory<ID extends string, T extends Record<string, CompilerNode>>(category: SpecializedNodeCategory<ID, T>) {
+export function createCategory<
+  ID extends string,
+  T extends Record<string, CompilerNode>
+>(category: SpecializedNodeCategory<ID, T>) {
   return category;
 }
 
 const literals = createCategory({
-  id: 'literals',
-  name: 'Literals',
+  id: "literals",
+  name: "Literals",
   nodes: {
     float: new LiteralNode(scalar("float")),
     bool: new BooleanLiteralNode(),
@@ -40,32 +47,38 @@ const literals = createCategory({
     // vector2: new LiteralNode(vector("float", 2)),
     // vector3: new LiteralNode(vector("float", 3)),
     // vector4: new LiteralNode(vector("float", 4)),
-  }
+  },
 });
 
 const operators = createCategory({
-  id: 'operators',
-  name: 'Operators',
+  id: "operators",
+  name: "Operators",
   nodes: {
     add,
     substract,
     divide,
-  }
+  },
 });
 
 const functions = createCategory({
-  id: 'functions',
-  name: 'Functions',
+  id: "functions",
+  name: "Functions",
   nodes: {
-    length: new FunctionNode("length", "Length of a vector", scalar("float"), [["in", Any]]),
-    sin: new FunctionNode("sin", "Sine function", scalar("float"), [["in", scalar("float")]]),
-    abs: new FunctionNode("abs", "Absolute value", scalar("float"), [["in", scalar("float")]]),
-  }
+    length: new FunctionNode("length", "Length of a vector", scalar("float"), [
+      ["in", Any],
+    ]),
+    sin: new FunctionNode("sin", "Sine function", scalar("float"), [
+      ["in", scalar("float")],
+    ]),
+    abs: new FunctionNode("abs", "Absolute value", scalar("float"), [
+      ["in", scalar("float")],
+    ]),
+  },
 });
 
 const vectors = createCategory({
-  id: 'vectors',
-  name: 'Vectors',
+  id: "vectors",
+  name: "Vectors",
   nodes: {
     getX: new GetMember("x", vector("float", 2), scalar("float")),
     getY: new GetMember("y", vector("float", 2), scalar("float")),
@@ -73,33 +86,49 @@ const vectors = createCategory({
     composeVector4,
     decomposeVector2,
     decomposeVector4,
-  }
+  },
 });
 
 const uniforms = createCategory({
-  id: 'uniforms',
-  name: 'Uniforms',
+  id: "uniforms",
+  name: "Uniforms",
   nodes: {
-    time: new UniformNode("time", "Elapsed time in seconds", "u_time", scalar("float")),
-    resolution: new UniformNode("resolution", "Screen resolution", "u_resolution", vector("float", 2)),
-    fragCoord: new UniformNode("fragCoord", "Fragment coordinates", "gl_FragCoord", vector("float", 4)),
-  }
+    time: new UniformNode(
+      "time",
+      "Elapsed time in seconds",
+      "u_time",
+      scalar("float")
+    ),
+    resolution: new UniformNode(
+      "resolution",
+      "Screen resolution",
+      "u_resolution",
+      vector("float", 2)
+    ),
+    fragCoord: new UniformNode(
+      "fragCoord",
+      "Fragment coordinates",
+      "gl_FragCoord",
+      vector("float", 4)
+    ),
+  },
 });
 
 const output = createCategory({
-  id: 'output',
-  name: 'Output',
+  id: "output",
+  name: "Output",
   nodes: {
+    output: outputNode,
     preview,
-  }
+  },
 });
 
 const utils = createCategory({
-  id: 'utils',
-  name: 'Utils',
+  id: "utils",
+  name: "Utils",
   nodes: {
     coords,
-  }
+  },
 });
 
 export const nodeCategories = [
@@ -112,7 +141,7 @@ export const nodeCategories = [
   utils,
 ] as const;
 
-export type NodeCategoryId = typeof nodeCategories[number]['id'];
+export type NodeCategoryId = (typeof nodeCategories)[number]["id"];
 
 export const nodes = {
   ...literals.nodes,

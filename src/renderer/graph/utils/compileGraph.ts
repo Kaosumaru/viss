@@ -20,7 +20,7 @@ export class CompilationHelper {
     }
 
     if (!nodeId) {
-      const node = this.graph.nodes.find((n) => n.nodeType === "preview");
+      const node = this.graph.nodes.find((n) => n.nodeType === "output");
       if (!node) {
         throw new Error("Preview node not found in graph");
       }

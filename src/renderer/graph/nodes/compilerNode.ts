@@ -34,7 +34,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       this.addControl("preview", control);
     }
 
-    this.updateSize();
+    this.updateSize(compilerNode);
   }
 
   setControlChangeCallback(callback: ControlChangeCallback) {
@@ -102,7 +102,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     }
   }
 
-  updateSize() {
+  updateSize(compilerNode: CompilerNode) {
     const inputs = Object.entries(this.inputs);
     const outputs = Object.entries(this.outputs);
     const controls = Object.entries(this.controls);
@@ -113,5 +113,9 @@ export class UICompilerNode extends ClassicPreset.Node {
       5 +
       Math.max(inputs.length, outputs.length) * 36 +
       controls.length * 36;
+
+    if (compilerNode.showPreview()) {
+      this.height += 140; // Add height for preview control
+    }
   }
 }
