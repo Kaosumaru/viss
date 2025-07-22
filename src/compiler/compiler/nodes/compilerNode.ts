@@ -10,10 +10,8 @@ export type ParamExtractedValue<T> = Extract<
 >["value"];
 */
 
-export type ParamExtractedValue<T extends ParameterValueType> = 
-  T extends "number" ? number :
-  T extends "boolean" ? boolean :
-  never;
+export type ParamExtractedValue<T extends ParameterValueType> =
+  T extends "number" ? number : T extends "boolean" ? boolean : never;
 
 export interface NodeContext {
   getVariables(): Variable[];
@@ -55,6 +53,10 @@ export abstract class CompilerNode {
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
   abstract getDescription(): string;
+
+  showPreview(): boolean {
+    return false;
+  }
 
   protected addInput(name: string, type: Type): void {
     this.inputs.push({ name, type });

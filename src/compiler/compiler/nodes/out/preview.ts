@@ -50,6 +50,10 @@ class PreviewNode extends CompilerNode {
   override getDescription(): string {
     return "Preview node to visualize input data as a vec4";
   }
+
+  override showPreview(): boolean {
+    return true;
+  }
 }
 
 export const preview = new PreviewNode();

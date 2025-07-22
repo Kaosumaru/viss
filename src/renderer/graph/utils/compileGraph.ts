@@ -16,7 +16,7 @@ export class CompilationHelper {
 
   compileNode(nodeId?: string): string | undefined {
     if (!this.compiler || !this.graph) {
-      throw new Error("Compiler not initialized");
+      return undefined;
     }
 
     if (!nodeId) {
@@ -41,7 +41,7 @@ export class CompilationHelper {
   }
 
   private outputToGLSL(output: Context): string {
-     const outExpression = output.outputs["out"];
+    const outExpression = output.outputs["out"];
 
     const variables = output.variables
       .map((variable: Variable) => compileVariable(variable, 1))

@@ -22,17 +22,21 @@ import type { EditorData } from "./interface";
 import {
   BooleanControl,
   CustomBooleanControl,
-} from "./nodes/customBooleanControl";
+} from "./nodes/controls/customBooleanControl";
 
 import { loadGraph as internalLoadGraph } from "./utils/loadGraph";
 import { saveGraph as internalSaveGraph } from "./utils/saveGraph";
 import { CompilationHelper } from "./utils/compileGraph";
+import {
+  CustomPreviewControl,
+  PreviewControl,
+} from "./nodes/controls/customPreviewControl";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 
 export async function createEditor(
   container: HTMLElement,
-  onChanged?: OnGraphChanged,
+  onChanged?: OnGraphChanged
 ): Promise<EditorData> {
   let deserializing = false;
   const editor = new NodeEditor<Schemes>();
@@ -78,6 +82,10 @@ export async function createEditor(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return CustomBooleanControl as any;
           }
+          if (data.payload instanceof PreviewControl) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return CustomPreviewControl as any;
+          }
           if (data.payload instanceof ClassicPreset.InputControl) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return Presets.classic.Control as any;
@@ -107,7 +115,6 @@ export async function createEditor(
 
   let timer: ReturnType<typeof setTimeout> | undefined;
   const scheduleGraphChange = () => {
-
     if (timer) return;
 
     timer = setTimeout(() => {
@@ -125,8 +132,7 @@ export async function createEditor(
     y?: number,
     id?: string
   ) => {
-    const node = new UICompilerNode(
-      nodeType);
+    const node = new UICompilerNode(nodeType);
     node.id = id || node.id; // Use provided ID or generate a new one
     // Set the control change callback for the node if it doesn't already have one
     node.setControlChangeCallback(() => {
@@ -168,7 +174,6 @@ export async function createEditor(
     return compilationHelper.compileNode(nodeId);
   };
 
-
   await createNode("preview");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
@@ -177,7 +182,7 @@ export async function createEditor(
     destroy: () => area.destroy(),
     createNode,
     clear,
-  
+
     loadGraph,
     saveGraph,
 

@@ -1,7 +1,8 @@
 import { getNode, type NodeType } from "@compiler/nodes/allNodes";
 import type { CompilerNode, Parameter } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
-import { BooleanControl } from "./customBooleanControl";
+import { BooleanControl } from "./controls/customBooleanControl";
+import { PreviewControl } from "./controls/customPreviewControl";
 
 export type ControlChangeCallback = (
   nodeId: string,
@@ -27,6 +28,11 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.addInputs(compilerNode);
     this.addParams(compilerNode);
     this.addOutputs(compilerNode);
+
+    if (compilerNode.showPreview()) {
+      const control = new PreviewControl(this.id);
+      this.addControl("preview", control);
+    }
 
     this.updateSize();
   }
