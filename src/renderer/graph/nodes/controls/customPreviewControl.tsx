@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef } from "react";
 import { ClassicPreset } from "rete";
 import { ShaderEntry } from "../../../components/shaderOverlay/shaderEntry";
-import { useShaderEntry } from "../../../context/ShaderEntryContext";
+import { useShaderEntry } from "../../../components/shaderOverlay/ShaderEntryContext";
 
 export class PreviewControl extends ClassicPreset.Control {
   nodeId: string;

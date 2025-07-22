@@ -11,7 +11,7 @@ import {
   Presets as ArrangePresets,
 } from "rete-auto-arrange-plugin";
 import React from "react";
-import { ShaderEntryProvider } from "../context/ShaderEntryProvider";
+import { ShaderEntryProvider } from "../components/shaderOverlay/ShaderEntryProvider";
 import type { AreaExtra, Schemes } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
 import { Node } from "./nodes/customNode";
@@ -33,7 +33,7 @@ import {
   CustomPreviewControl,
   PreviewControl,
 } from "./nodes/controls/customPreviewControl";
-import type { ShaderEntryContextType } from "renderer/context/ShaderEntryContext";
+import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 

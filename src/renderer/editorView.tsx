@@ -7,7 +7,7 @@ import type { NodeEditor } from "rete";
 import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorData } from "./graph/interface";
-import { ShaderOverlayRenderer } from "./context/ShaderOverlayRenderer";
+import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
 import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 
 export interface EditorViewProps {

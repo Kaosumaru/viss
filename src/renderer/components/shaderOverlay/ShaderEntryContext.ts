@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { ShaderEntry } from "../components/shaderOverlay/shaderEntry";
+import { ShaderEntry } from "./shaderEntry";
 
 export interface ShaderEntryContextType {
   addEntry: (entry: ShaderEntry) => void;
