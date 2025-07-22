@@ -41,6 +41,7 @@ export async function createEditor(
   onChanged?: OnGraphChanged,
   onControlChanged?: OnControlChanged
 ): Promise<EditorData> {
+  let deserializing = false;
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
@@ -151,7 +152,12 @@ export async function createEditor(
   };
 
   const loadGraph = async (graphJson: string) => {
-    await internalLoadGraph(graphJson, data!);
+    deserializing = true; // Set the flag to skip onChanged during deserialization
+    try {
+      await internalLoadGraph(graphJson, data!);
+    } finally {
+      deserializing = false; // Reset the flag after loading
+    }
   };
 
   const saveGraph = () => {
@@ -181,6 +187,9 @@ export async function createEditor(
       context.type === "connectioncreated" ||
       context.type === "connectionremoved"
     ) {
+      if (deserializing) {
+        return context; // Skip during deserialization
+      }
       onChanged?.(data);
     }
     return context;
