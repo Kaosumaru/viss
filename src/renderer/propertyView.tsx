@@ -1,7 +1,5 @@
 import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
-import { loadGraph } from "./utils/loadGraph";
-import { editorToGraph } from "./utils/saveGraph";
 import type { EditorData } from "./graph/interface";
 
 const vertexShader = `
@@ -27,7 +25,7 @@ export function PropertyView({
     }
 
     try {
-      const graph = editorToGraph(editorData);
+      const graph = editorData.saveGraph();
       const graphJson = JSON.stringify(graph, null, 2);
 
       // Copy to clipboard
@@ -47,7 +45,7 @@ export function PropertyView({
     try {
       // Read from clipboard
       const graphJson = await navigator.clipboard.readText();
-      await loadGraph(graphJson, editorData);
+      await editorData.loadGraph(graphJson);
 
       console.log("Graph loaded successfully from clipboard");
     } catch (error) {

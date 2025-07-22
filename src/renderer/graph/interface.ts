@@ -1,4 +1,5 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
+import type { Graph } from "@graph/graph";
 import type { AreaExtra, Schemes } from "renderer/graph/node";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
@@ -13,6 +14,11 @@ export interface EditorData {
     y?: number,
     id?: string
   ) => Promise<UICompilerNode>;
+
+  loadGraph: (graphJson: string) => Promise<void>;
+  saveGraph: () => Graph;
+
+  // TODO remove?
   editor: NodeEditor<Schemes>;
   area: AreaPlugin<Schemes, AreaExtra>;
 }

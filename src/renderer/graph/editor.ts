@@ -24,6 +24,9 @@ import {
   CustomBooleanControl,
 } from "./nodes/customBooleanControl";
 
+import { loadGraph as internalLoadGraph } from "./utils/loadGraph";
+import { saveGraph as internalSaveGraph } from "./utils/saveGraph";
+
 export type OnGraphChanged = (editorData: EditorData) => void;
 
 export type OnControlChanged = (
@@ -147,6 +150,14 @@ export async function createEditor(
     editor.clear();
   };
 
+  const loadGraph = async (graphJson: string) => {
+    await internalLoadGraph(graphJson, data!);
+  };
+
+  const saveGraph = () => {
+    return internalSaveGraph(data!);
+  };
+
   await createNode("preview");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
@@ -155,6 +166,10 @@ export async function createEditor(
     destroy: () => area.destroy(),
     createNode,
     clear,
+  
+    loadGraph,
+    saveGraph,
+
     editor,
     area,
   };

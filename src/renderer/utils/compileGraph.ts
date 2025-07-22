@@ -1,11 +1,11 @@
 import { Compiler } from "@compiler/compiler";
-import { editorToGraph } from "./saveGraph";
+import { saveGraph } from "../graph/utils/saveGraph";
 import type { EditorData } from "renderer/graph/interface";
 import type { Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
 
 export function compileGraph(editorData: EditorData): string | undefined {
-  const graph = editorToGraph(editorData);
+  const graph = saveGraph(editorData);
   try {
     const compiler = new Compiler(graph);
     const node = graph.nodes.find((n) => n.nodeType === "preview");
