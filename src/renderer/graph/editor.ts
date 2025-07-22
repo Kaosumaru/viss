@@ -33,11 +33,13 @@ import {
   CustomPreviewControl,
   PreviewControl,
 } from "./nodes/controls/customPreviewControl";
+import type { ShaderEntryContextType } from "renderer/context/ShaderEntryContext";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 
 export async function createEditor(
   container: HTMLElement,
+  overlayContext: ShaderEntryContextType,
   onChanged?: OnGraphChanged
 ): Promise<EditorData> {
   let deserializing = false;
@@ -51,7 +53,12 @@ export async function createEditor(
       // Wrap the rendering with ShaderEntryProvider context
       return {
         render: (element: React.ReactElement) => {
-          root.render(React.createElement(ShaderEntryProvider, null, element));
+          root.render(
+            React.createElement(ShaderEntryProvider, {
+              context: overlayContext,
+              children: element,
+            })
+          );
         },
         unmount: () => root.unmount(),
       };

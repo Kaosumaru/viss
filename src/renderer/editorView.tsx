@@ -7,6 +7,8 @@ import type { NodeEditor } from "rete";
 import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorData } from "./graph/interface";
+import { ShaderOverlayRenderer } from "./context/ShaderOverlayRenderer";
+import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -20,14 +22,39 @@ export function EditorView({ onChanged }: EditorViewProps) {
     y: number;
   } | null>(null);
 
+  const [entries, setEntries] = useState<ShaderEntry[]>([]);
+
+  const addEntry = useCallback((entry: ShaderEntry) => {
+    setEntries((prev) => [...prev, entry]);
+  }, []);
+
+  const removeEntry = useCallback((entry: ShaderEntry) => {
+    setEntries((prev) => prev.filter((e) => e !== entry));
+  }, []);
+
+  const updateEntryPosition = useCallback(
+    (entry: ShaderEntry, x: number, y: number, w: number, h: number) => {
+      entry.setPosition(x, y, w, h);
+    },
+    []
+  );
+
   const create = useCallback(
     async (container: HTMLElement) => {
-      const editor = await createEditor(container, onChanged);
+      const editor = await createEditor(
+        container,
+        {
+          addEntry,
+          removeEntry,
+          updateEntryPosition,
+        },
+        onChanged
+      );
       editorRef.current = editor;
       onChanged?.(editor);
       return editor;
     },
-    [onChanged]
+    [addEntry, onChanged, removeEntry, updateEntryPosition]
   );
 
   const [ref] = useRete(create);
@@ -80,6 +107,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onContextMenuOpen={setLastContextMenuPosition}
       getNodeById={getNodeById}
     >
+      <ShaderOverlayRenderer entries={entries} />
       <div ref={ref} style={{ height: "100vh" }} />
     </MaterialContextMenuProvider>
   );
