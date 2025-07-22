@@ -29,17 +29,9 @@ import { saveGraph as internalSaveGraph } from "./utils/saveGraph";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 
-export type OnControlChanged = (
-  editorData: EditorData,
-  nodeId: string,
-  controlKey: string,
-  value: unknown
-) => void;
-
 export async function createEditor(
   container: HTMLElement,
   onChanged?: OnGraphChanged,
-  onControlChanged?: OnControlChanged
 ): Promise<EditorData> {
   let deserializing = false;
   const editor = new NodeEditor<Schemes>();
@@ -110,6 +102,18 @@ export async function createEditor(
 
   let data: EditorData | undefined = undefined;
 
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const scheduleGraphChange = () => {
+
+    if (timer) return;
+
+    timer = setTimeout(() => {
+      if (!data || !onChanged) return;
+      onChanged(data);
+      timer = undefined;
+    });
+  };
+
   // Function to add a node at the mouse position
   const createNode = async (
     nodeType: NodeType,
@@ -118,20 +122,12 @@ export async function createEditor(
     id?: string
   ) => {
     const node = new UICompilerNode(
-      nodeType,
-      onControlChanged
-        ? (nodeId, controlKey, value) => {
-            onControlChanged(data!, nodeId, controlKey, value);
-          }
-        : undefined
-    );
+      nodeType);
     node.id = id || node.id; // Use provided ID or generate a new one
     // Set the control change callback for the node if it doesn't already have one
-    if (onControlChanged && node.setControlChangeCallback) {
-      node.setControlChangeCallback((nodeId, controlKey, value) => {
-        onControlChanged(data!, nodeId, controlKey, value);
-      });
-    }
+    node.setControlChangeCallback(() => {
+      scheduleGraphChange();
+    });
 
     await editor.addNode(node);
 
@@ -190,7 +186,7 @@ export async function createEditor(
       if (deserializing) {
         return context; // Skip during deserialization
       }
-      onChanged?.(data);
+      scheduleGraphChange();
     }
     return context;
   });

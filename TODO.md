@@ -4,8 +4,9 @@
  - when we would want to use input more than once (is that necessary?)
 3. More types of properties
     - colors
-    - te xtures
+    - textures
 4. Global uniform parameters
+5. Think about how multiple additions/removals should be handled
 
 
 Optimization

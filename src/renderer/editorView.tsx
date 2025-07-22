@@ -2,7 +2,6 @@ import { useRete } from "rete-react-plugin";
 import {
   createEditor,
   type OnGraphChanged,
-  type OnControlChanged,
 } from "./graph/editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
@@ -15,10 +14,9 @@ import type { EditorData } from "./graph/interface";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
-  onControlChanged?: OnControlChanged;
 }
 
-export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
+export function EditorView({ onChanged }: EditorViewProps) {
   const editorRef = useRef<EditorData | null>(null);
 
   const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
@@ -28,12 +26,12 @@ export function EditorView({ onChanged, onControlChanged }: EditorViewProps) {
 
   const create = useCallback(
     async (container: HTMLElement) => {
-      const editor = await createEditor(container, onChanged, onControlChanged);
+      const editor = await createEditor(container, onChanged);
       editorRef.current = editor;
       onChanged?.(editor);
       return editor;
     },
-    [onChanged, onControlChanged]
+    [onChanged]
   );
 
   const [ref] = useRete(create);
