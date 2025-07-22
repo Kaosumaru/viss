@@ -1,15 +1,12 @@
 import { useRete } from "rete-react-plugin";
-import {
-  createEditor,
-  type OnGraphChanged,
-} from "./graph/editor";
+import { createEditor, type OnGraphChanged } from "./graph/editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeEditor } from "rete";
 import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import { ShaderOverlay } from "./components/shaderOverlay/ShaderOverlay";
+import { ShaderEntryProvider } from "./context/ShaderEntryProvider";
 import type { EditorData } from "./graph/interface";
 
 export interface EditorViewProps {
@@ -78,15 +75,16 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   const contextMenuProvider = (
-    <MaterialContextMenuProvider
-      onNodeCreate={handleNodeCreate}
-      onNodeDelete={handleNodeDelete}
-      onContextMenuOpen={setLastContextMenuPosition}
-      getNodeById={getNodeById}
-    >
-      <div ref={ref} style={{ height: "100vh" }} />
-      <ShaderOverlay/>
-    </MaterialContextMenuProvider>
+    <ShaderEntryProvider>
+      <MaterialContextMenuProvider
+        onNodeCreate={handleNodeCreate}
+        onNodeDelete={handleNodeDelete}
+        onContextMenuOpen={setLastContextMenuPosition}
+        getNodeById={getNodeById}
+      >
+        <div ref={ref} style={{ height: "100vh" }} />
+      </MaterialContextMenuProvider>
+    </ShaderEntryProvider>
   );
 
   return contextMenuProvider;
