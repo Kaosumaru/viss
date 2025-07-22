@@ -18,6 +18,8 @@ export interface EditorData {
   loadGraph: (graphJson: string) => Promise<void>;
   saveGraph: () => Graph;
 
+  compileNode: (nodeId?: string) => string | undefined;
+
   // TODO remove?
   editor: NodeEditor<Schemes>;
   area: AreaPlugin<Schemes, AreaExtra>;

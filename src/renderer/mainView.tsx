@@ -3,7 +3,6 @@ import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
-import { compileGraph } from "./utils/compileGraph";
 import type { EditorData } from "./graph/interface";
 
 const Layout = styled.div`
@@ -49,7 +48,7 @@ export function MainView() {
 
   const onChanged: OnGraphChanged = useCallback((editorData) => {
     setEditorData(editorData);
-    const newShader = compileGraph(editorData);
+    const newShader = editorData.compileNode();
     setShader(newShader ? newShader : defaultColor);
   }, []);
 

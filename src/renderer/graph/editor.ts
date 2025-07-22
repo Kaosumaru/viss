@@ -26,6 +26,7 @@ import {
 
 import { loadGraph as internalLoadGraph } from "./utils/loadGraph";
 import { saveGraph as internalSaveGraph } from "./utils/saveGraph";
+import { CompilationHelper } from "./utils/compileGraph";
 
 export type OnGraphChanged = (editorData: EditorData) => void;
 
@@ -39,6 +40,8 @@ export async function createEditor(
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<Schemes>();
+
+  const compilationHelper = new CompilationHelper();
   // const contextMenu = createContextMenu();
 
   // area.use(contextMenu);
@@ -109,6 +112,7 @@ export async function createEditor(
 
     timer = setTimeout(() => {
       if (!data || !onChanged) return;
+      compilationHelper.updateGraph(data);
       onChanged(data);
       timer = undefined;
     });
@@ -160,6 +164,11 @@ export async function createEditor(
     return internalSaveGraph(data!);
   };
 
+  const compileNode = (nodeId?: string): string | undefined => {
+    return compilationHelper.compileNode(nodeId);
+  };
+
+
   await createNode("preview");
   await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
@@ -171,6 +180,8 @@ export async function createEditor(
   
     loadGraph,
     saveGraph,
+
+    compileNode,
 
     editor,
     area,
