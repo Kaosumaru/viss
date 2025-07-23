@@ -29,7 +29,7 @@ export function parseFunctionsFrom(
   for (const func of functions) {
     functionMap[func.name] = func;
   }
-  return {};
+  return functionMap;
 }
 
 export function listFunctions(glsl: string): FunctionDefinition[] {

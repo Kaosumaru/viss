@@ -15,6 +15,7 @@ import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
 import { multiply } from "./operators/multiply";
+import { glslFunction } from "./functions/glslFunction";
 
 export interface NodeCategory {
   id: string;
@@ -154,6 +155,8 @@ export const nodes = {
   ...uniforms.nodes,
   ...output.nodes,
   ...utils.nodes,
+
+  glslFunction,
 };
 
 export type NodeType = keyof typeof nodes;

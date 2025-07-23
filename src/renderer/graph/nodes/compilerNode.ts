@@ -88,14 +88,16 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addParams(inputs: Pins, params: Parameters) {
-    params.forEach((param) => {
-      // Only add as standalone control if there's no input with the same name
-      const hasInput = inputs.some((input) => input.name === param.name);
-      if (!hasInput) {
-        const control = this.createControl(param);
-        this.addControl(param.name, control);
-      }
-    });
+    params
+      .filter((p) => p.name[0] !== "_")
+      .forEach((param) => {
+        // Only add as standalone control if there's no input with the same name
+        const hasInput = inputs.some((input) => input.name === param.name);
+        if (!hasInput) {
+          const control = this.createControl(param);
+          this.addControl(param.name, control);
+        }
+      });
   }
 
   protected createControl(param: Parameter): ClassicPreset.Control {
@@ -112,6 +114,11 @@ export class UICompilerNode extends ClassicPreset.Node {
       case "number":
         return new ClassicPreset.InputControl("number", {
           initial: param.defaultValue?.value || 0,
+          change: callback,
+        });
+      case "string":
+        return new ClassicPreset.InputControl("text", {
+          initial: param.defaultValue?.value || "",
           change: callback,
         });
     }

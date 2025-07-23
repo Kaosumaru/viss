@@ -2,12 +2,29 @@ import { Compiler } from "@compiler/compiler";
 import { saveGraph } from "./saveGraph";
 import type { Context, Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
-import type { Graph } from "@graph/graph";
+import type { GLSLInclude, Graph } from "@graph/graph";
 import type { NodeEditor } from "rete";
 import type { AreaPlugin } from "rete-area-plugin";
 import type { AreaExtra, Schemes } from "../node";
+import type { FunctionDefinition } from "@glsl/function";
+
+const commonIncludes: GLSLInclude = {
+  name: "common",
+  content: `
+     float add(float a, float b) {
+       return a + b;
+     }
+    `,
+};
 
 export class CompilationHelper {
+  constructor() {
+    this.compiler = new Compiler({
+      includes: [commonIncludes],
+      nodes: [],
+      connections: [],
+    });
+  }
   updateGraph(
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>
@@ -16,7 +33,15 @@ export class CompilationHelper {
     if (!this.graph) {
       throw new Error("Failed to save graph");
     }
+    this.graph.includes.push(commonIncludes);
     this.compiler = new Compiler(this.graph);
+  }
+
+  getCustomFunctions(): FunctionDefinition[] {
+    if (!this.compiler) {
+      return [];
+    }
+    return this.compiler.getCustomFunctions();
   }
 
   compileNode(nodeId?: string, outputPin = "_preview"): string | undefined {
@@ -72,7 +97,7 @@ ${variables}
   }
 
   private graph?: Graph;
-  private compiler?: Compiler;
+  private compiler: Compiler;
 }
 
 function compileVariable(variable: Variable, level: number): string {

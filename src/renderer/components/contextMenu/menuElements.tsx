@@ -1,5 +1,10 @@
-import { nodeCategories, type NodeCategory, type NodeCategoryId, type NodeType } from "@compiler/nodes/allNodes";
-import type { MenuCategory } from "./interface";
+import {
+  nodeCategories,
+  type NodeCategory,
+  type NodeCategoryId,
+  type NodeType,
+} from "@compiler/nodes/allNodes";
+import type { MenuCategory, MenuItem } from "./interface";
 import {
   Functions as FunctionsIcon,
   Calculate as CalculateIcon,
@@ -7,10 +12,29 @@ import {
   Settings as SettingsIcon,
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
+import type { FunctionDefinition } from "@glsl/function";
 
+export function getMenuElements(customFunctions: FunctionDefinition[]) {
+  return [
+    ...menuElements,
+    {
+      name: "Custom Functions",
+      icon: <FunctionsIcon fontSize="small" />,
+      items: customFunctions.map(functionToItem),
+    },
+  ];
+}
 
-export const menuElements: MenuCategory[] = nodeCategories.map(createMenuCategory);
+function functionToItem(fn: FunctionDefinition): MenuItem {
+  return {
+    name: fn.name,
+    nodeType: "glslFunction",
+    nameParam: fn.name,
+    description: "No description available",
+  };
+}
 
+const menuElements: MenuCategory[] = nodeCategories.map(createMenuCategory);
 
 function createMenuCategory(category: NodeCategory): MenuCategory {
   return {
@@ -26,19 +50,19 @@ function createMenuCategory(category: NodeCategory): MenuCategory {
 
 function getIconForCategory(categoryId: NodeCategoryId): React.ReactNode {
   switch (categoryId) {
-    case 'literals':
+    case "literals":
       return <CalculateIcon fontSize="small" />;
-    case 'operators':
+    case "operators":
       return <FunctionsIcon fontSize="small" />;
-    case 'uniforms':
+    case "uniforms":
       return <SettingsIcon fontSize="small" />;
-    case 'functions':
+    case "functions":
       return <FunctionsIcon fontSize="small" />;
-    case 'vectors':
+    case "vectors":
       return <TimelineIcon fontSize="small" />;
-    case 'utils':
+    case "utils":
       return <SettingsIcon fontSize="small" />;
-    case 'output':
+    case "output":
       return <VisibilityIcon fontSize="small" />;
   }
 }

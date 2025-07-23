@@ -3,10 +3,10 @@ import { createEditor, type OnGraphChanged } from "./graph/editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
-import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorAPI } from "./graph/interface";
 import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
 import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
+import type { MenuItem } from "./components/contextMenu/interface";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -66,7 +66,8 @@ export function EditorView({ onChanged }: EditorViewProps) {
   const [ref] = useRete(create);
 
   const handleNodeCreate = useCallback(
-    (node: NodeType) => {
+    async (item: MenuItem) => {
+      const node = item.nodeType;
       let positionX = 200;
       let positionY = 200;
 
@@ -93,6 +94,10 @@ export function EditorView({ onChanged }: EditorViewProps) {
     editorRef.current?.deleteNode(nodeId);
   }, []);
 
+  const getCustomFunctions = useCallback(() => {
+    return editorRef.current?.getCustomFunctions() || [];
+  }, []);
+
   const getNodeById = useCallback(
     (nodeId: string): UICompilerNode | undefined => {
       return editorRef.current?.getNode(nodeId);
@@ -106,6 +111,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onNodeDelete={handleNodeDelete}
       onContextMenuOpen={setLastContextMenuPosition}
       getNodeById={getNodeById}
+      customFunctions={getCustomFunctions()}
     >
       <ShaderOverlayRenderer entries={entries} />
       <div ref={ref} style={{ height: "100vh" }} />

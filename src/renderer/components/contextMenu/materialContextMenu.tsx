@@ -17,9 +17,9 @@ import {
   ExpandLess,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import type { NodeType } from "@compiler/nodes/allNodes";
-import type { MenuCategory } from "./interface";
-import { menuElements } from "./menuElements";
+import type { MenuCategory, MenuItem } from "./interface";
+import { getMenuElements } from "./menuElements";
+import type { FunctionDefinition } from "@glsl/function";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -106,14 +106,17 @@ const CategoryIcon = styled(Box)(() => ({
 interface MaterialContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
-  onNodeCreate: (nodeType: NodeType) => void;
+  onNodeCreate: (item: MenuItem) => void;
+  customFunctions: FunctionDefinition[];
 }
 
 export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   position,
   onClose,
   onNodeCreate,
+  customFunctions,
 }) => {
+  const menuElements = getMenuElements(customFunctions);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(menuElements.map((cat) => cat.name))
@@ -160,8 +163,8 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
     setExpandedCategories(newExpanded);
   };
 
-  const handleNodeCreate = (nodeType: NodeType) => {
-    onNodeCreate(nodeType);
+  const handleNodeCreate = (item: MenuItem) => {
+    onNodeCreate(item);
     onClose();
   };
 
@@ -256,7 +259,7 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
               {filterItems(category.items).map((item) => (
                 <NodeItem
                   key={item.name}
-                  onClick={() => handleNodeCreate(item.nodeType)}
+                  onClick={() => handleNodeCreate(item)}
                 >
                   <ListItemText
                     primary={

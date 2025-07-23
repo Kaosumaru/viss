@@ -9,6 +9,7 @@ import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
 import { loadGraph } from "./utils/loadGraph";
 import { saveGraph } from "./utils/saveGraph";
+import type { FunctionDefinition } from "@glsl/function";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -123,6 +124,10 @@ export class EditorAPIImp implements EditorAPI {
   destroy() {
     this.area.destroy();
   }
+
+  getCustomFunctions: () => FunctionDefinition[] = () => {
+    return this.compilationHelper.getCustomFunctions();
+  };
 
   protected scheduleGraphChange() {
     if (this.timer) return;

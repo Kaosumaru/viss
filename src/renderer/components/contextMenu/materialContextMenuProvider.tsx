@@ -2,7 +2,8 @@ import React, { useState, useCallback } from "react";
 import { MaterialContextMenu } from "./materialContextMenu";
 import { NodeContextMenu } from "./nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
-import type { NodeType } from "@compiler/nodes/allNodes";
+import type { FunctionDefinition } from "@glsl/function";
+import type { MenuItem } from "./interface";
 
 interface ContextMenuState {
   visible: boolean;
@@ -13,10 +14,11 @@ interface ContextMenuState {
 
 interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
-  onNodeCreate?: (node: NodeType) => void;
+  onNodeCreate?: (node: MenuItem) => void;
   onNodeDelete?: (nodeId: string) => void;
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
+  customFunctions: FunctionDefinition[];
 }
 
 export const MaterialContextMenuProvider: React.FC<
@@ -27,6 +29,7 @@ export const MaterialContextMenuProvider: React.FC<
   onNodeDelete,
   onContextMenuOpen,
   getNodeById,
+  customFunctions,
 }) => {
   const [contextMenuState, setContextMenuState] = useState<ContextMenuState>({
     visible: false,
@@ -85,9 +88,9 @@ export const MaterialContextMenuProvider: React.FC<
   }, []);
 
   const handleNodeCreate = useCallback(
-    (nodeType: NodeType) => {
+    (item: MenuItem) => {
       if (onNodeCreate) {
-        onNodeCreate(nodeType);
+        onNodeCreate(item);
       }
       hideContextMenu();
     },
@@ -121,6 +124,7 @@ export const MaterialContextMenuProvider: React.FC<
           position={contextMenuState.position}
           onClose={hideContextMenu}
           onNodeCreate={handleNodeCreate}
+          customFunctions={customFunctions}
         />
       )}
       {contextMenuState.visible &&

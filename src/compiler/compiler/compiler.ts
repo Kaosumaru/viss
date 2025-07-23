@@ -44,6 +44,10 @@ export class Compiler {
     return new CompileNodeContext(this, this.options, this.graph, node);
   }
 
+  public getCustomFunctions(): FunctionDefinition[] {
+    return Object.values(this.nameToFunction);
+  }
+
   protected nameToFunction: Record<string, FunctionDefinition> = {};
   protected graph: GraphHelper;
   protected cachedContexts: Map<string, Context> = new Map();

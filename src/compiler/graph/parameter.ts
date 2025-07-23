@@ -8,7 +8,12 @@ export interface BooleanValue {
   value: boolean;
 }
 
-export type ParameterValue = NumberValue | BooleanValue;
+export interface StringValue {
+  type: "string";
+  value: string;
+}
+
+export type ParameterValue = NumberValue | BooleanValue | StringValue;
 export type ParameterValueType = ParameterValue["type"];
 
 export interface Parameters {

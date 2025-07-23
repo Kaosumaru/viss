@@ -1,4 +1,5 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
+import type { FunctionDefinition } from "@glsl/function";
 import type { Graph } from "@graph/graph";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
@@ -19,4 +20,5 @@ export interface EditorAPI {
   saveGraph: () => Graph;
 
   compileNode: (nodeId?: string) => string | undefined;
+  getCustomFunctions: () => FunctionDefinition[];
 }
