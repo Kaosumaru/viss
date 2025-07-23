@@ -11,3 +11,5 @@
 
 Optimization
 1. coords nodes could have a global cache
+2. Preview node is generating unnecessary variable - variables there should be created per output
+3. Three shaker for functions
