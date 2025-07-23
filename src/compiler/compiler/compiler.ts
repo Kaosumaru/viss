@@ -5,6 +5,7 @@ import type { NodeContext } from "./nodes/compilerNode";
 import { GraphHelper } from "./graphHelper";
 import type { Graph } from "@graph/graph";
 import { CompileNodeContext } from "./compilerNodeContext";
+import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
 
 export interface CompilationOptions {
   noVariables?: boolean;
@@ -14,6 +15,11 @@ export class Compiler {
   constructor(graph: Graph, options?: CompilationOptions) {
     this.graph = new GraphHelper(graph);
     this.options = options ?? {};
+    this.precompile(graph);
+  }
+
+  private precompile(graph: Graph): void {
+    this.nameToFunction = parseFunctionsFrom(graph);
   }
 
   compile(nodeId: string): Context {
@@ -38,6 +44,7 @@ export class Compiler {
     return new CompileNodeContext(this, this.options, this.graph, node);
   }
 
+  protected nameToFunction: Record<string, FunctionDefinition> = {};
   protected graph: GraphHelper;
   protected cachedContexts: Map<string, Context> = new Map();
   protected options: CompilationOptions;

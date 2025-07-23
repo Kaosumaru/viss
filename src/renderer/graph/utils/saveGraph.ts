@@ -2,15 +2,25 @@ import type { Node } from "@graph/node";
 import type { ClassicPreset, NodeEditor } from "rete";
 import { UICompilerNode } from "../nodes/compilerNode";
 import { BooleanControl } from "../nodes/controls/customBooleanControl";
-import type { Graph } from "@graph/graph";
+import type { GLSLInclude, Graph } from "@graph/graph";
 import type { AreaExtra, Schemes } from "../node";
 import type { AreaPlugin } from "rete-area-plugin";
+
+const commonIncludes: GLSLInclude = {
+  name: "common",
+  content: `
+     float add(float a, float b) {
+       return a + b;
+     }
+    `,
+};
 
 export function saveGraph(
   editor: NodeEditor<Schemes>,
   area: AreaPlugin<Schemes, AreaExtra>
 ): Graph {
   const graph: Graph = {
+    includes: [commonIncludes],
     nodes: [],
     connections: [],
   };
