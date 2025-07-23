@@ -1,18 +1,19 @@
 import type { Node } from "@graph/node";
-import type { ClassicPreset } from "rete";
+import type { ClassicPreset, NodeEditor } from "rete";
 import { UICompilerNode } from "../nodes/compilerNode";
 import { BooleanControl } from "../nodes/controls/customBooleanControl";
 import type { Graph } from "@graph/graph";
-import type { EditorData } from "renderer/graph/interface";
+import type { AreaExtra, Schemes } from "../node";
+import type { AreaPlugin } from "rete-area-plugin";
 
-export function saveGraph(editorData: EditorData): Graph {
+export function saveGraph(
+  editor: NodeEditor<Schemes>,
+  area: AreaPlugin<Schemes, AreaExtra>
+): Graph {
   const graph: Graph = {
     nodes: [],
     connections: [],
   };
-
-  const editor = editorData.editor;
-  const area = editorData.area;
 
   editor.getNodes().forEach((node) => {
     if (node instanceof UICompilerNode) {

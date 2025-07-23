@@ -1,13 +1,18 @@
 import { Compiler } from "@compiler/compiler";
 import { saveGraph } from "./saveGraph";
-import type { EditorData } from "renderer/graph/interface";
 import type { Context, Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
 import type { Graph } from "@graph/graph";
+import type { NodeEditor } from "rete";
+import type { AreaPlugin } from "rete-area-plugin";
+import type { AreaExtra, Schemes } from "../node";
 
 export class CompilationHelper {
-  updateGraph(editorData: EditorData) {
-    this.graph = saveGraph(editorData);
+  updateGraph(
+    editor: NodeEditor<Schemes>,
+    area: AreaPlugin<Schemes, AreaExtra>
+  ) {
+    this.graph = saveGraph(editor, area);
     if (!this.graph) {
       throw new Error("Failed to save graph");
     }

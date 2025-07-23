@@ -35,7 +35,7 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
         removeEntry(shaderEntryRef.current);
       }
     };
-  }, [addEntry, removeEntry]);
+  });
 
   useEffect(() => {
     const updatePosition = () => {

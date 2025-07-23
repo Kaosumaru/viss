@@ -3,8 +3,6 @@ import { createEditor, type OnGraphChanged } from "./graph/editor";
 import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
-import type { NodeEditor } from "rete";
-import type { Schemes } from "./graph/node";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { EditorData } from "./graph/interface";
 import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
@@ -86,24 +84,18 @@ export function EditorView({ onChanged }: EditorViewProps) {
         positionY = rect.height / 2;
       }
 
-      editorRef.current.createNode(node, positionX, positionY);
+      editorRef.current.createNode(node, "screen", positionX, positionY);
     },
     [lastContextMenuPosition, ref]
   );
 
   const handleNodeDelete = useCallback((nodeId: string) => {
-    if (editorRef.current) {
-      removeNodeWithConnections(editorRef.current.editor, nodeId);
-    }
+    editorRef.current?.deleteNode(nodeId);
   }, []);
 
   const getNodeById = useCallback(
     (nodeId: string): UICompilerNode | undefined => {
-      if (editorRef.current) {
-        const node = editorRef.current.editor.getNode(nodeId);
-        return node instanceof UICompilerNode ? node : undefined;
-      }
-      return undefined;
+      return editorRef.current?.getNode(nodeId);
     },
     []
   );
@@ -121,25 +113,4 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   return contextMenuProvider;
-}
-
-function removeNodeWithConnections(
-  editor: NodeEditor<Schemes>,
-  nodeId: string
-) {
-  // Get all connections that involve this node
-  const connectionsToRemove = editor
-    .getConnections()
-    .filter(
-      (connection) =>
-        connection.source === nodeId || connection.target === nodeId
-    );
-
-  // Remove all connections involving this node
-  for (const connection of connectionsToRemove) {
-    editor.removeConnection(connection.id);
-  }
-
-  // Finally remove the node itself
-  editor.removeNode(nodeId);
 }

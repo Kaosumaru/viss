@@ -1,16 +1,22 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { Graph } from "@graph/graph";
-import { ClassicPreset } from "rete";
+import { ClassicPreset, NodeEditor } from "rete";
 import { BooleanControl } from "../nodes/controls/customBooleanControl";
-import type { EditorData } from "renderer/graph/interface";
+import type { Schemes } from "../node";
+import type { EditorData } from "../interface";
 
-export async function loadGraph(graphJson: string, editorData: EditorData) {
+export async function loadGraph(
+  graphJson: string,
+  editorData: EditorData,
+  editor: NodeEditor<Schemes>
+) {
   const graph: Graph = JSON.parse(graphJson);
 
   // Add nodes from graph
   for (const graphNode of graph.nodes) {
     const uiNode = await editorData.createNode(
       graphNode.nodeType as NodeType,
+      "absolute", // Use absolute positioning for loading
       graphNode.position.x,
       graphNode.position.y,
       graphNode.identifier
@@ -52,11 +58,11 @@ export async function loadGraph(graphJson: string, editorData: EditorData) {
 
   // Add connections
   for (const connection of graph.connections) {
-    const sourceNode = editorData.editor.getNode(connection.from.nodeId);
-    const targetNode = editorData.editor.getNode(connection.to.nodeId);
+    const sourceNode = editor.getNode(connection.from.nodeId);
+    const targetNode = editor.getNode(connection.to.nodeId);
 
     if (sourceNode && targetNode) {
-      await editorData.editor.addConnection(
+      await editor.addConnection(
         new ClassicPreset.Connection(
           sourceNode,
           connection.from.socketId,

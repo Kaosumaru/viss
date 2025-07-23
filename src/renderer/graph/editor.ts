@@ -141,7 +141,7 @@ export async function createEditor(
 
     timer = setTimeout(() => {
       if (!data || !onChanged) return;
-      compilationHelper.updateGraph(data);
+      compilationHelper.updateGraph(editor, area);
       onChanged(data);
 
       for (const [node, control] of nodeToPreviewControl) {
@@ -155,6 +155,7 @@ export async function createEditor(
   // Function to add a node at the mouse position
   const createNode = async (
     nodeType: NodeType,
+    space: "screen" | "absolute" = "screen",
     x?: number,
     y?: number,
     id?: string
@@ -175,13 +176,33 @@ export async function createEditor(
     if (x !== undefined && y !== undefined) {
       // Convert screen coordinates to area coordinates
       const transform = area.area.transform;
-      const areaX = (x - transform.x) / transform.k;
-      const areaY = (y - transform.y) / transform.k;
 
-      await area.translate(node.id, { x: areaX, y: areaY });
+      if (space === "screen") {
+        x = (x - transform.x) / transform.k;
+        y = (y - transform.y) / transform.k;
+      }
+
+      await area.translate(node.id, { x, y });
     }
 
     return node;
+  };
+
+  const deleteNode = async (nodeId: string) => {
+    const connectionsToRemove = editor
+      .getConnections()
+      .filter(
+        (connection) =>
+          connection.source === nodeId || connection.target === nodeId
+      );
+
+    // Remove all connections involving this node
+    for (const connection of connectionsToRemove) {
+      await editor.removeConnection(connection.id);
+    }
+
+    // Finally remove the node itself
+    await editor.removeNode(nodeId);
   };
 
   const clear = async () => {
@@ -193,7 +214,7 @@ export async function createEditor(
     deserializing = true; // Set the flag to skip onChanged during deserialization
     try {
       await clear();
-      await internalLoadGraph(graphJson, data!);
+      await internalLoadGraph(graphJson, data!, editor);
       AreaExtensions.zoomAt(area, editor.getNodes());
       scheduleGraphChange();
     } finally {
@@ -202,7 +223,12 @@ export async function createEditor(
   };
 
   const saveGraph = () => {
-    return internalSaveGraph(data!);
+    return internalSaveGraph(editor, area);
+  };
+
+  const getNode = (nodeId: string): UICompilerNode | undefined => {
+    const node = editor.getNode(nodeId);
+    return node instanceof UICompilerNode ? node : undefined;
   };
 
   const compileNode = (nodeId?: string): string | undefined => {
@@ -216,15 +242,15 @@ export async function createEditor(
   data = {
     destroy: () => area.destroy(),
     createNode,
+    deleteNode,
     clear,
+
+    getNode,
 
     loadGraph,
     saveGraph,
 
     compileNode,
-
-    editor,
-    area,
   };
 
   editor.addPipe((context) => {

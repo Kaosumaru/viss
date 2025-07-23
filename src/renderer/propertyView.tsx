@@ -22,7 +22,7 @@ export function PropertyView({
   editorData,
 }: PropertyViewProps) {
   const handleSaveGraph = async () => {
-    if (!editorData?.editor) {
+    if (!editorData) {
       console.warn("No editor available");
       return;
     }
