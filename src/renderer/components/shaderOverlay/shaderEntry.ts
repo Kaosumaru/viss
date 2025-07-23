@@ -2,6 +2,7 @@ const g_vertexShaderSrc = `
   precision mediump float;
   attribute vec2 a_position;
   attribute vec2 a_uv;
+  uniform vec2 u_canvasResolution;
   uniform vec2 u_resolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
   varying vec2 v_uv;
@@ -9,7 +10,7 @@ const g_vertexShaderSrc = `
   void main() {
     // Transform from pixel coordinates to NDC
     vec2 pixelPos = a_position * u_rect.zw + u_rect.xy;
-    vec2 clipSpace = ((pixelPos / u_resolution) * 2.0) - 1.0;
+    vec2 clipSpace = ((pixelPos / u_canvasResolution) * 2.0) - 1.0;
     gl_Position = vec4(clipSpace * vec2(1, -1), 0.0, 1.0);
     v_uv = a_uv;
   }
@@ -79,13 +80,20 @@ export class ShaderEntry {
       this.program,
       "u_resolution"
     );
+    const canvasResolutionUniform = gl.getUniformLocation(
+      this.program,
+      "u_canvasResolution"
+    );
     const rectUniform = gl.getUniformLocation(this.program, "u_rect");
 
     if (timeUniform) {
       gl.uniform1f(timeUniform, time);
     }
     if (resolutionUniform) {
-      gl.uniform2f(resolutionUniform, canvasWidth, canvasHeight);
+      gl.uniform2f(resolutionUniform, this.w, this.h);
+    }
+    if (canvasResolutionUniform) {
+      gl.uniform2f(canvasResolutionUniform, canvasWidth, canvasHeight);
     }
     if (rectUniform) {
       gl.uniform4f(rectUniform, this.x, this.y, this.w, this.h);

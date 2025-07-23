@@ -11,6 +11,12 @@ class CoordsNode extends CompilerNode {
       { type: "boolean", value: true },
       "center"
     );
+    this.addParameter(
+      "aspectRatio",
+      "boolean",
+      { type: "boolean", value: false },
+      "Correct Ratio"
+    );
     this.addOutput("out", vector("float", 2));
   }
   override compile(node: NodeContext): Context {
@@ -21,7 +27,11 @@ class CoordsNode extends CompilerNode {
 
   protected buildExpression(node: NodeContext): string {
     const center = this.getParamValue(node, "center", "boolean");
-    return center ? "v_uv * 2.0 - 1.0" : "v_uv";
+    let expression = center ? "(v_uv * 2.0 - 1.0)" : "v_uv";
+    if (this.getParamValue(node, "aspectRatio", "boolean")) {
+      expression = `(${expression} * vec2(1.0, u_resolution.x / u_resolution.y))`;
+    }
+    return expression;
   }
 
   override getLabel(): string {
