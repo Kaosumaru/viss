@@ -1,13 +1,17 @@
 const g_vertexShaderSrc = `
   precision mediump float;
   attribute vec2 a_position;
+  attribute vec2 a_uv;
   uniform vec2 u_resolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
+  varying vec2 v_uv;
+
   void main() {
     // Transform from pixel coordinates to NDC
     vec2 pixelPos = a_position * u_rect.zw + u_rect.xy;
     vec2 clipSpace = ((pixelPos / u_resolution) * 2.0) - 1.0;
     gl_Position = vec4(clipSpace * vec2(1, -1), 0.0, 1.0);
+    v_uv = a_uv;
   }
 `;
 
@@ -15,6 +19,7 @@ const g_fragmentShaderSrc = `
   precision mediump float;
   uniform vec2 u_resolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
+  varying vec2 v_uv;
   void main() {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Dark green with 10% alpha
   }
@@ -54,8 +59,19 @@ export class ShaderEntry {
     gl.useProgram(this.program);
 
     const posAttrib = gl.getAttribLocation(this.program, "a_position");
-    gl.enableVertexAttribArray(posAttrib);
-    gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, false, 0, 0);
+    const uvAttrib = gl.getAttribLocation(this.program, "a_uv");
+
+    const stride = 4 * 4; // 4 floats per vertex (x, y, u, v) * 4 bytes per float
+
+    if (posAttrib !== -1) {
+      gl.enableVertexAttribArray(posAttrib);
+      gl.vertexAttribPointer(posAttrib, 2, gl.FLOAT, false, stride, 0);
+    }
+
+    if (uvAttrib !== -1) {
+      gl.enableVertexAttribArray(uvAttrib);
+      gl.vertexAttribPointer(uvAttrib, 2, gl.FLOAT, false, stride, 2 * 4); // offset by 2 floats
+    }
 
     // Set uniforms
     const timeUniform = gl.getUniformLocation(this.program, "u_time");

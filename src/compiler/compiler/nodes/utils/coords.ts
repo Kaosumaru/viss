@@ -21,9 +21,7 @@ class CoordsNode extends CompilerNode {
 
   protected buildExpression(node: NodeContext): string {
     const center = this.getParamValue(node, "center", "boolean");
-    return center
-      ? "(gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0"
-      : "gl_FragCoord.xy / u_resolution.xy";
+    return center ? "v_uv * 2.0 - 1.0" : "v_uv";
   }
 
   override getLabel(): string {

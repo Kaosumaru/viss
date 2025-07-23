@@ -14,6 +14,7 @@ import { FunctionNode } from "./functions/functionNode";
 import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
+import { multiply } from "./operators/multiply";
 
 export interface NodeCategory {
   id: string;
@@ -57,6 +58,7 @@ const operators = createCategory({
     add,
     substract,
     divide,
+    multiply,
   },
 });
 
@@ -111,6 +113,7 @@ const uniforms = createCategory({
       "gl_FragCoord",
       vector("float", 4)
     ),
+    uv: new UniformNode("uv", "UV coordinates", "v_uv", vector("float", 2)),
   },
 });
 

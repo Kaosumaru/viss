@@ -26,6 +26,7 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
     // Create shader entry
     const shaderEntry = new ShaderEntry();
     shaderEntryRef.current = shaderEntry;
+    shaderEntryRef.current?.setShader(props.data.shader);
     addEntry(shaderEntry);
 
     return () => {

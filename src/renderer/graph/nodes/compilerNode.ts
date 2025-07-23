@@ -45,12 +45,14 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addOutputs(compilerNode: CompilerNode) {
-    compilerNode.outputs.forEach(({ name }) => {
-      this.addOutput(
-        name,
-        new ClassicPreset.Output(new ClassicPreset.Socket(name), name)
-      );
-    });
+    compilerNode.outputs
+      .filter(({ name }) => name[0] != "_")
+      .forEach(({ name }) => {
+        this.addOutput(
+          name,
+          new ClassicPreset.Output(new ClassicPreset.Socket(name), name)
+        );
+      });
   }
 
   protected addInputs(compilerNode: CompilerNode) {

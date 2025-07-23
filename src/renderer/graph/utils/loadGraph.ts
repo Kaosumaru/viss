@@ -6,7 +6,6 @@ import type { EditorData } from "renderer/graph/interface";
 
 export async function loadGraph(graphJson: string, editorData: EditorData) {
   const graph: Graph = JSON.parse(graphJson);
-  editorData.clear();
 
   // Add nodes from graph
   for (const graphNode of graph.nodes) {

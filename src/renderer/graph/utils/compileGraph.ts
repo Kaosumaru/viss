@@ -14,7 +14,7 @@ export class CompilationHelper {
     this.compiler = new Compiler(this.graph);
   }
 
-  compileNode(nodeId?: string): string | undefined {
+  compileNode(nodeId?: string, outputPin = "_preview"): string | undefined {
     if (!this.compiler || !this.graph) {
       return undefined;
     }
@@ -33,15 +33,15 @@ export class CompilationHelper {
 
     try {
       const output = this.compiler.compile(nodeId);
-      return this.outputToGLSL(output);
+      return this.outputToGLSL(output, outputPin);
     } catch (error) {
       console.error("Compilation error:", error);
       return undefined;
     }
   }
 
-  private outputToGLSL(output: Context): string {
-    const outExpression = output.outputs["out"];
+  private outputToGLSL(output: Context, outputPin: string): string {
+    const outExpression = output.outputs[outputPin];
 
     const variables = output.variables
       .map((variable: Variable) => compileVariable(variable, 1))
@@ -50,6 +50,7 @@ export class CompilationHelper {
 precision mediump float;
 uniform float u_time;
 uniform vec2 u_resolution;
+varying vec2 v_uv;
 void main() {
 ${variables}
   gl_FragColor = ${outExpression.data}; 

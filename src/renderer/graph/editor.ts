@@ -184,16 +184,18 @@ export async function createEditor(
     return node;
   };
 
-  const clear = () => {
+  const clear = async () => {
     nodeToPreviewControl.clear();
-    editor.clear();
+    await editor.clear();
   };
 
   const loadGraph = async (graphJson: string) => {
     deserializing = true; // Set the flag to skip onChanged during deserialization
-    nodeToPreviewControl.clear();
     try {
+      await clear();
       await internalLoadGraph(graphJson, data!);
+      AreaExtensions.zoomAt(area, editor.getNodes());
+      scheduleGraphChange();
     } finally {
       deserializing = false; // Reset the flag after loading
     }
@@ -208,7 +210,7 @@ export async function createEditor(
   };
 
   await createNode("output");
-  await arrange.layout();
+  //await arrange.layout();
   AreaExtensions.zoomAt(area, editor.getNodes());
 
   data = {

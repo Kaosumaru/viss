@@ -6,7 +6,7 @@ class OutputNode extends CompilerNode {
   constructor() {
     super();
     this.addInput("in", Any);
-    this.addOutput("out", Any);
+    this.addOutput("_preview", Any);
   }
 
   override compile(node: NodeContext): Context {
@@ -44,7 +44,7 @@ class OutputNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Out";
+    return "Output";
   }
 
   override getDescription(): string {
