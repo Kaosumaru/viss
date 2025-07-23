@@ -32,7 +32,10 @@ export class CompileNodeContext implements NodeContext {
     return out;
   }
 
-  tryGetParamValue<T extends ParameterValueType>(name: string, type: T): ParamExtractedValue<T> | undefined {
+  tryGetParamValue<T extends ParameterValueType>(
+    name: string,
+    type: T
+  ): ParamExtractedValue<T> | undefined {
     const param = this.node.parameters[name];
     if (!param) {
       return undefined;
@@ -46,7 +49,7 @@ export class CompileNodeContext implements NodeContext {
   }
 
   createVariable(expr: Expression): Expression {
-    const variableName = `var_${this.node.identifier}_${this.variables.length}`;
+    const variableName = `_${this.node.nodeType}_${this.node.identifier}_${this.variables.length}`;
     const variable: Variable = {
       name: variableName,
       type: expr.type,
