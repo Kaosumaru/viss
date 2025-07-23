@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
-import { ShaderEntryProvider } from "renderer/components/shaderOverlay/ShaderEntryProvider";
 import { ClassicPreset } from "rete";
 import { ReactPlugin, Presets } from "rete-react-plugin";
 import { getDOMSocketPosition } from "rete-render-utils";
@@ -17,6 +16,7 @@ import {
 import { CustomConnection } from "./nodes/customConnection";
 import { CustomSocket } from "./nodes/customSocket";
 import { Node } from "./nodes/customNode";
+import { ShaderEntryProvider } from "../components/shaderOverlay/ShaderEntryProvider";
 
 export function createRenderer(
   overlayContext: ShaderEntryContextType
