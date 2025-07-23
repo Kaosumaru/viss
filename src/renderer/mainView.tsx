@@ -3,7 +3,7 @@ import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
-import type { EditorData } from "./graph/interface";
+import type { EditorAPI } from "./graph/interface";
 
 const Layout = styled.div`
   display: grid;
@@ -42,7 +42,7 @@ void main() {
 export function MainView() {
   const [shader, setShader] = useState(fragmentShader); // Default color
 
-  const [editorData, setEditorData] = useState<EditorData | undefined>(
+  const [editorData, setEditorData] = useState<EditorAPI | undefined>(
     undefined
   );
 

@@ -2,7 +2,7 @@ import type { NodeType } from "@compiler/nodes/allNodes";
 import type { Graph } from "@graph/graph";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
-export interface EditorData {
+export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
   destroy: () => void;
   clear: () => void;

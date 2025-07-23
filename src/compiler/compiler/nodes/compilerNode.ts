@@ -47,9 +47,9 @@ export interface OutputExpression {
 
 export type Parameters = Parameter[];
 export abstract class CompilerNode {
-  inputs: Pins = [];
-  parameters: Parameters = [];
-  outputs: Pins = [];
+  private inputs_: Pins = [];
+  private parameters_: Parameters = [];
+  private outputs_: Pins = [];
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
   abstract getDescription(): string;
@@ -58,21 +58,33 @@ export abstract class CompilerNode {
     return false;
   }
 
+  public inputs(): Pins {
+    return this.inputs_;
+  }
+
+  public outputs(): Pins {
+    return this.outputs_;
+  }
+
+  public parameters(): Parameters {
+    return this.parameters_;
+  }
+
   protected addInput(name: string, type: Type): void {
-    this.inputs.push({ name, type });
+    this.inputs_.push({ name, type });
   }
 
   protected addOutput(name: string, type: Type): void {
-    this.outputs.push({ name, type });
+    this.outputs_.push({ name, type });
   }
 
   protected getInputType(name: string): Type | undefined {
-    const pin = this.inputs.find((pin) => pin.name === name);
+    const pin = this.inputs_.find((pin) => pin.name === name);
     return pin?.type;
   }
 
   protected getOutputType(name: string): Type | undefined {
-    const pin = this.outputs.find((pin) => pin.name === name);
+    const pin = this.outputs_.find((pin) => pin.name === name);
     return pin?.type;
   }
 
@@ -80,14 +92,14 @@ export abstract class CompilerNode {
     node: NodeContext,
     expression: string | OutputExpression
   ): Context {
-    if (this.outputs.length !== 1) {
+    if (this.outputs_.length !== 1) {
       throw new Error("Single output expected but multiple outputs found.");
     }
-    const outputName = this.outputs[0].name;
+    const outputName = this.outputs_[0].name;
     if (typeof expression === "object") {
       return this.createOutputs(node, [expression]);
     }
-    const type = this.getOutputType(this.outputs[0].name);
+    const type = this.getOutputType(this.outputs_[0].name);
 
     let outExpression: Expression = {
       data: expression,
@@ -112,12 +124,12 @@ export abstract class CompilerNode {
       variables: node.getVariables(),
       outputs: {},
     };
-    if (this.outputs.length !== outputs.length) {
+    if (this.outputs_.length !== outputs.length) {
       throw new Error("Mismatch between outputs and expected outputs.");
     }
     let i = 0;
     for (const { data, type, trivial } of outputs) {
-      const output = this.outputs[i];
+      const output = this.outputs_[i];
       i++;
 
       let outExpression: Expression = {
@@ -138,11 +150,11 @@ export abstract class CompilerNode {
     defaultValue?: ParameterValue,
     description?: string
   ): void {
-    this.parameters.push({ name, type, defaultValue, description });
+    this.parameters_.push({ name, type, defaultValue, description });
   }
 
   protected getParameter(name: string): Parameter | undefined {
-    return this.parameters.find((param) => param.name === name);
+    return this.parameters_.find((param) => param.name === name);
   }
 
   protected addFloat(name: string): void {

@@ -1,6 +1,6 @@
 import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
-import type { EditorData } from "./graph/interface";
+import type { EditorAPI } from "./graph/interface";
 
 const vertexShader = `
 attribute vec2 a_position;
@@ -14,7 +14,7 @@ void main() {
 
 export interface PropertyViewProps {
   fragmentShader: string;
-  editorData?: EditorData;
+  editorData?: EditorAPI;
 }
 
 export function PropertyView({

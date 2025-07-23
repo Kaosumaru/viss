@@ -3,11 +3,11 @@ import type { Graph } from "@graph/graph";
 import { ClassicPreset, NodeEditor } from "rete";
 import { BooleanControl } from "../nodes/controls/customBooleanControl";
 import type { Schemes } from "../node";
-import type { EditorData } from "../interface";
+import type { EditorAPI } from "../interface";
 
 export async function loadGraph(
   graphJson: string,
-  editorData: EditorData,
+  editorData: EditorAPI,
   editor: NodeEditor<Schemes>
 ) {
   const graph: Graph = JSON.parse(graphJson);

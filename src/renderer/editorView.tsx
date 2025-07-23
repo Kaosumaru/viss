@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import type { EditorData } from "./graph/interface";
+import type { EditorAPI } from "./graph/interface";
 import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
 import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 
@@ -13,7 +13,7 @@ export interface EditorViewProps {
 }
 
 export function EditorView({ onChanged }: EditorViewProps) {
-  const editorRef = useRef<EditorData | null>(null);
+  const editorRef = useRef<EditorAPI | null>(null);
 
   const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
     x: number;
