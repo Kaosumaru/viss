@@ -1,8 +1,14 @@
 import { getNode, type NodeType } from "@compiler/nodes/allNodes";
-import type { CompilerNode, Parameter } from "@compiler/nodes/compilerNode";
+import type {
+  CompilerNode,
+  Parameter,
+  Parameters,
+  Pins,
+} from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
 import { PreviewControl } from "./controls/customPreviewControl";
+import type { CompilationHelper } from "../utils/compileGraph";
 
 export type ControlChangeCallback = (
   nodeId: string,
@@ -19,16 +25,24 @@ export class UICompilerNode extends ClassicPreset.Node {
 
   constructor(
     nodeType: NodeType,
-    controlChangeCallback?: ControlChangeCallback
+    controlChangeCallback: ControlChangeCallback,
+    compilationHelper: CompilationHelper
   ) {
     const compilerNode = getNode(nodeType);
     super(compilerNode.getLabel());
 
+    this.compilationHelper = compilationHelper;
     this.nodeType = nodeType;
     this.controlChangeCallback = controlChangeCallback;
-    this.addInputs(compilerNode);
-    this.addParams(compilerNode);
-    this.addOutputs(compilerNode);
+
+    const compiler = compilationHelper.getCompiler();
+    const inputs = compilerNode.inputs(compiler);
+    const params = compilerNode.parameters(compiler);
+    const outputs = compilerNode.outputs(compiler);
+
+    this.addInputs(inputs, params);
+    this.addParams(inputs, params);
+    this.addOutputs(outputs);
 
     if (compilerNode.showPreview()) {
       this.previewControl = new PreviewControl(this.id);
@@ -44,9 +58,8 @@ export class UICompilerNode extends ClassicPreset.Node {
     // but existing controls won't be updated unless the node is recreated
   }
 
-  protected addOutputs(compilerNode: CompilerNode) {
-    compilerNode
-      .outputs()
+  protected addOutputs(outputs: Pins) {
+    outputs
       .filter(({ name }) => name[0] != "_")
       .forEach(({ name }) => {
         this.addOutput(
@@ -56,15 +69,15 @@ export class UICompilerNode extends ClassicPreset.Node {
       });
   }
 
-  protected addInputs(compilerNode: CompilerNode) {
-    compilerNode.inputs().forEach(({ name }) => {
+  protected addInputs(inputs: Pins, params: Parameters) {
+    inputs.forEach(({ name }) => {
       const input = new ClassicPreset.Input(
         new ClassicPreset.Socket(name),
         name
       );
 
       // If there's a parameter with the same name, add control to the input
-      const param = compilerNode.parameters().find((p) => p.name === name);
+      const param = params.find((p) => p.name === name);
       if (param) {
         const control = this.createControl(param);
         input.addControl(control);
@@ -74,12 +87,10 @@ export class UICompilerNode extends ClassicPreset.Node {
     });
   }
 
-  protected addParams(compilerNode: CompilerNode) {
-    compilerNode.parameters().forEach((param) => {
+  protected addParams(inputs: Pins, params: Parameters) {
+    params.forEach((param) => {
       // Only add as standalone control if there's no input with the same name
-      const hasInput = compilerNode
-        .inputs()
-        .some((input) => input.name === param.name);
+      const hasInput = inputs.some((input) => input.name === param.name);
       if (!hasInput) {
         const control = this.createControl(param);
         this.addControl(param.name, control);
@@ -122,4 +133,6 @@ export class UICompilerNode extends ClassicPreset.Node {
       this.height += 140; // Add height for preview control
     }
   }
+
+  protected compilationHelper: CompilationHelper;
 }

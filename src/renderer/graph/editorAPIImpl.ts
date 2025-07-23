@@ -46,16 +46,15 @@ export class EditorAPIImp implements EditorAPI {
     y?: number,
     id?: string
   ): Promise<UICompilerNode> {
-    const node = new UICompilerNode(nodeType);
+    const cb = () => {
+      this.scheduleGraphChange();
+    };
+    const node = new UICompilerNode(nodeType, cb, this.compilationHelper);
     node.id = id || node.id; // Use provided ID or generate a new one
 
     if (node.previewControl) {
       this.nodeToPreviewControl.set(node.id, node.previewControl);
     }
-    // Set the control change callback for the node if it doesn't already have one
-    node.setControlChangeCallback(() => {
-      this.scheduleGraphChange();
-    });
 
     await this.editor.addNode(node);
 

@@ -64,6 +64,13 @@ ${variables}
     return fragmentShader;
   }
 
+  getCompiler(): Compiler {
+    if (!this.compiler) {
+      throw new Error("Compiler is not initialized. Call updateGraph first.");
+    }
+    return this.compiler;
+  }
+
   private graph?: Graph;
   private compiler?: Compiler;
 }
