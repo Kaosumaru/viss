@@ -21,4 +21,3 @@ test("Parses simple function", () => {
     },
   ]);
 });
-a;

@@ -1,5 +1,4 @@
-import { vector } from "@glsl/types";
-import { expectedOutput, setup } from "@test/setup";
+import { setup } from "@test/setup";
 import { expect, test } from "vitest";
 
 test("PreviewNode", () => {
