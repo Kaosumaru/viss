@@ -40,7 +40,7 @@ export class Compiler {
     return ctx;
   }
 
-  protected createNodeContextFor(node: Node): NodeContext {
+  public createNodeContextFor(node: Node): NodeContext {
     return new CompileNodeContext(this, this.options, this.graph, node);
   }
 

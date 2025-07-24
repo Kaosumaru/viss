@@ -1,5 +1,5 @@
 import { Any } from "@glsl/types";
-import { CompilerNode, type NodeContext } from "../compilerNode";
+import { CompilerNode, type NodeContext, type Pins } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 class GlslFunction extends CompilerNode {
@@ -7,6 +7,14 @@ class GlslFunction extends CompilerNode {
     super();
 
     this.addParameter("_name", "string");
+  }
+
+  public inputs(): Pins {
+    return [];
+  }
+
+  public outputs(): Pins {
+    return [];
   }
 
   override compile(node: NodeContext): Context {

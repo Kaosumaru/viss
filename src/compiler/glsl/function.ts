@@ -13,8 +13,11 @@ export interface FunctionDefinition {
   returnType: Type;
 }
 
+export type Mode = "input" | "output";
+
 export interface ParameterDefinition {
   name: string;
+  mode: Mode;
   type: Type;
 }
 
@@ -62,6 +65,7 @@ function parameterNodeToDefinition(
 ): ParameterDefinition {
   return {
     name: node.identifier.identifier,
+    mode: "input",
     type: typeToType(node.specifier),
   };
 }

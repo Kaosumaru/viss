@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ParameterValue, ParameterValueType } from "@graph/parameter";
 import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
-import type { CompilationOptions, Compiler } from "@compiler/compiler";
+import type { CompilationOptions } from "@compiler/compiler";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -59,15 +58,15 @@ export abstract class CompilerNode {
     return false;
   }
 
-  public inputs(_c: Compiler): Pins {
+  public inputs(): Pins {
     return this.inputs_;
   }
 
-  public outputs(_c: Compiler): Pins {
+  public outputs(): Pins {
     return this.outputs_;
   }
 
-  public parameters(_c: Compiler): Parameters {
+  public parameters(): Parameters {
     return this.parameters_;
   }
 

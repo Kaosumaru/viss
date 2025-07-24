@@ -35,10 +35,9 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.nodeType = nodeType;
     this.controlChangeCallback = controlChangeCallback;
 
-    const compiler = compilationHelper.getCompiler();
-    const inputs = compilerNode.inputs(compiler);
-    const params = compilerNode.parameters(compiler);
-    const outputs = compilerNode.outputs(compiler);
+    const inputs = compilerNode.inputs();
+    const params = compilerNode.parameters();
+    const outputs = compilerNode.outputs();
 
     this.addInputs(inputs, params);
     this.addParams(inputs, params);
