@@ -1,15 +1,16 @@
 import type { NodeEditor } from "rete";
 import type { EditorAPI } from "./interface";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
+import { AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
 import type { Schemes, AreaExtra } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
 import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
-import { loadGraph } from "./utils/loadGraph";
-import { saveGraph } from "./utils/saveGraph";
 import type { FunctionDefinition } from "@glsl/function";
+import type { GraphDiff } from "@graph/graph";
+import type { Connection } from "@graph/connection";
+import type { Node } from "@graph/node";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -19,22 +20,24 @@ export class EditorAPIImp implements EditorAPI {
   ) {
     this.editor = editor;
     this.area = area;
-    this.onChanged = onChanged;
+    this.onOutputChanged = onChanged;
 
     editor.addPipe((context) => {
       if (context.type === "noderemoved") {
         this.nodeToPreviewControl.delete(context.data.id);
+        this.applyDiff(this.compiler().removeNode(context.data.id));
       }
-      if (
-        context.type === "nodecreated" ||
-        context.type === "noderemoved" ||
-        context.type === "connectioncreated" ||
-        context.type === "connectionremoved"
-      ) {
-        if (this.deserializing) {
-          return context; // Skip during deserialization
-        }
-        this.scheduleGraphChange();
+      if (context.type === "connectionremoved") {
+        this.applyDiff(
+          this.compiler().removeConnection(
+            uiConnectionToConnection(context.data)
+          )
+        );
+      }
+      if (context.type === "connectioncreated") {
+        this.applyDiff(
+          this.compiler().addConnection(uiConnectionToConnection(context.data))
+        );
       }
       return context;
     });
@@ -44,21 +47,8 @@ export class EditorAPIImp implements EditorAPI {
     nodeType: NodeType,
     space: "screen" | "absolute",
     x?: number,
-    y?: number,
-    id?: string
-  ): Promise<UICompilerNode> {
-    const cb = () => {
-      this.scheduleGraphChange();
-    };
-    const node = new UICompilerNode(nodeType, cb, this.compilationHelper);
-    node.id = id || node.id; // Use provided ID or generate a new one
-
-    if (node.previewControl) {
-      this.nodeToPreviewControl.set(node.id, node.previewControl);
-    }
-
-    await this.editor.addNode(node);
-
+    y?: number
+  ) {
     if (x !== undefined && y !== undefined) {
       // Convert screen coordinates to area coordinates
       const transform = this.area.area.transform;
@@ -67,49 +57,43 @@ export class EditorAPIImp implements EditorAPI {
         x = (x - transform.x) / transform.k;
         y = (y - transform.y) / transform.k;
       }
-
-      await this.area.translate(node.id, { x, y });
     }
 
+    this.applyDiff(
+      this.compiler().addNode({
+        nodeType,
+        position: { x: x ?? 0, y: y ?? 0 },
+        inputs: {},
+        outputs: {},
+        parameters: {},
+      })
+    );
+
+    /*
+
+
+
     return node;
+    */
   }
 
   async deleteNode(nodeId: string) {
-    const connectionsToRemove = this.editor
-      .getConnections()
-      .filter(
-        (connection) =>
-          connection.source === nodeId || connection.target === nodeId
-      );
-
-    // Remove all connections involving this node
-    for (const connection of connectionsToRemove) {
-      await this.editor.removeConnection(connection.id);
-    }
-
-    // Finally remove the node itself
-    await this.editor.removeNode(nodeId);
+    this.compiler().removeNode(nodeId);
   }
 
   async clear() {
-    this.nodeToPreviewControl.clear();
-    await this.editor.clear();
+    // TODO
+    // this.nodeToPreviewControl.clear();
+    // await this.editor.clear();
   }
 
-  async loadGraph(graphJson: string): Promise<void> {
-    this.deserializing = true; // Set the flag to skip onChanged during deserialization
-    try {
-      await this.clear();
-      await loadGraph(graphJson, this, this.editor);
-      AreaExtensions.zoomAt(this.area, this.editor.getNodes());
-      this.scheduleGraphChange();
-    } finally {
-      this.deserializing = false; // Reset the flag after loading
-    }
+  async loadGraph(_graphJson: string): Promise<void> {
+    // TODO
+    this.compiler().loadGraph(JSON.parse(_graphJson));
   }
 
   saveGraph() {
-    return saveGraph(this.editor, this.area);
+    return this.compiler().saveGraph();
   }
 
   getNode(nodeId: string): UICompilerNode | undefined {
@@ -129,27 +113,102 @@ export class EditorAPIImp implements EditorAPI {
     return this.compilationHelper.getCustomFunctions();
   };
 
-  protected scheduleGraphChange() {
-    if (this.timer) return;
-
-    this.timer = setTimeout(() => {
-      if (!this.onChanged) return;
-      this.compilationHelper.updateGraph(this.editor, this.area);
-      this.onChanged(this);
-
-      for (const [node, control] of this.nodeToPreviewControl) {
-        control.shader = this.compilationHelper.compileNode(node);
+  protected recompilePreviewNodes(nodes: string[]) {
+    for (const nodeId of nodes) {
+      const control = this.nodeToPreviewControl.get(nodeId);
+      if (control) {
+        control.shader = this.compilationHelper.compileNode(nodeId);
         this.area.update("control", control.id);
       }
-      this.timer = undefined;
+    }
+  }
+
+  protected compiler() {
+    return this.compilationHelper.compiler();
+  }
+
+  protected applyDiff(diff: GraphDiff) {
+    // todo operations on editor UI are asynchronous
+    if (diff.invalidatedNodeIds) {
+      this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
+      // TODO this should be only fired on output change
+      if (this.onOutputChanged) {
+        this.onOutputChanged(this);
+      }
+    }
+
+    if (diff.removedNodes) {
+      for (const node of diff.removedNodes) {
+        this.nodeToPreviewControl.delete(node.identifier);
+        this.editor.removeNode(node.identifier);
+      }
+    }
+
+    if (diff.addedNodes) {
+      for (const node of diff.addedNodes) {
+        this.addNode(node);
+      }
+    }
+
+    if (diff.removedConnections) {
+      for (const connection of diff.removedConnections) {
+        const c = this.editor
+          .getConnections()
+          .find(
+            (c) =>
+              c.source === connection.from.nodeId &&
+              c.sourceOutput === connection.from.socketId &&
+              c.target === connection.to.nodeId &&
+              c.targetInput === connection.to.socketId
+          );
+        if (c) {
+          this.editor.removeConnection(c.id);
+        }
+      }
+    }
+  }
+
+  protected async addNode(graphNode: Node) {
+    const node = new UICompilerNode(
+      graphNode.nodeType as NodeType,
+      (id, paramName, value) => {
+        // TODO update params in compiler
+        this.compiler().updateParameter(id, paramName, value);
+      },
+      this.compilationHelper
+    );
+
+    node.id = graphNode.identifier;
+
+    if (node.previewControl) {
+      this.nodeToPreviewControl.set(node.id, node.previewControl);
+    }
+
+    await this.editor.addNode(node);
+    await this.area.translate(node.id, {
+      x: graphNode.position.x,
+      y: graphNode.position.y,
     });
   }
 
   private nodeToPreviewControl = new Map<string, PreviewControl>();
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
-  private deserializing = false;
-  private timer: ReturnType<typeof setTimeout> | undefined;
-  private onChanged?: OnGraphChanged;
+  private onOutputChanged?: OnGraphChanged;
   private compilationHelper = new CompilationHelper();
+}
+
+function uiConnectionToConnection(
+  connection: Schemes["Connection"]
+): Connection {
+  return {
+    from: {
+      nodeId: connection.source,
+      socketId: connection.sourceOutput,
+    },
+    to: {
+      nodeId: connection.target,
+      socketId: connection.targetInput,
+    },
+  };
 }

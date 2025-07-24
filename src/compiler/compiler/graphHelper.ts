@@ -3,6 +3,7 @@ import type { Graph, GraphDiff } from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
 import type { Context } from "./context";
+import type { ParameterValue } from "@graph/parameter";
 
 export interface InputConnection {
   node: Node;
@@ -37,6 +38,9 @@ export class GraphHelper {
       ...node,
     };
 
+    this.nodes.set(newNode.identifier, newNode);
+    this.graph.nodes.push(newNode);
+
     return {
       addedNodes: [newNode],
     };
@@ -47,6 +51,7 @@ export class GraphHelper {
     if (!node) throw new Error("Node not found");
 
     this.graph.nodes = this.graph.nodes.filter((n) => n.identifier !== nodeId);
+    this.nodes.delete(nodeId);
 
     const removedConnections: Connection[] = [];
 
@@ -100,8 +105,24 @@ export class GraphHelper {
     };
   }
 
+  updateParameter(nodeId: string, paramName: string, value: ParameterValue) {
+    const node = this.getNodeById(nodeId);
+    if (!node) {
+      throw new Error(`Node with id ${nodeId} not found in graph`);
+    }
+    node.parameters[paramName] = value;
+    const invalidatedNodeIds = this.invalidateNodes([nodeId]);
+
+    return {
+      updatedNodes: [node],
+      invalidatedNodeIds,
+    };
+  }
+
   loadGraph(graph: Graph): void {
     this.graph = graph;
+    this.nodes.clear();
+    this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));
   }
 
   saveGraph(): Graph {

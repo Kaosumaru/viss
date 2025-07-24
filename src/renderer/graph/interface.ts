@@ -13,7 +13,7 @@ export interface EditorAPI {
     x?: number,
     y?: number,
     id?: string
-  ) => Promise<UICompilerNode>;
+  ) => Promise<void>;
   deleteNode: (nodeId: string) => Promise<void>;
 
   loadGraph: (graphJson: string) => Promise<void>;

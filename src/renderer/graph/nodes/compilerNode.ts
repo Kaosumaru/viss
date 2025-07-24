@@ -9,11 +9,12 @@ import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
 import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
+import type { ParameterValue } from "@graph/parameter";
 
 export type ControlChangeCallback = (
   nodeId: string,
   controlKey: string,
-  value: unknown
+  value: ParameterValue
 ) => void;
 
 export class UICompilerNode extends ClassicPreset.Node {
@@ -49,12 +50,6 @@ export class UICompilerNode extends ClassicPreset.Node {
     }
 
     this.updateSize(compilerNode);
-  }
-
-  setControlChangeCallback(callback: ControlChangeCallback) {
-    this.controlChangeCallback = callback;
-    // Note: Controls created after this will use the new callback,
-    // but existing controls won't be updated unless the node is recreated
   }
 
   protected addOutputs(outputs: Pins) {
@@ -100,7 +95,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected createControl(param: Parameter): ClassicPreset.Control {
-    const callback = (value: unknown) => {
+    const callback = (value: ParameterValue) => {
       this.controlChangeCallback?.(this.id, param.name, value);
     };
     switch (param.type) {
@@ -108,17 +103,17 @@ export class UICompilerNode extends ClassicPreset.Node {
         return new BooleanControl(
           (param.defaultValue?.value as boolean) || false,
           param,
-          callback
+          (v) => callback({ type: "boolean", value: v })
         );
       case "number":
         return new ClassicPreset.InputControl("number", {
           initial: param.defaultValue?.value || 0,
-          change: callback,
+          change: (v) => callback({ type: "number", value: v as number }),
         });
       case "string":
         return new ClassicPreset.InputControl("text", {
           initial: param.defaultValue?.value || "",
-          change: callback,
+          change: (v) => callback({ type: "string", value: v as string }),
         });
     }
   }

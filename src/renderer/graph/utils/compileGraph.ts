@@ -1,51 +1,23 @@
 import { Compiler } from "@compiler/compiler";
-import { saveGraph } from "./saveGraph";
 import type { Context, Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
-import type { GLSLInclude, Graph } from "@graph/graph";
-import type { NodeEditor } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
-import type { AreaExtra, Schemes } from "../node";
+import type { Graph } from "@graph/graph";
 import type { FunctionDefinition } from "@glsl/function";
-
-const commonIncludes: GLSLInclude = {
-  name: "common",
-  content: `
-     float add(float a, float b) {
-       return a + b;
-     }
-    `,
-};
 
 export class CompilationHelper {
   constructor() {
-    this.compiler = new Compiler({
-      includes: [commonIncludes],
-      nodes: [],
-      connections: [],
-    });
-  }
-  updateGraph(
-    editor: NodeEditor<Schemes>,
-    area: AreaPlugin<Schemes, AreaExtra>
-  ) {
-    this.graph = saveGraph(editor, area);
-    if (!this.graph) {
-      throw new Error("Failed to save graph");
-    }
-    this.graph.includes.push(commonIncludes);
-    this.compiler = new Compiler(this.graph);
+    this.compiler_ = new Compiler();
   }
 
   getCustomFunctions(): FunctionDefinition[] {
-    if (!this.compiler) {
+    if (!this.compiler_) {
       return [];
     }
-    return this.compiler.getCustomFunctions();
+    return this.compiler_.getCustomFunctions();
   }
 
   compileNode(nodeId?: string, outputPin = "_preview"): string | undefined {
-    if (!this.compiler || !this.graph) {
+    if (!this.compiler_ || !this.graph) {
       return undefined;
     }
 
@@ -62,7 +34,7 @@ export class CompilationHelper {
     }
 
     try {
-      const output = this.compiler.compile(nodeId);
+      const output = this.compiler_.compile(nodeId);
       return this.outputToGLSL(output, outputPin);
     } catch (error) {
       console.error("Compilation error:", error);
@@ -89,15 +61,12 @@ ${variables}
     return fragmentShader;
   }
 
-  getCompiler(): Compiler {
-    if (!this.compiler) {
-      throw new Error("Compiler is not initialized. Call updateGraph first.");
-    }
-    return this.compiler;
+  compiler(): Compiler {
+    return this.compiler_;
   }
 
   private graph?: Graph;
-  private compiler: Compiler;
+  private compiler_: Compiler;
 }
 
 function compileVariable(variable: Variable, level: number): string {

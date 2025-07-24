@@ -16,6 +16,7 @@ export interface GLSLInclude {
 export interface GraphDiff {
   addedNodes?: Node[];
   removedNodes?: Node[];
+  updatedNodes?: Node[];
   addedConnections?: Connection[];
   removedConnections?: Connection[];
   invalidatedNodeIds?: Set<string>;

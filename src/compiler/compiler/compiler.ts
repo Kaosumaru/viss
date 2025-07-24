@@ -3,10 +3,11 @@ import type { Context } from "./context";
 import { getNode, type NodeType } from "./nodes/allNodes";
 import type { NodeContext } from "./nodes/compilerNode";
 import { GraphHelper } from "./graphHelper";
-import type { GraphDiff } from "@graph/graph";
+import type { Graph, GraphDiff } from "@graph/graph";
 import { CompileNodeContext } from "./compilerNodeContext";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
+import type { ParameterValue } from "@graph/parameter";
 
 export interface CompilationOptions {
   noVariables?: boolean;
@@ -45,16 +46,28 @@ export class Compiler {
     return this.graph.addNode(node);
   }
 
-  public removeNode(nodeId: string): void {
-    this.graph.removeNode(nodeId);
+  public removeNode(nodeId: string): GraphDiff {
+    return this.graph.removeNode(nodeId);
   }
 
-  public addConnection(connection: Connection) {
-    this.graph.addConnection(connection);
+  public addConnection(connection: Connection): GraphDiff {
+    return this.graph.addConnection(connection);
   }
 
-  public removeConnection(connection: Connection) {
-    this.graph.removeConnection(connection);
+  public removeConnection(connection: Connection): GraphDiff {
+    return this.graph.removeConnection(connection);
+  }
+
+  updateParameter(id: string, paramName: string, value: ParameterValue) {
+    this.graph.updateParameter(id, paramName, value);
+  }
+
+  saveGraph() {
+    return this.graph.saveGraph();
+  }
+
+  loadGraph(graph: Graph) {
+    return this.graph.loadGraph(graph);
   }
 
   protected createNodeContextFor(node: Node): NodeContext {

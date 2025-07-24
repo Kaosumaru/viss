@@ -60,7 +60,7 @@ export function setup<T extends Descriptors>(
       return this;
     },
     compile(node) {
-      const compiler = new Compiler(this.graph, { noVariables: true });
+      const compiler = new Compiler({ noVariables: true });
       return compiler.compile(node);
     },
   };
