@@ -30,5 +30,8 @@ export function createPreviewExpression(in_: Expression) {
   }
   if (!outputExpression)
     throw new Error("Preview node only supports scalar inputs");
+
+  // we are marking it as trivial so variable isn't emitted
+  outputExpression.trivial = true;
   return outputExpression;
 }
