@@ -23,6 +23,9 @@ export class EditorAPIImp implements EditorAPI {
     this.onOutputChanged = onChanged;
 
     editor.addPipe((context) => {
+      if (this.deserializing) {
+        return context;
+      }
       if (context.type === "connectionremoved") {
         this.applyDiff(
           this.compiler().removeConnection(
@@ -119,44 +122,55 @@ export class EditorAPIImp implements EditorAPI {
     return this.compilationHelper.compiler();
   }
 
-  protected applyDiff(diff: GraphDiff) {
-    // todo operations on editor UI are asynchronous
-    if (diff.invalidatedNodeIds) {
-      this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
-      // TODO this should be only fired on output change
-      if (this.onOutputChanged) {
-        this.onOutputChanged(this);
-      }
+  protected async applyDiff(diff: GraphDiff) {
+    if (this.deserializing) {
+      throw new Error("Cannot apply diff during deserialization");
     }
 
-    if (diff.removedConnections) {
-      for (const connection of diff.removedConnections) {
-        const id = getUIConnectionId(connection);
-        this.editor.removeConnection(id);
-      }
-    }
-
-    if (diff.addedNodes) {
-      for (const node of diff.addedNodes) {
-        this.addNode(node);
-      }
-    }
-
-    if (diff.removedNodes) {
-      for (const node of diff.removedNodes) {
-        this.nodeToPreviewControl.delete(node.identifier);
-        this.editor.removeNode(node.identifier);
-      }
-    }
-
-    if (diff.addedConnections) {
-      for (const connection of diff.addedConnections) {
-        const id = getUIConnectionId(connection);
-        if (this.editor.getConnection(id)) {
-          continue; // already exists
+    try {
+      this.deserializing = true;
+      // todo operations on editor UI are asynchronous
+      if (diff.invalidatedNodeIds) {
+        this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
+        // TODO this should be only fired on output change
+        if (this.onOutputChanged) {
+          this.onOutputChanged(this);
         }
-        this.editor.addConnection(connectionToUIConnection(id, connection));
       }
+
+      if (diff.removedConnections) {
+        for (const connection of diff.removedConnections) {
+          const id = getUIConnectionId(connection);
+          await this.editor.removeConnection(id);
+        }
+      }
+
+      if (diff.addedNodes) {
+        for (const node of diff.addedNodes) {
+          await this.addNode(node);
+        }
+      }
+
+      if (diff.removedNodes) {
+        for (const node of diff.removedNodes) {
+          this.nodeToPreviewControl.delete(node.identifier);
+          await this.editor.removeNode(node.identifier);
+        }
+      }
+
+      if (diff.addedConnections) {
+        for (const connection of diff.addedConnections) {
+          const id = getUIConnectionId(connection);
+          if (this.editor.getConnection(id)) {
+            continue; // already exists
+          }
+          await this.editor.addConnection(
+            connectionToUIConnection(id, connection)
+          );
+        }
+      }
+    } finally {
+      this.deserializing = false;
     }
   }
 
@@ -189,6 +203,7 @@ export class EditorAPIImp implements EditorAPI {
   private area: AreaPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;
   private compilationHelper = new CompilationHelper();
+  private deserializing = false;
 }
 
 function uiConnectionToConnection(

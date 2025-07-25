@@ -141,7 +141,7 @@ export class GraphHelper {
       areConnectionsSame(conn, connection)
     );
     if (index === -1) {
-      return {};
+      throw new Error("Connection not found in graph");
     }
 
     this.graph.connections.splice(index, 1);
