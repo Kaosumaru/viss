@@ -74,7 +74,10 @@ export class GraphHelper {
     if (!nodeClass) {
       throw new Error(`Node type "${newNode.nodeType}" not found`);
     }
-    newNode.parameters = nodeClass.getDefaultParameters();
+    newNode.parameters = {
+      ...nodeClass.getDefaultParameters(),
+      ...newNode.parameters,
+    };
 
     this.nodes.set(newNode.identifier, newNode);
     this.graph.nodes.push(newNode);

@@ -11,6 +11,6 @@
 
 Optimization
 1. coords nodes could have a global cache
-2. Preview node is generating unnecessary variable - variables there should be created per output
+2. nodes with preview are generating unnecessary variable - variables there should be created per output
 3. Three shaker for functions - now every include is added to result
 4. Right compilation of a node is stack based, we could fix that (maybe first analyze tree and compile leafs so we won't actually change internal API)

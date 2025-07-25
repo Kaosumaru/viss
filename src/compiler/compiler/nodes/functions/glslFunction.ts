@@ -4,8 +4,9 @@ import {
   type NodeInfo,
   type Pins,
 } from "../compilerNode";
-import type { Context } from "@compiler/context";
+import type { Context, Expression } from "@compiler/context";
 import type { FunctionDefinition } from "@glsl/function";
+import { createPreviewExpression } from "../out/utils";
 
 class GlslFunction extends CompilerNode {
   constructor() {
@@ -36,9 +37,15 @@ class GlslFunction extends CompilerNode {
 
     const params = this.buildParameterList(node, funcDef);
     const call = `${funcName}(${params})`;
+    const outExpression: Expression = {
+      data: call,
+      type: funcDef.returnType,
+      trivial: false,
+    };
 
     return this.createDynamicOutputs(node, [
-      ["out", { data: call, type: funcDef.returnType, trivial: false }],
+      ["out", outExpression],
+      ["_preview", createPreviewExpression(outExpression)],
     ]);
   }
 
