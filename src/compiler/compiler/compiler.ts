@@ -1,10 +1,7 @@
 import type { Node } from "@graph/node";
 import type { Context } from "./context";
-import { getNode, type NodeType } from "./nodes/allNodes";
-import type { NodeContext } from "./nodes/compilerNode";
 import { GraphHelper } from "./graphHelper";
 import type { Graph, GraphDiff } from "@graph/graph";
-import { CompileNodeContext } from "./compilerNodeContext";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
@@ -15,8 +12,7 @@ export interface CompilationOptions {
 
 export class Compiler {
   constructor(options?: CompilationOptions) {
-    this.graph = new GraphHelper();
-    this.options = options ?? {};
+    this.graph = new GraphHelper(options ?? {});
   }
 
   public getCustomFunctions(): FunctionDefinition[] {
@@ -24,22 +20,7 @@ export class Compiler {
   }
 
   compile(nodeId: string): Context {
-    const node = this.graph.getNodeById(nodeId);
-    if (!node) {
-      throw new Error(`Node with id ${nodeId} not found in graph`);
-    }
-
-    const cacheContext = this.graph.getCachedContext(node.identifier);
-    if (cacheContext) {
-      return cacheContext;
-    }
-
-    const compilerNode = getNode(node.nodeType as NodeType);
-    const nodeContext = this.createNodeContextFor(node);
-
-    const ctx = compilerNode.compile(nodeContext);
-    this.graph.cacheContext(node.identifier, ctx);
-    return ctx;
+    return this.graph.compile(nodeId);
   }
 
   public addNode(node: Omit<Node, "identifier">): GraphDiff {
@@ -78,12 +59,6 @@ export class Compiler {
     return this.graph.clearGraph();
   }
 
-
-  protected createNodeContextFor(node: Node): NodeContext {
-    return new CompileNodeContext(this, this.options, this.graph, node);
-  }
-
   protected nameToFunction: Record<string, FunctionDefinition> = {};
   protected graph: GraphHelper;
-  protected options: CompilationOptions;
 }

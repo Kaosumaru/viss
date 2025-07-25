@@ -2,17 +2,15 @@ import type { ParameterValueType } from "@graph/parameter";
 import type { Expression as Expression, Variable } from "./context";
 import type { NodeContext, ParamExtractedValue } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
-import type { CompilationOptions, Compiler } from "./compiler";
+import type { CompilationOptions } from "./compiler";
 import type { GraphHelper } from "./graphHelper";
 
 export class CompileNodeContext implements NodeContext {
   constructor(
-    compiler: Compiler,
     options: CompilationOptions,
     graph: GraphHelper,
     node: Node
   ) {
-    this.compiler = compiler;
     this.graph = graph;
     this.compilationOptions = options;
     this.node = node;
@@ -23,7 +21,7 @@ export class CompileNodeContext implements NodeContext {
     if (!input) {
       return undefined;
     }
-    const ctx = this.compiler.compile(input.node.identifier);
+    const ctx = this.graph.compile(input.node.identifier);
     this.mergeVariables(ctx.variables);
     const out = ctx.outputs[input.socketId];
     if (!out) {
@@ -84,7 +82,6 @@ export class CompileNodeContext implements NodeContext {
     }
   }
 
-  protected compiler: Compiler;
   protected node: Node;
   protected graph: GraphHelper;
 

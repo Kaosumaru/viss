@@ -1,3 +1,4 @@
+import type { NodeInfo } from "@compiler/nodes/compilerNode";
 import type { Connection } from "./connection";
 import type { Node } from "./node";
 
@@ -13,8 +14,13 @@ export interface GLSLInclude {
   content: string;
 }
 
+export interface AddedNodeInfo {
+  node: Node;
+  instanceInfo: NodeInfo;
+}
+
 export interface GraphDiff {
-  addedNodes?: Node[];
+  addedNodes?: AddedNodeInfo[];
   removedNodes?: Node[];
   updatedNodes?: Node[];
   addedConnections?: Connection[];

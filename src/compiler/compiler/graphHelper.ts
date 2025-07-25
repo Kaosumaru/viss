@@ -1,9 +1,13 @@
 import type { Connection } from "@graph/connection";
-import type { Graph, GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
 import type { Context } from "./context";
 import type { ParameterValue } from "@graph/parameter";
+import { getNode, type NodeType } from "./nodes/allNodes";
+import { CompileNodeContext } from "./compilerNodeContext";
+import type { NodeContext } from "./nodes/compilerNode";
+import type { CompilationOptions } from "./compiler";
 
 export interface InputConnection {
   node: Node;
@@ -12,12 +16,38 @@ export interface InputConnection {
 
 export class GraphHelper {
   protected graph: Graph;
-  constructor() {
+  protected options: CompilationOptions;
+
+  constructor(options: CompilationOptions) {
+    this.options = options;
     this.graph = {
       includes: [],
       nodes: [],
       connections: [],
     };
+  }
+
+  public createNodeContextFor(node: Node): NodeContext {
+    return new CompileNodeContext(this.options, this, node);
+  }
+
+  compile(nodeId: string): Context {
+    const node = this.getNodeById(nodeId);
+    if (!node) {
+      throw new Error(`Node with id ${nodeId} not found in graph`);
+    }
+
+    const cacheContext = this.getCachedContext(node.identifier);
+    if (cacheContext) {
+      return cacheContext;
+    }
+
+    const compilerNode = getNode(node.nodeType as NodeType);
+    const nodeContext = this.createNodeContextFor(node);
+
+    const ctx = compilerNode.compile(nodeContext);
+    this.cacheContext(node.identifier, ctx);
+    return ctx;
   }
 
   addNode(node: Omit<Node, "identifier">): GraphDiff {
@@ -30,7 +60,7 @@ export class GraphHelper {
     this.graph.nodes.push(newNode);
 
     return {
-      addedNodes: [newNode],
+      addedNodes: [this.getAddedNodeInfo(newNode)],
     };
   }
 
@@ -122,7 +152,9 @@ export class GraphHelper {
     });
 
     return {
-      addedNodes: this.graph.nodes,
+      addedNodes: this.graph.nodes.map((node) =>
+        this.getAddedNodeInfo(node)
+      ),
       addedConnections: this.graph.connections,
       invalidatedNodeIds: new Set(
         this.graph.nodes.map((node) => node.identifier)
@@ -156,11 +188,11 @@ export class GraphHelper {
     return this.nodes.get(id);
   }
 
-  public cacheContext(nodeId: string, context: Context) {
+  protected cacheContext(nodeId: string, context: Context) {
     this.cachedContexts.set(nodeId, context);
   }
 
-  public getCachedContext(nodeId: string): Context | undefined {
+  protected getCachedContext(nodeId: string): Context | undefined {
     return this.cachedContexts.get(nodeId);
   }
 
@@ -170,6 +202,14 @@ export class GraphHelper {
       node: this.getNodeById(connection.from.nodeId)!,
       socketId: connection.from.socketId,
     });
+  }
+
+  protected getAddedNodeInfo(node: Node): AddedNodeInfo {
+    const nodeClass = getNode(node.nodeType as NodeType);
+    return {
+      node,
+      instanceInfo: nodeClass.getInfo(this.createNodeContextFor(node)),
+    };
   }
 
   protected invalidateNodes(nodeIds: string[]): Set<string> {

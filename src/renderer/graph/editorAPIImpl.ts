@@ -8,9 +8,8 @@ import { UICompilerNode } from "./nodes/compilerNode";
 import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
-import type { GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, GraphDiff } from "@graph/graph";
 import type { Connection } from "@graph/connection";
-import type { Node } from "@graph/node";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -166,7 +165,8 @@ export class EditorAPIImp implements EditorAPI {
     }
   }
 
-  protected async addNode(graphNode: Node) {
+  protected async addNode(item: AddedNodeInfo) {
+    const graphNode = item.node;
     const node = new UICompilerNode(
       graphNode.nodeType as NodeType,
       (id, paramName, value) => {
@@ -174,6 +174,7 @@ export class EditorAPIImp implements EditorAPI {
       },
       this.compilationHelper
     );
+    node.updateNode(item.instanceInfo);
 
     node.id = graphNode.identifier;
 

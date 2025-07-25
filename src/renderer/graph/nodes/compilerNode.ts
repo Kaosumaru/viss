@@ -1,6 +1,6 @@
 import { getNode, type NodeType } from "@compiler/nodes/allNodes";
 import type {
-  CompilerNode,
+  NodeInfo,
   Parameter,
   Parameters,
   Pins,
@@ -35,21 +35,21 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.compilationHelper = compilationHelper;
     this.nodeType = nodeType;
     this.controlChangeCallback = controlChangeCallback;
+  }
 
-    const inputs = compilerNode.inputs();
-    const params = compilerNode.parameters();
-    const outputs = compilerNode.outputs();
+  public updateNode(description: NodeInfo) {
+    this.label = description.name;
 
-    this.addInputs(inputs, params);
-    this.addParams(inputs, params);
-    this.addOutputs(outputs);
+    this.addInputs(description.inputs, description.parameters);
+    this.addParams(description.inputs, description.parameters);
+    this.addOutputs(description.outputs);
 
-    if (compilerNode.showPreview()) {
+    if (description.showPreview) {
       this.previewControl = new PreviewControl(this.id);
       this.addControl("preview", this.previewControl);
     }
 
-    this.updateSize(compilerNode);
+    this.updateSize(description);
   }
 
   protected addOutputs(outputs: Pins) {
@@ -118,7 +118,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     }
   }
 
-  updateSize(compilerNode: CompilerNode) {
+  updateSize(description: NodeInfo) {
     const inputs = Object.entries(this.inputs);
     const outputs = Object.entries(this.outputs);
     const controls = Object.entries(this.controls);
@@ -130,7 +130,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       Math.max(inputs.length, outputs.length) * 36 +
       controls.length * 36;
 
-    if (compilerNode.showPreview()) {
+    if (description.showPreview) {
       this.height += 140; // Add height for preview control
     }
   }

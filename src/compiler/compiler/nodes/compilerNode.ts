@@ -45,6 +45,15 @@ export interface OutputExpression {
   trivial?: boolean;
 }
 
+export interface NodeInfo {
+  name: string;
+  description: string;
+  showPreview: boolean;
+  inputs: Pins;
+  outputs: Pins;
+  parameters: Parameters;
+}
+
 export type Parameters = Parameter[];
 export abstract class CompilerNode {
   private inputs_: Pins = [];
@@ -58,16 +67,15 @@ export abstract class CompilerNode {
     return false;
   }
 
-  public inputs(): Pins {
-    return this.inputs_;
-  }
-
-  public outputs(): Pins {
-    return this.outputs_;
-  }
-
-  public parameters(): Parameters {
-    return this.parameters_;
+  public getInfo(_node: NodeContext): NodeInfo {
+    return {
+      name: this.getLabel(),
+      description: this.getDescription(),
+      showPreview: this.showPreview(),
+      inputs: this.inputs_,
+      outputs: this.outputs_,
+      parameters: this.parameters_,
+    };
   }
 
   protected addInput(name: string, type: Type): void {
