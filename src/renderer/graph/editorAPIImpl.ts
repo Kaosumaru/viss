@@ -129,6 +129,13 @@ export class EditorAPIImp implements EditorAPI {
       }
     }
 
+    if (diff.removedConnections) {
+      for (const connection of diff.removedConnections) {
+        const id = getUIConnectionId(connection);
+        this.editor.removeConnection(id);
+      }
+    }
+
     if (diff.addedNodes) {
       for (const node of diff.addedNodes) {
         this.addNode(node);
@@ -149,23 +156,6 @@ export class EditorAPIImp implements EditorAPI {
           continue; // already exists
         }
         this.editor.addConnection(connectionToUIConnection(id, connection));
-      }
-    }
-
-    if (diff.removedConnections) {
-      for (const connection of diff.removedConnections) {
-        const c = this.editor
-          .getConnections()
-          .find(
-            (c) =>
-              c.source === connection.from.nodeId &&
-              c.sourceOutput === connection.from.socketId &&
-              c.target === connection.to.nodeId &&
-              c.targetInput === connection.to.socketId
-          );
-        if (c) {
-          this.editor.removeConnection(c.id);
-        }
       }
     }
   }
