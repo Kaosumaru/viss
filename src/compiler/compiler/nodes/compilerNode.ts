@@ -2,6 +2,7 @@ import type { ParameterValue, ParameterValueType } from "@graph/parameter";
 import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
 import type { CompilationOptions } from "@compiler/compiler";
+import type { FunctionDefinition } from "@glsl/function";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -14,6 +15,7 @@ export type ParamExtractedValue<T extends ParameterValueType> =
   T extends "number" ? number : T extends "boolean" ? boolean : never;
 
 export interface NodeContext {
+  tryGetFunctionDefinition(name: string): FunctionDefinition | undefined;
   getVariables(): Variable[];
   createVariable(outputData: Expression): Expression;
   info(): string;

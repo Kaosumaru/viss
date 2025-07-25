@@ -3,7 +3,7 @@ import type { NodeType } from "@compiler/nodes/allNodes";
 export interface MenuItem {
   name: string;
   nodeType: NodeType;
-  nameParam?: string;
+  identifierParam?: string;
   description?: string;
 }
 export interface MenuCategory {

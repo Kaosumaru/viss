@@ -10,10 +10,10 @@ import type { Graph } from "@graph/graph";
 export interface FunctionDefinition {
   name: string;
   parameters: ParameterDefinition[];
-  returnType: Type;
+  returnType?: Type;
 }
 
-export type Mode = "input" | "output";
+export type Mode = "in" | "out" | "inout";
 
 export interface ParameterDefinition {
   name: string;
@@ -65,17 +65,19 @@ function parameterNodeToDefinition(
 ): ParameterDefinition {
   return {
     name: node.identifier.identifier,
-    mode: "input",
-    type: typeToType(node.specifier),
+    mode: "in",
+    type: typeToType(node.specifier)!,
   };
 }
 
-function typeToType(type: TypeSpecifierNode): Type {
+function typeToType(type: TypeSpecifierNode): Type | undefined {
   if (type.specifier.type !== "keyword") {
     throw new Error(`Unsupported type specifier: ${type.specifier.type}`);
   }
   const type_name = type.specifier.token;
   switch (type_name) {
+    case "void":
+      return undefined;
     case "float":
       return scalar("float");
     case "vec2":

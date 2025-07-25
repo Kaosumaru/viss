@@ -4,6 +4,7 @@ import type { NodeContext, ParamExtractedValue } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { CompilationOptions } from "./compiler";
 import type { GraphHelper } from "./graphHelper";
+import type { FunctionDefinition } from "@glsl/function";
 
 export class CompileNodeContext implements NodeContext {
   constructor(
@@ -44,6 +45,10 @@ export class CompileNodeContext implements NodeContext {
       );
     }
     return param.value as ParamExtractedValue<T>;
+  }
+
+  tryGetFunctionDefinition(name: string): FunctionDefinition | undefined {
+    return this.graph.tryGetFunctionDefinition(name);
   }
 
   createVariable(expr: Expression): Expression {

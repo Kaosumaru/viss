@@ -9,6 +9,7 @@ import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
 import type { AddedNodeInfo, GraphDiff } from "@graph/graph";
+import type { Parameters } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 
 export class EditorAPIImp implements EditorAPI {
@@ -42,7 +43,8 @@ export class EditorAPIImp implements EditorAPI {
     nodeType: NodeType,
     space: "screen" | "absolute",
     x?: number,
-    y?: number
+    y?: number,
+    params?: Parameters
   ) {
     if (x !== undefined && y !== undefined) {
       // Convert screen coordinates to area coordinates
@@ -60,7 +62,7 @@ export class EditorAPIImp implements EditorAPI {
         position: { x: x ?? 0, y: y ?? 0 },
         inputs: {},
         outputs: {},
-        parameters: {},
+        parameters: params ?? {},
       })
     );
   }

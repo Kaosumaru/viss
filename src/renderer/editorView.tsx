@@ -7,6 +7,7 @@ import type { EditorAPI } from "./graph/interface";
 import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
 import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 import type { MenuItem } from "./components/contextMenu/interface";
+import type { Parameters } from "@graph/parameter";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -85,7 +86,18 @@ export function EditorView({ onChanged }: EditorViewProps) {
         positionY = rect.height / 2;
       }
 
-      editorRef.current.createNode(node, "screen", positionX, positionY);
+      let params: Parameters | undefined;
+
+      if (item.identifierParam) {
+        params = {
+          _identifier: {
+            type: "string",
+            value: item.identifierParam
+          },
+        };
+      }
+      
+      editorRef.current.createNode(node, "screen", positionX, positionY, params);
     },
     [lastContextMenuPosition, ref]
   );

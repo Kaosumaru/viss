@@ -8,6 +8,8 @@ import { getNode, type NodeType } from "./nodes/allNodes";
 import { CompileNodeContext } from "./compilerNodeContext";
 import type { NodeContext } from "./nodes/compilerNode";
 import type { CompilationOptions } from "./compiler";
+import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
+import { getBuiltInFunctions } from "@glsl/builtInIncludes";
 
 export interface InputConnection {
   node: Node;
@@ -25,6 +27,15 @@ export class GraphHelper {
       nodes: [],
       connections: [],
     };
+    this.clearGraph();
+  }
+
+  public getCustomFunctions(): FunctionDefinition[] {
+    return Object.values(this.nameToFunction);
+  }
+
+  public tryGetFunctionDefinition(name: string): FunctionDefinition | undefined {
+    return this.nameToFunction[name];
   }
 
   public createNodeContextFor(node: Node): NodeContext {
@@ -167,14 +178,17 @@ export class GraphHelper {
   }
 
   clearGraph() {
+    this.nodes.clear();
     this.getConnectedNode.clear();
     this.cachedContexts.clear();
     this.nodes.clear();
     this.graph = {
-      includes: [],
+      includes: getBuiltInFunctions(),
       nodes: [],
       connections: [],
     };
+
+    this.nameToFunction = parseFunctionsFrom(this.graph);
   }
 
   getInputNode(
@@ -247,6 +261,7 @@ export class GraphHelper {
 
   protected getConnectedNode: Map<string, InputConnection> = new Map();
   protected nodes: Map<string, Node> = new Map();
+  protected nameToFunction: Record<string, FunctionDefinition> = {};
 }
 
 function areConnectionsSame(conn1: Connection, conn2: Connection): boolean {
@@ -261,3 +276,4 @@ function areConnectionsSame(conn1: Connection, conn2: Connection): boolean {
 function globalToSocketRef(connection: Connection): string {
   return `${connection.to.nodeId}///${connection.to.socketId}`;
 }
+

@@ -29,7 +29,7 @@ function functionToItem(fn: FunctionDefinition): MenuItem {
   return {
     name: fn.name,
     nodeType: "glslFunction",
-    nameParam: fn.name,
+    identifierParam: fn.name,
     description: "No description available",
   };
 }

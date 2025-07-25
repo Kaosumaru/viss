@@ -16,7 +16,7 @@ export class Compiler {
   }
 
   public getCustomFunctions(): FunctionDefinition[] {
-    return Object.values(this.nameToFunction);
+    return this.graph.getCustomFunctions();
   }
 
   compile(nodeId: string): Context {
@@ -59,6 +59,5 @@ export class Compiler {
     return this.graph.clearGraph();
   }
 
-  protected nameToFunction: Record<string, FunctionDefinition> = {};
   protected graph: GraphHelper;
 }
