@@ -117,6 +117,16 @@ export class GraphHelper {
     };
   }
 
+  translateNode(nodeId: string, x: number, y: number) {
+    const node = this.getNodeById(nodeId);
+    if (!node) {
+      throw new Error(`Node with id ${nodeId} not found in graph`);
+    }
+
+    node.position.x = x;
+    node.position.y = y;
+  }
+
   addConnection(connection: Connection): GraphDiff {
     // TODO throw error if connection is invalid (would cause loop or is of invalid type)
     const index = this.graph.connections.findIndex((conn) =>

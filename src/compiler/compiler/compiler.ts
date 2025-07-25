@@ -31,6 +31,10 @@ export class Compiler {
     return this.graph.removeNode(nodeId);
   }
 
+  public translateNode(nodeId: string, x: number, y: number): void {
+    this.graph.translateNode(nodeId, x, y);
+  }
+
   public addConnection(connection: Connection): GraphDiff {
     return this.graph.addConnection(connection);
   }

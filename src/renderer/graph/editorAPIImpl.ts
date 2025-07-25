@@ -22,6 +22,17 @@ export class EditorAPIImp implements EditorAPI {
     this.area = area;
     this.onOutputChanged = onChanged;
 
+    this.area.addPipe((context) => {
+      if (this.deserializing) {
+        return context;
+      }
+      if (context.type === "nodetranslated") {
+        const { x, y } = context.data.position;
+        this.compiler().translateNode(context.data.id, x, y);
+      }
+      return context;
+    });
+
     editor.addPipe((context) => {
       if (this.deserializing) {
         return context;
@@ -41,6 +52,7 @@ export class EditorAPIImp implements EditorAPI {
           this.compiler().addConnection(uiConnectionToConnection(context.data))
         );
       }
+
       return context;
     });
   }
@@ -79,7 +91,9 @@ export class EditorAPIImp implements EditorAPI {
 
   async clear() {
     this.compiler().clearGraph();
+    this.deserializing = true;
     await this.editor.clear();
+    this.deserializing = false;
   }
 
   async loadGraph(_graphJson: string): Promise<void> {
