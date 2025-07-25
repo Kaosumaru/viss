@@ -23,10 +23,6 @@ export class EditorAPIImp implements EditorAPI {
     this.onOutputChanged = onChanged;
 
     editor.addPipe((context) => {
-      if (context.type === "noderemoved") {
-        this.nodeToPreviewControl.delete(context.data.id);
-        this.applyDiff(this.compiler().removeNode(context.data.id));
-      }
       if (context.type === "connectionremoved") {
         this.applyDiff(
           this.compiler().removeConnection(
@@ -78,7 +74,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async deleteNode(nodeId: string) {
-    this.compiler().removeNode(nodeId);
+    this.applyDiff(this.compiler().removeNode(nodeId));
   }
 
   async clear() {
