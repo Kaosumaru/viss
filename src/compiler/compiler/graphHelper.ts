@@ -116,7 +116,12 @@ export class GraphHelper {
 
   addConnection(connection: Connection): GraphDiff {
     // TODO throw error if connection is invalid (would cause loop or is of invalid type)
-
+    const index = this.graph.connections.findIndex((conn) =>
+      areConnectionsSame(conn, connection)
+    );
+    if (index !== -1) {
+      throw new Error("Connection already exists in graph");
+    }
     const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
 
     this.graph.connections.push(connection);

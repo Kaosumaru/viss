@@ -30,6 +30,9 @@ export class EditorAPIImp implements EditorAPI {
           )
         );
       }
+      if (context.type === "connectioncreate") {
+        context.data.id = generateUIConnectionId(context.data);
+      }
       if (context.type === "connectioncreated") {
         this.applyDiff(
           this.compiler().addConnection(uiConnectionToConnection(context.data))
@@ -226,8 +229,10 @@ function connectionToUIConnection(
   };
 }
 
-function getUIConnectionId(
-  connection: Connection
-): string {
-  return `${connection.from.nodeId}-${connection.from.socketId}-${connection.to.nodeId}-${connection.to.socketId}`;
+function getUIConnectionId(connection: Connection): string {
+  return `${connection.from.nodeId}-${connection.from.socketId}->${connection.to.nodeId}-${connection.to.socketId}`;
+}
+
+function generateUIConnectionId(connection: Schemes["Connection"]): string {
+  return `${connection.source}-${connection.sourceOutput}->${connection.target}-${connection.targetInput}`;
 }
