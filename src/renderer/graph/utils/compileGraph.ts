@@ -1,7 +1,6 @@
 import { Compiler } from "@compiler/compiler";
 import type { Context, Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/typeToString";
-import type { Graph } from "@graph/graph";
 import type { FunctionDefinition } from "@glsl/function";
 
 export class CompilationHelper {
@@ -17,12 +16,14 @@ export class CompilationHelper {
   }
 
   compileNode(nodeId?: string, outputPin = "_preview"): string | undefined {
-    if (!this.compiler_ || !this.graph) {
+    if (!this.compiler_) {
       return undefined;
     }
 
     if (!nodeId) {
-      const node = this.graph.nodes.find((n) => n.nodeType === "output");
+      const node = this.compiler_
+        .getGraph()
+        .nodes.find((n) => n.nodeType === "output");
       if (!node) {
         throw new Error("Preview node not found in graph");
       }
@@ -65,7 +66,6 @@ ${variables}
     return this.compiler_;
   }
 
-  private graph?: Graph;
   private compiler_: Compiler;
 }
 

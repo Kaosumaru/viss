@@ -58,11 +58,15 @@ export class Compiler {
     return this.graph.removeConnection(connection);
   }
 
-  updateParameter(id: string, paramName: string, value: ParameterValue) {
-    this.graph.updateParameter(id, paramName, value);
+  updateParameter(
+    id: string,
+    paramName: string,
+    value: ParameterValue
+  ): GraphDiff {
+    return this.graph.updateParameter(id, paramName, value);
   }
 
-  saveGraph() {
+  getGraph() {
     return this.graph.saveGraph();
   }
 

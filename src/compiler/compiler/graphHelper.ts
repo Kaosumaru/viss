@@ -18,23 +18,11 @@ export class GraphHelper {
       nodes: [],
       connections: [],
     };
-    this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));
-
-    this.graph.connections.forEach((connection) => {
-      const fromNode = this.getNodeById(connection.from.nodeId);
-      const toNode = this.getNodeById(connection.to.nodeId);
-      if (fromNode && toNode) {
-        this.getConnectedNode.set(
-          `${toNode.identifier}///${connection.to.socketId}`,
-          { node: fromNode, socketId: connection.from.socketId }
-        );
-      }
-    });
   }
 
   addNode(node: Omit<Node, "identifier">): GraphDiff {
     const newNode: Node = {
-      identifier: uuidv4(),
+      identifier: uuidv4().replaceAll("-", "_"),
       ...node,
     };
 
@@ -79,11 +67,14 @@ export class GraphHelper {
   addConnection(connection: Connection): GraphDiff {
     // TODO throw error if connection is invalid (would cause loop or is of invalid type)
 
-    this.invalidateNodes([connection.to.nodeId]);
+    const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
 
     this.graph.connections.push(connection);
+    this.cacheConnection(connection);
+
     return {
       addedConnections: [connection],
+      invalidatedNodeIds,
     };
   }
 
@@ -96,6 +87,8 @@ export class GraphHelper {
     }
 
     this.graph.connections.splice(index, 1);
+    const ref = globalToSocketRef(connection);
+    this.getConnectedNode.delete(ref);
 
     const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
 
@@ -123,6 +116,10 @@ export class GraphHelper {
     this.graph = graph;
     this.nodes.clear();
     this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));
+
+    this.graph.connections.forEach((connection) => {
+      this.cacheConnection(connection);
+    });
   }
 
   saveGraph(): Graph {
@@ -146,6 +143,14 @@ export class GraphHelper {
 
   public getCachedContext(nodeId: string): Context | undefined {
     return this.cachedContexts.get(nodeId);
+  }
+
+  protected cacheConnection(connection: Connection) {
+    const key = globalToSocketRef(connection);
+    this.getConnectedNode.set(key, {
+      node: this.getNodeById(connection.from.nodeId)!,
+      socketId: connection.from.socketId,
+    });
   }
 
   protected invalidateNodes(nodeIds: string[]): Set<string> {
@@ -192,4 +197,8 @@ function areConnectionsSame(conn1: Connection, conn2: Connection): boolean {
     conn1.to.nodeId === conn2.to.nodeId &&
     conn1.to.socketId === conn2.to.socketId
   );
+}
+
+function globalToSocketRef(connection: Connection): string {
+  return `${connection.to.nodeId}///${connection.to.socketId}`;
 }

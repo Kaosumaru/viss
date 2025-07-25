@@ -89,7 +89,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   saveGraph() {
-    return this.compiler().saveGraph();
+    return this.compiler().getGraph();
   }
 
   getNode(nodeId: string): UICompilerNode | undefined {
@@ -168,8 +168,7 @@ export class EditorAPIImp implements EditorAPI {
     const node = new UICompilerNode(
       graphNode.nodeType as NodeType,
       (id, paramName, value) => {
-        // TODO update params in compiler
-        this.compiler().updateParameter(id, paramName, value);
+        this.applyDiff(this.compiler().updateParameter(id, paramName, value));
       },
       this.compilationHelper
     );
