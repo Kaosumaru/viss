@@ -32,11 +32,9 @@ class GlslFunction extends CompilerNode {
     const params = this.buildParameterList(node, funcDef);
     const call = `${funcName}(${params})`;
 
-    return this.createOutput(node, {
-      data: call,
-      type: funcDef.returnType,
-      trivial: false,
-    });
+    return this.createDynamicOutputs(node, [
+      ['out', { data: call, type: funcDef.returnType, trivial: false }],
+    ]);
   }
 
   override getLabel(): string {

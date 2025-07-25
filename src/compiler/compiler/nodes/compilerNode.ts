@@ -100,7 +100,7 @@ export abstract class CompilerNode {
 
   protected createOutput(
     node: NodeContext,
-    expression: string | OutputExpression
+    expression: string | OutputExpression,
   ): Context {
     if (this.outputs_.length !== 1) {
       throw new Error("Single output expected but multiple outputs found.");
@@ -150,6 +150,33 @@ export abstract class CompilerNode {
       outExpression = this.toVariable(node, outExpression);
 
       result.outputs[output.name] = outExpression;
+    }
+    return result;
+  }
+
+  protected createDynamicOutputs(
+    node: NodeContext,
+    outputs: [string, OutputExpression][]
+  ): Context {
+    const result: Context = {
+      variables: node.getVariables(),
+      outputs: {},
+    };
+
+    for (const [name, { data, type, trivial }] of outputs) {
+
+      if (!type) {
+        throw new Error(`Output type for '${name}' is not defined`);
+      }
+
+      let outExpression: Expression = {
+        type: type,
+        data,
+        trivial: trivial ?? false,
+      };
+      outExpression = this.toVariable(node, outExpression);
+
+      result.outputs[name] = outExpression;
     }
     return result;
   }
