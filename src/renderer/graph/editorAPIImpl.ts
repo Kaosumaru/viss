@@ -64,13 +64,6 @@ export class EditorAPIImp implements EditorAPI {
         parameters: {},
       })
     );
-
-    /*
-
-
-
-    return node;
-    */
   }
 
   async deleteNode(nodeId: string) {
@@ -78,14 +71,13 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async clear() {
-    // TODO
-    // this.nodeToPreviewControl.clear();
-    // await this.editor.clear();
+    this.compiler().clearGraph();
+    await this.editor.clear();
   }
 
   async loadGraph(_graphJson: string): Promise<void> {
-    // TODO
-    this.compiler().loadGraph(JSON.parse(_graphJson));
+    await this.clear();
+    this.applyDiff(this.compiler().loadGraph(JSON.parse(_graphJson)));
   }
 
   saveGraph() {
@@ -133,6 +125,12 @@ export class EditorAPIImp implements EditorAPI {
       }
     }
 
+    if (diff.addedNodes) {
+      for (const node of diff.addedNodes) {
+        this.addNode(node);
+      }
+    }
+
     if (diff.removedNodes) {
       for (const node of diff.removedNodes) {
         this.nodeToPreviewControl.delete(node.identifier);
@@ -140,9 +138,13 @@ export class EditorAPIImp implements EditorAPI {
       }
     }
 
-    if (diff.addedNodes) {
-      for (const node of diff.addedNodes) {
-        this.addNode(node);
+    if (diff.addedConnections) {
+      for (const connection of diff.addedConnections) {
+        const id = getUIConnectionId(connection);
+        if (this.editor.getConnection(id)) {
+          continue; // already exists
+        }
+        this.editor.addConnection(connectionToUIConnection(id, connection));
       }
     }
 
@@ -206,4 +208,23 @@ function uiConnectionToConnection(
       socketId: connection.targetInput,
     },
   };
+}
+
+function connectionToUIConnection(
+  id: string,
+  connection: Connection
+): Schemes["Connection"] {
+  return {
+    id,
+    source: connection.from.nodeId,
+    sourceOutput: connection.from.socketId,
+    target: connection.to.nodeId,
+    targetInput: connection.to.socketId,
+  };
+}
+
+function getUIConnectionId(
+  connection: Connection
+): string {
+  return `${connection.from.nodeId}-${connection.from.socketId}-${connection.to.nodeId}-${connection.to.socketId}`;
 }

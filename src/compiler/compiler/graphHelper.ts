@@ -112,18 +112,37 @@ export class GraphHelper {
     };
   }
 
-  loadGraph(graph: Graph): void {
+  loadGraph(graph: Graph): GraphDiff {
+    this.clearGraph();
     this.graph = graph;
-    this.nodes.clear();
     this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));
 
     this.graph.connections.forEach((connection) => {
       this.cacheConnection(connection);
     });
+
+    return {
+      addedNodes: this.graph.nodes,
+      addedConnections: this.graph.connections,
+      invalidatedNodeIds: new Set(
+        this.graph.nodes.map((node) => node.identifier)
+      ),
+    }
   }
 
   saveGraph(): Graph {
     return this.graph;
+  }
+
+  clearGraph() {
+    this.getConnectedNode.clear();
+    this.cachedContexts.clear();
+    this.nodes.clear();
+    this.graph = {
+      includes: [],
+      nodes: [],
+      connections: [],
+    };
   }
 
   getInputNode(

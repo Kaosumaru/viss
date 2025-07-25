@@ -70,9 +70,14 @@ export class Compiler {
     return this.graph.saveGraph();
   }
 
-  loadGraph(graph: Graph) {
+  loadGraph(graph: Graph): GraphDiff {
     return this.graph.loadGraph(graph);
   }
+
+  clearGraph() {
+    return this.graph.clearGraph();
+  }
+
 
   protected createNodeContextFor(node: Node): NodeContext {
     return new CompileNodeContext(this, this.options, this.graph, node);
