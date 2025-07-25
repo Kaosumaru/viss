@@ -1,6 +1,10 @@
+Bugs:
+1. Sometimes connection isn't created in the compiler
+2. loading and saving doesn't restore parameters
+
 1. Preview in nodes
 2. splitting things to variables
- - when output is connected to multimple things
+ - when output is connected to multiple things
  - when we would want to use input more than once (is that necessary?)
 3. More types of properties
     - colors
