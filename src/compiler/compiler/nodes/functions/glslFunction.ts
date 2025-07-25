@@ -1,6 +1,6 @@
-import { Any } from "@glsl/types";
 import { CompilerNode, type NodeContext, type NodeInfo, type Pins } from "../compilerNode";
 import type { Context } from "@compiler/context";
+import type { FunctionDefinition } from "@glsl/function";
 
 class GlslFunction extends CompilerNode {
   constructor() {
@@ -18,10 +18,24 @@ class GlslFunction extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
+    const funcName = node.tryGetParamValue("_identifier", "string");
+    const funcDef = node.tryGetFunctionDefinition(funcName || "");
+
+    if (!funcName || !funcDef) {
+      throw new Error(`Function "${funcName}" not found`);
+    }
+
+    if (!funcDef.returnType) {
+      throw new Error(`Function "${funcName}" must have a return type`);
+    }
+
+    const params = this.buildParameterList(node, funcDef);
+    const call = `${funcName}(${params})`;
+
     return this.createOutput(node, {
-      data: `1`,
-      type: Any,
-      trivial: true,
+      data: call,
+      type: funcDef.returnType,
+      trivial: false,
     });
   }
 
@@ -31,6 +45,20 @@ class GlslFunction extends CompilerNode {
 
   override getDescription(): string {
     return `Custom Function`;
+  }
+
+  protected buildParameterList(node: NodeContext, func: FunctionDefinition): string {
+    return func.parameters
+      .map((param) => {
+        if (param.mode === "out" || param.mode === "inout") {
+          throw new Error(`Output parameters are not supported in function "${func.name}"`) ;
+        }
+        const value = this.getInput(node, param.name);
+        // TODO check type
+        // TODO handle out, and inout params
+        return value.data;
+      })
+      .join(", ");
   }
 
   override getInfo(node: NodeContext): NodeInfo {

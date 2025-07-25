@@ -21,9 +21,8 @@ export class CompilationHelper {
     }
 
     if (!nodeId) {
-      const node = this.compiler_
-        .getGraph()
-        .nodes.find((n) => n.nodeType === "output");
+      const graph = this.compiler_.getGraph();
+      const node = graph.nodes.find((n) => n.nodeType === "output");
       if (!node) {
         throw new Error("Preview node not found in graph");
       }
@@ -46,6 +45,7 @@ export class CompilationHelper {
   private outputToGLSL(output: Context, outputPin: string): string {
     const outExpression = output.outputs[outputPin];
 
+    const graph = this.compiler_.getGraph();
     const variables = output.variables
       .map((variable: Variable) => compileVariable(variable, 1))
       .join("\n");
@@ -54,6 +54,9 @@ precision mediump float;
 uniform float u_time;
 uniform vec2 u_resolution;
 varying vec2 v_uv;
+
+${graph.includes.map((include) => include.content).join("\n")}
+
 void main() {
 ${variables}
   gl_FragColor = ${outExpression.data}; 
