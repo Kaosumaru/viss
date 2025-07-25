@@ -1,4 +1,9 @@
-import { CompilerNode, type NodeContext, type NodeInfo, type Pins } from "../compilerNode";
+import {
+  CompilerNode,
+  type NodeContext,
+  type NodeInfo,
+  type Pins,
+} from "../compilerNode";
 import type { Context } from "@compiler/context";
 import type { FunctionDefinition } from "@glsl/function";
 
@@ -33,7 +38,7 @@ class GlslFunction extends CompilerNode {
     const call = `${funcName}(${params})`;
 
     return this.createDynamicOutputs(node, [
-      ['out', { data: call, type: funcDef.returnType, trivial: false }],
+      ["out", { data: call, type: funcDef.returnType, trivial: false }],
     ]);
   }
 
@@ -45,11 +50,16 @@ class GlslFunction extends CompilerNode {
     return `Custom Function`;
   }
 
-  protected buildParameterList(node: NodeContext, func: FunctionDefinition): string {
+  protected buildParameterList(
+    node: NodeContext,
+    func: FunctionDefinition
+  ): string {
     return func.parameters
       .map((param) => {
         if (param.mode === "out" || param.mode === "inout") {
-          throw new Error(`Output parameters are not supported in function "${func.name}"`) ;
+          throw new Error(
+            `Output parameters are not supported in function "${func.name}"`
+          );
         }
         const value = this.getInput(node, param.name);
         // TODO check type
@@ -65,7 +75,9 @@ class GlslFunction extends CompilerNode {
     if (!funcName || !funcDef) {
       return {
         name: "INVALID",
-        description: !funcName ? "Function name is not set" : `Function "${funcName}" not found`,
+        description: !funcName
+          ? "Function name is not set"
+          : `Function "${funcName}" not found`,
         showPreview: false,
         inputs: [],
         outputs: [],
@@ -73,15 +85,19 @@ class GlslFunction extends CompilerNode {
       };
     }
 
-    const inputs = funcDef.parameters.filter((param) => param.mode === "in" || param.mode === "inout").map((param) => ({
-      name: param.name,
-      type: param.type,
-    }));
+    const inputs = funcDef.parameters
+      .filter((param) => param.mode === "in" || param.mode === "inout")
+      .map((param) => ({
+        name: param.name,
+        type: param.type,
+      }));
 
-    const outputs = funcDef.parameters.filter((param) => param.mode === "out" || param.mode === "inout").map((param) => ({
-      name: param.name,
-      type: param.type,
-    }));
+    const outputs = funcDef.parameters
+      .filter((param) => param.mode === "out" || param.mode === "inout")
+      .map((param) => ({
+        name: param.name,
+        type: param.type,
+      }));
 
     if (funcDef.returnType) {
       outputs.push({
@@ -93,7 +109,7 @@ class GlslFunction extends CompilerNode {
     return {
       name: funcName,
       description: "Custom Function",
-      showPreview: false,
+      showPreview: funcDef.pragmas.has("preview"),
       inputs,
       outputs,
       parameters: [],

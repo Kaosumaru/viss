@@ -5,6 +5,7 @@ import { scalar } from "./types";
 test("Parses simple function", () => {
   const list = listFunctions(
     `
+     #pragma editor: export
      float add(float a, float b) {
        return a + b;
      }
@@ -14,10 +15,33 @@ test("Parses simple function", () => {
     {
       name: "add",
       parameters: [
-        { name: "a", type: scalar("float") },
-        { name: "b", type: scalar("float") },
+        { name: "a", mode: "in", type: scalar("float") },
+        { name: "b", mode: "in", type: scalar("float") },
       ],
       returnType: scalar("float"),
+      pragmas: new Set(["export"]),
+    },
+  ]);
+});
+
+test("Parses pragmas", () => {
+  const list = listFunctions(
+    `
+     #pragma editor: export, preview
+     float add(float a, float b) {
+       return a + b;
+     }
+    `
+  );
+  expect(list).toEqual([
+    {
+      name: "add",
+      parameters: [
+        { name: "a", mode: "in", type: scalar("float") },
+        { name: "b", mode: "in", type: scalar("float") },
+      ],
+      returnType: scalar("float"),
+      pragmas: new Set(["export", "preview"]),
     },
   ]);
 });

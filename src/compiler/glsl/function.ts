@@ -11,6 +11,8 @@ export interface FunctionDefinition {
   name: string;
   parameters: ParameterDefinition[];
   returnType?: Type;
+
+  pragmas: Set<string>;
 }
 
 export type Mode = "in" | "out" | "inout";
@@ -40,14 +42,51 @@ export function listFunctions(glsl: string): FunctionDefinition[] {
   if (!p) {
     throw new Error("Failed to parse GLSL code");
   }
-  const functions = p.program
-    .filter((node) => node.type === "function")
-    .map((f) => f.prototype);
-  return functions.map(functionNodeToDefinition);
+
+  const definitions: FunctionDefinition[] = [];
+  let pragmas: string[] = [];
+
+  for (const statement of p.program) {
+    switch (statement.type) {
+      case "function": {
+        if (pragmas.includes("export")) {
+          const func = functionNodeToDefinition(statement.prototype, pragmas);
+          definitions.push(func);
+        }
+        pragmas = [];
+        continue;
+      }
+
+      case "preprocessor": {
+        pragmas.push(...extractPragmas(statement.line));
+        continue;
+      }
+
+      default: {
+        pragmas = [];
+      }
+    }
+  }
+
+  return definitions;
+}
+
+function extractPragmas(line: string): string[] {
+  const prefix = "editor:";
+  const index = line.indexOf(prefix);
+  if (index === -1) {
+    return [];
+  }
+  const pragmas = line
+    .slice(index + prefix.length)
+    .split(",")
+    .map((p) => p.trim());
+  return pragmas;
 }
 
 function functionNodeToDefinition(
-  node: FunctionPrototypeNode
+  node: FunctionPrototypeNode,
+  pragmas: string[]
 ): FunctionDefinition {
   const parameters: ParameterDefinition[] = node.parameters.map(
     parameterNodeToDefinition
@@ -57,6 +96,7 @@ function functionNodeToDefinition(
     name: node.header.name.identifier,
     parameters,
     returnType: typeToType(node.header.returnType.specifier),
+    pragmas: new Set(pragmas),
   };
 }
 
