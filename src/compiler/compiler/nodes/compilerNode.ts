@@ -3,6 +3,7 @@ import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
 import type { CompilationOptions } from "@compiler/compiler";
 import type { FunctionDefinition } from "@glsl/function";
+import type { Parameters as GraphParameters } from "@graph/parameter";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -100,7 +101,7 @@ export abstract class CompilerNode {
 
   protected createOutput(
     node: NodeContext,
-    expression: string | OutputExpression,
+    expression: string | OutputExpression
   ): Context {
     if (this.outputs_.length !== 1) {
       throw new Error("Single output expected but multiple outputs found.");
@@ -164,7 +165,6 @@ export abstract class CompilerNode {
     };
 
     for (const [name, { data, type, trivial }] of outputs) {
-
       if (!type) {
         throw new Error(`Output type for '${name}' is not defined`);
       }
@@ -206,6 +206,16 @@ export abstract class CompilerNode {
       return input;
     }
     throw new Error(`Input '${name}' not found in node ${node.info()}`);
+  }
+
+  getDefaultParameters(): GraphParameters {
+    const params: GraphParameters = {};
+    for (const param of this.parameters_) {
+      if (param.defaultValue !== undefined) {
+        params[param.name] = param.defaultValue;
+      }
+    }
+    return params;
   }
 
   getParamValue(node: NodeContext, name: string, type: "number"): number;

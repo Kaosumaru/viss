@@ -34,7 +34,9 @@ export class GraphHelper {
     return Object.values(this.nameToFunction);
   }
 
-  public tryGetFunctionDefinition(name: string): FunctionDefinition | undefined {
+  public tryGetFunctionDefinition(
+    name: string
+  ): FunctionDefinition | undefined {
     return this.nameToFunction[name];
   }
 
@@ -66,6 +68,13 @@ export class GraphHelper {
       identifier: uuidv4().replaceAll("-", "_"),
       ...node,
     };
+
+    // initialize default values in node
+    const nodeClass = getNode(newNode.nodeType as NodeType);
+    if (!nodeClass) {
+      throw new Error(`Node type "${newNode.nodeType}" not found`);
+    }
+    newNode.parameters = nodeClass.getDefaultParameters();
 
     this.nodes.set(newNode.identifier, newNode);
     this.graph.nodes.push(newNode);
@@ -163,14 +172,12 @@ export class GraphHelper {
     });
 
     return {
-      addedNodes: this.graph.nodes.map((node) =>
-        this.getAddedNodeInfo(node)
-      ),
+      addedNodes: this.graph.nodes.map((node) => this.getAddedNodeInfo(node)),
       addedConnections: this.graph.connections,
       invalidatedNodeIds: new Set(
         this.graph.nodes.map((node) => node.identifier)
       ),
-    }
+    };
   }
 
   saveGraph(): Graph {
@@ -276,4 +283,3 @@ function areConnectionsSame(conn1: Connection, conn2: Connection): boolean {
 function globalToSocketRef(connection: Connection): string {
   return `${connection.to.nodeId}///${connection.to.socketId}`;
 }
-
