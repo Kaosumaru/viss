@@ -10,6 +10,8 @@ import { BooleanControl } from "./controls/customBooleanControl";
 import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
+import type { Parameters as GraphParameters } from "@graph/parameter";
+import { CustomParamControl } from "./controls/customParamControl";
 
 export type ControlChangeCallback = (
   nodeId: string,
@@ -94,17 +96,27 @@ export class UICompilerNode extends ClassicPreset.Node {
       });
   }
 
+  public updateControls(parameters: GraphParameters) {
+    for (const [key, control] of Object.entries(this.controls)) {
+      const param = parameters[key];
+      if (!param) {
+        continue;
+      }
+      if (control instanceof CustomParamControl) {
+        control.value = param;
+      } else if (control instanceof ClassicPreset.InputControl) {
+        control.value = param.value;
+      }
+    }
+  }
+
   protected createControl(param: Parameter): ClassicPreset.Control {
     const callback = (value: ParameterValue) => {
       this.controlChangeCallback?.(this.id, param.name, value);
     };
     switch (param.type) {
       case "boolean":
-        return new BooleanControl(
-          (param.defaultValue?.value as boolean) || false,
-          param,
-          (v) => callback({ type: "boolean", value: v })
-        );
+        return new BooleanControl(param.defaultValue, param, callback);
       case "number":
         return new ClassicPreset.InputControl("number", {
           initial: param.defaultValue?.value || 0,

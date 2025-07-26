@@ -1,28 +1,23 @@
 import { useState, useEffect } from "react";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
-import { ClassicPreset } from "rete";
+import { CustomParamControl } from "./customParamControl";
+import type { ParameterValue } from "@graph/parameter";
 import type { Parameter } from "@compiler/nodes/compilerNode";
 
-export class BooleanControl extends ClassicPreset.Control {
-  value: boolean;
-  parameter: Parameter;
-  onChange?: (value: boolean) => void;
-
+export class BooleanControl extends CustomParamControl {
   constructor(
-    value: boolean,
+    value: ParameterValue | undefined,
     parameter: Parameter,
-    onChange?: (value: boolean) => void
+    onChange?: (value: ParameterValue) => void
   ) {
-    super();
-    this.value = value;
-    this.parameter = parameter;
-    this.onChange = onChange;
+    super(value ?? { type: "boolean", value: false }, parameter, onChange);
   }
 }
 
 export function CustomBooleanControl(props: { data: BooleanControl }) {
   const control = props.data;
   const [value, setValue] = useState(control.value);
+  const boolValue = value.type === "boolean" ? value.value : false;
 
   useEffect(() => {
     setValue(control.value);
@@ -30,9 +25,12 @@ export function CustomBooleanControl(props: { data: BooleanControl }) {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.checked;
-    setValue(newValue);
-    control.value = newValue;
-    control.onChange?.(newValue);
+    control.value = {
+      type: "boolean",
+      value: newValue,
+    };
+    setValue(control.value);
+    control.onChange?.(control.value);
   };
 
   return (
@@ -40,7 +38,7 @@ export function CustomBooleanControl(props: { data: BooleanControl }) {
       <FormControlLabel
         control={
           <Switch
-            checked={value}
+            checked={boolValue}
             onChange={handleChange}
             size="small"
             sx={{

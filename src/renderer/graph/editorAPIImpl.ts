@@ -206,6 +206,7 @@ export class EditorAPIImp implements EditorAPI {
       this.compilationHelper
     );
     node.updateNode(item.instanceInfo);
+    node.updateControls(graphNode.parameters);
 
     node.id = graphNode.identifier;
 
