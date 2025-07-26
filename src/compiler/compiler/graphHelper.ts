@@ -1,5 +1,10 @@
 import type { Connection } from "@graph/connection";
-import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
+import {
+  mergeGraphDiffs,
+  type AddedNodeInfo,
+  type Graph,
+  type GraphDiff,
+} from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
 import type { Context } from "./context";
@@ -115,6 +120,11 @@ export class GraphHelper {
       removedConnections,
       invalidatedNodeIds,
     };
+  }
+
+  removeNodes(nodeIds: string[]): GraphDiff {
+    const diffs: GraphDiff[] = nodeIds.map((nodeId) => this.removeNode(nodeId));
+    return mergeGraphDiffs(diffs);
   }
 
   translateNode(nodeId: string, x: number, y: number) {

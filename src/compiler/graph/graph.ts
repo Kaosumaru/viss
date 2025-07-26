@@ -27,3 +27,30 @@ export interface GraphDiff {
   removedConnections?: Connection[];
   invalidatedNodeIds?: Set<string>;
 }
+
+export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
+  return diffs.reduce((acc, diff) => {
+    acc.addedNodes = [...(acc.addedNodes || []), ...(diff.addedNodes || [])];
+    acc.removedNodes = [
+      ...(acc.removedNodes || []),
+      ...(diff.removedNodes || []),
+    ];
+    acc.updatedNodes = [
+      ...(acc.updatedNodes || []),
+      ...(diff.updatedNodes || []),
+    ];
+    acc.addedConnections = [
+      ...(acc.addedConnections || []),
+      ...(diff.addedConnections || []),
+    ];
+    acc.removedConnections = [
+      ...(acc.removedConnections || []),
+      ...(diff.removedConnections || []),
+    ];
+    acc.invalidatedNodeIds = new Set([
+      ...(acc.invalidatedNodeIds || []),
+      ...(diff.invalidatedNodeIds || []),
+    ]);
+    return acc;
+  }, {} as GraphDiff);
+}
