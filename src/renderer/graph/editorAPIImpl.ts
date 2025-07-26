@@ -144,14 +144,6 @@ export class EditorAPIImp implements EditorAPI {
     try {
       this.deserializing = true;
       // todo operations on editor UI are asynchronous
-      if (diff.invalidatedNodeIds) {
-        this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
-        // TODO this should be only fired on output change
-        if (this.onOutputChanged) {
-          this.onOutputChanged(this);
-        }
-      }
-
       if (diff.removedConnections) {
         for (const connection of diff.removedConnections) {
           const id = getUIConnectionId(connection);
@@ -183,8 +175,24 @@ export class EditorAPIImp implements EditorAPI {
           );
         }
       }
+
+      if (diff.invalidatedNodeIds) {
+        this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
+        // TODO this should be only fired on output change
+        this.reportChange();
+      }
     } finally {
       this.deserializing = false;
+    }
+  }
+
+  protected reportChange() {
+    try {
+      if (this.onOutputChanged) {
+        this.onOutputChanged(this);
+      }
+    } catch (e) {
+      console.error("Error during onOutputChanged callback", e);
     }
   }
 
