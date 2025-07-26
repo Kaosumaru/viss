@@ -6,6 +6,7 @@ import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
 export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
+  getSelectedNodes: () => string[];
   destroy: () => void;
   clear: () => void;
   createNode: (
@@ -16,6 +17,7 @@ export interface EditorAPI {
     params?: Parameters
   ) => Promise<void>;
   deleteNode: (nodeId: string) => Promise<void>;
+  deleteNodes: (nodeIds: string[]) => Promise<void>;
 
   loadGraph: (graphJson: string) => Promise<void>;
   saveGraph: () => Graph;

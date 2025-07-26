@@ -11,6 +11,7 @@ import type { FunctionDefinition } from "@glsl/function";
 import type { AddedNodeInfo, GraphDiff } from "@graph/graph";
 import type { Parameters } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
+import { EditorKeybindings } from "./editorKeybindings";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -18,6 +19,7 @@ export class EditorAPIImp implements EditorAPI {
     area: AreaPlugin<Schemes, AreaExtra>,
     onChanged?: OnGraphChanged
   ) {
+    this.keybindings = new EditorKeybindings(this, area);
     this.editor = editor;
     this.area = area;
     this.onOutputChanged = onChanged;
@@ -89,6 +91,11 @@ export class EditorAPIImp implements EditorAPI {
     this.applyDiff(this.compiler().removeNode(nodeId));
   }
 
+  async deleteNodes(nodeIds: string[]) {
+    if (nodeIds.length === 0) return;
+    this.applyDiff(this.compiler().removeNodes(nodeIds));
+  }
+
   async clear() {
     this.compiler().clearGraph();
     this.deserializing = true;
@@ -115,12 +122,19 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   destroy() {
+    this.keybindings.destroy();
     this.area.destroy();
   }
 
   getCustomFunctions: () => FunctionDefinition[] = () => {
     return this.compilationHelper.getCustomFunctions();
   };
+
+  getSelectedNodes(): string[] {
+    // Get selected nodes from the editor
+    const nodes = this.editor.getNodes();
+    return nodes.filter((node) => node.selected).map((node) => node.id);
+  }
 
   protected recompilePreviewNodes(nodes: string[]) {
     for (const nodeId of nodes) {
@@ -227,6 +241,7 @@ export class EditorAPIImp implements EditorAPI {
   private onOutputChanged?: OnGraphChanged;
   private compilationHelper = new CompilationHelper();
   private deserializing = false;
+  private keybindings: EditorKeybindings;
 }
 
 function uiConnectionToConnection(
