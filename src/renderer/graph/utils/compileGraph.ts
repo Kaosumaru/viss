@@ -4,8 +4,8 @@ import { typeToGlsl } from "@glsl/typeToString";
 import type { FunctionDefinition } from "@glsl/function";
 
 export class CompilationHelper {
-  constructor() {
-    this.compiler_ = new Compiler();
+  constructor(compiler?: Compiler) {
+    this.compiler_ = compiler ?? new Compiler();
   }
 
   getCustomFunctions(): FunctionDefinition[] {

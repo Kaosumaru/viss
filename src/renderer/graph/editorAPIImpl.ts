@@ -13,14 +13,17 @@ import type { Parameters } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
+import type { Compiler } from "@compiler/compiler";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
+    compiler: Compiler,
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
     onChanged?: OnGraphChanged
   ) {
+    this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.editor = editor;
     this.area = area;
@@ -60,6 +63,9 @@ export class EditorAPIImp implements EditorAPI {
 
       return context;
     });
+
+    // TODO it's async
+    this.applyDiff(this.compiler().getGraphAsDiff());
   }
 
   async createNode(
@@ -288,7 +294,7 @@ export class EditorAPIImp implements EditorAPI {
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;
-  private compilationHelper = new CompilationHelper();
+  private compilationHelper: CompilationHelper;
   private deserializing = false;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;

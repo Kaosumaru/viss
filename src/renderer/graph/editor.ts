@@ -22,10 +22,12 @@ import {
   selector,
   type SelectableAPI,
 } from "./extensions/selectable";
+import { Compiler } from "@compiler/compiler";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
 export async function createEditor(
+  compiler: Compiler,
   container: HTMLElement,
   overlayContext: ShaderEntryContextType,
   onChanged?: OnGraphChanged
@@ -39,7 +41,13 @@ export async function createEditor(
     accumulating: accumulateOnCtrl(),
   });
 
-  const editorData = new EditorAPIImp(editor, area, selectable, onChanged);
+  const editorData = new EditorAPIImp(
+    compiler,
+    editor,
+    area,
+    selectable,
+    onChanged
+  );
 
   addCustomBackground(area);
   connection.addPreset(ConnectionPresets.classic.setup());
@@ -56,7 +64,7 @@ export async function createEditor(
     return !hasAnyConnection;
   });
 
-  await editorData.createNode("output", "screen");
+  // await editorData.createNode("output", "screen");
   AreaExtensions.zoomAt(area, editor.getNodes());
 
   return editorData;

@@ -1,6 +1,6 @@
 import { useRete } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./graph/editor";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
@@ -13,6 +13,7 @@ import {
   getNodesInSelectionArea,
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
+import { Compiler } from "@compiler/compiler";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -20,6 +21,20 @@ export interface EditorViewProps {
 
 export function EditorView({ onChanged }: EditorViewProps) {
   const editorRef = useRef<EditorAPI | null>(null);
+  const compiler = useMemo(() => {
+    const compiler = new Compiler();
+    compiler.addNode({
+      nodeType: "output",
+      inputs: {},
+      outputs: {},
+      parameters: {},
+      position: {
+        x: 0,
+        y: 0,
+      },
+    });
+    return compiler;
+  }, []);
 
   const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
     x: number;
@@ -53,6 +68,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   const create = useCallback(
     async (container: HTMLElement) => {
       const editor = await createEditor(
+        compiler,
         container,
         {
           addEntry,

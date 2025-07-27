@@ -207,6 +207,10 @@ export class CompilerInternal {
       this.cacheConnection(connection);
     });
 
+    return this.getGraphAsDiff();
+  }
+
+  getGraphAsDiff(): GraphDiff {
     return {
       addedNodes: this.graph.nodes.map((node) => this.getAddedNodeInfo(node)),
       addedConnections: this.graph.connections,

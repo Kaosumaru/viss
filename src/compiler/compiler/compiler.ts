@@ -71,6 +71,10 @@ export class Compiler {
     return this.graph.loadGraph(graph);
   }
 
+  getGraphAsDiff(): GraphDiff {
+    return this.graph.getGraphAsDiff();
+  }
+
   clearGraph() {
     return this.graph.clearGraph();
   }
