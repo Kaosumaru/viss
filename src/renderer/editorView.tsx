@@ -8,7 +8,10 @@ import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayR
 import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 import type { MenuItem } from "./components/contextMenu/interface";
 import type { Parameters } from "@graph/parameter";
-import { NodeSelectionArea, getNodesInSelectionArea } from "./components/selectionArea";
+import {
+  NodeSelectionArea,
+  getNodesInSelectionArea,
+} from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
 
 export interface EditorViewProps {
@@ -94,12 +97,18 @@ export function EditorView({ onChanged }: EditorViewProps) {
         params = {
           _identifier: {
             type: "string",
-            value: item.identifierParam
+            value: item.identifierParam,
           },
         };
       }
-      
-      editorRef.current.createNode(node, "screen", positionX, positionY, params);
+
+      editorRef.current.createNode(
+        node,
+        "screen",
+        positionX,
+        positionY,
+        params
+      );
     },
     [lastContextMenuPosition, ref]
   );
@@ -125,10 +134,13 @@ export function EditorView({ onChanged }: EditorViewProps) {
     }
   }, []);
 
-  const getNodesInArea = useCallback((rect: SelectionRect): string[] => {
-    if (!ref.current) return [];
-    return getNodesInSelectionArea(rect, ref.current);
-  }, [ref]);
+  const getNodesInArea = useCallback(
+    (rect: SelectionRect): string[] => {
+      if (!ref.current) return [];
+      return getNodesInSelectionArea(rect, ref.current);
+    },
+    [ref]
+  );
 
   const contextMenuProvider = (
     <MaterialContextMenuProvider

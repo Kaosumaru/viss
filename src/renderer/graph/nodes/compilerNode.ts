@@ -5,6 +5,7 @@ import type {
   Parameters,
   Pins,
 } from "@compiler/nodes/compilerNode";
+import type { Type } from "@glsl/types";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
 import { ColorControl } from "./controls/color/customColorControl";
@@ -13,6 +14,16 @@ import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
 import type { Parameters as GraphParameters } from "@graph/parameter";
 import { CustomParamControl } from "./controls/customParamControl";
+
+// Extend Socket to include GLSL type information
+class SocketWithType extends ClassicPreset.Socket {
+  glslType: Type;
+
+  constructor(name: string, glslType: Type) {
+    super(name);
+    this.glslType = glslType;
+  }
+}
 
 export type ControlChangeCallback = (
   nodeId: string,
@@ -58,20 +69,16 @@ export class UICompilerNode extends ClassicPreset.Node {
   protected addOutputs(outputs: Pins) {
     outputs
       .filter(({ name }) => name[0] != "_")
-      .forEach(({ name }) => {
-        this.addOutput(
-          name,
-          new ClassicPreset.Output(new ClassicPreset.Socket(name), name)
-        );
+      .forEach(({ name, type }) => {
+        const socket = new SocketWithType(name, type);
+        this.addOutput(name, new ClassicPreset.Output(socket, name));
       });
   }
 
   protected addInputs(inputs: Pins, params: Parameters) {
-    inputs.forEach(({ name }) => {
-      const input = new ClassicPreset.Input(
-        new ClassicPreset.Socket(name),
-        name
-      );
+    inputs.forEach(({ name, type }) => {
+      const socket = new SocketWithType(name, type);
+      const input = new ClassicPreset.Input(socket, name);
 
       // If there's a parameter with the same name, add control to the input
       const param = params.find((p) => p.name === name);

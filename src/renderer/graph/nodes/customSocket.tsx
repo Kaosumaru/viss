@@ -1,19 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Socket } from "rete/_types/presets/classic";
 import styled from "styled-components";
+import type { Type } from "@glsl/types";
+import { typeToName } from "@glsl/typeToString";
+import { getTypeBorderColor, getTypeColor } from "./typeColor";
+
+interface SocketWithType extends Socket {
+  glslType?: Type;
+}
 
 const $socketmargin = 8;
 const $socketsize = 20;
 
-const Styles = styled.div`
+const Styles = styled.div<{ $socketType?: Type }>`
   display: inline-block;
   cursor: pointer;
-  border: 1px solid white;
+  border: 1px solid ${(props) => getTypeBorderColor(props.$socketType)};
   border-radius: ${$socketsize / 2.0}px;
   width: ${$socketsize}px;
   height: ${$socketsize}px;
   vertical-align: middle;
-  background: #ffffff47; // #e8e8e8;
+  background: ${(props) => getTypeColor(props.$socketType)};
   z-index: 2;
   box-sizing: border-box;
   &:hover {
@@ -34,11 +41,19 @@ const Hoverable = styled.div`
 `;
 
 export function CustomSocket<T extends Socket>(props: { data: T }) {
+  const socketWithType = props.data as SocketWithType;
+  const typeString = socketWithType.glslType
+    ? typeToName(socketWithType.glslType)
+    : "unknown";
+
   return (
     // @ts-ignore
     <Hoverable>
       {/* @ts-ignore */}
-      <Styles title={props.data.name} />
+      <Styles
+        $socketType={socketWithType.glslType}
+        title={`${props.data.name} (${typeString})`}
+      />
     </Hoverable>
   );
 }
