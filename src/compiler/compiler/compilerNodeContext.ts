@@ -3,13 +3,13 @@ import type { Expression as Expression, Variable } from "./context";
 import type { NodeContext, ParamExtractedValue } from "./nodes/compilerNode";
 import type { Node } from "@graph/node";
 import type { CompilationOptions } from "./compiler";
-import type { GraphHelper } from "./graphHelper";
+import type { CompilerInternal } from "./logic/compilerInternal";
 import type { FunctionDefinition } from "@glsl/function";
 
 export class CompileNodeContext implements NodeContext {
   constructor(
     options: CompilationOptions,
-    graph: GraphHelper,
+    graph: CompilerInternal,
     node: Node
   ) {
     this.graph = graph;
@@ -88,7 +88,7 @@ export class CompileNodeContext implements NodeContext {
   }
 
   protected node: Node;
-  protected graph: GraphHelper;
+  protected graph: CompilerInternal;
 
   protected allVariableNames: Set<string> = new Set();
   protected variables: Variable[] = [];

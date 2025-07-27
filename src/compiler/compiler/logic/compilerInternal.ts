@@ -7,27 +7,31 @@ import {
 } from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
-import type { Context } from "./context";
+import type { Context } from "../context";
 import type { ParameterValue } from "@graph/parameter";
-import { getNode, type NodeType } from "./nodes/allNodes";
-import { CompileNodeContext } from "./compilerNodeContext";
-import type { NodeContext } from "./nodes/compilerNode";
-import type { CompilationOptions } from "./compiler";
+import { getNode, type NodeType } from "../nodes/allNodes";
+import { CompileNodeContext } from "../compilerNodeContext";
+import type { NodeContext } from "../nodes/compilerNode";
+import type { CompilationOptions } from "../compiler";
 import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
 import { getBuiltInFunctions } from "@glsl/builtInIncludes";
+import { copyNodes } from "./copyNodes";
+import { pasteNodes } from "./pasteNodes";
 
 export interface InputConnection {
   node: Node;
   socketId: string;
 }
 
-export class GraphHelper {
+export class CompilerInternal {
+  static readonly graphVersion = 1;
   protected graph: Graph;
   protected options: CompilationOptions;
 
   constructor(options: CompilationOptions) {
     this.options = options;
     this.graph = {
+      version: CompilerInternal.graphVersion,
       includes: [],
       nodes: [],
       connections: [],
@@ -68,9 +72,13 @@ export class GraphHelper {
     return ctx;
   }
 
+  generateNodeId(): string {
+    return uuidv4().replaceAll("-", "_");
+  }
+
   addNode(node: Omit<Node, "identifier">): GraphDiff {
     const newNode: Node = {
-      identifier: uuidv4().replaceAll("-", "_"),
+      identifier: this.generateNodeId(),
       ...node,
     };
 
@@ -208,7 +216,15 @@ export class GraphHelper {
     };
   }
 
-  saveGraph(): Graph {
+  pasteNodes(graph: Graph, offsetX: number, offsetY: number): GraphDiff {
+    return pasteNodes(this, graph, offsetX, offsetY);
+  }
+
+  copyNodes(nodeIds: string[]): Graph {
+    return copyNodes(this, nodeIds);
+  }
+
+  getGraph(): Graph {
     return this.graph;
   }
 
@@ -218,6 +234,7 @@ export class GraphHelper {
     this.cachedContexts.clear();
     this.nodes.clear();
     this.graph = {
+      version: CompilerInternal.graphVersion,
       includes: getBuiltInFunctions(),
       nodes: [],
       connections: [],
@@ -235,6 +252,10 @@ export class GraphHelper {
 
   getNodeById(id: string): Node | undefined {
     return this.nodes.get(id);
+  }
+
+  hasNode(identifier: string) {
+    return this.nodes.has(identifier);
   }
 
   protected cacheContext(nodeId: string, context: Context) {

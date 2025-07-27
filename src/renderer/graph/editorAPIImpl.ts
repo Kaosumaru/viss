@@ -76,7 +76,7 @@ export class EditorAPIImp implements EditorAPI {
       }
     }
 
-    this.applyDiff(
+    return this.applyDiff(
       this.compiler().addNode({
         nodeType,
         position: { x: x ?? 0, y: y ?? 0 },
@@ -88,12 +88,28 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async deleteNode(nodeId: string) {
-    this.applyDiff(this.compiler().removeNode(nodeId));
+    return this.applyDiff(this.compiler().removeNode(nodeId));
   }
 
   async deleteNodes(nodeIds: string[]) {
     if (nodeIds.length === 0) return;
-    this.applyDiff(this.compiler().removeNodes(nodeIds));
+    return this.applyDiff(this.compiler().removeNodes(nodeIds));
+  }
+
+  copyNodes(nodeIds: string[]): string {
+    if (nodeIds.length === 0) return "";
+    const graph = this.compiler().copyNodes(nodeIds);
+    return JSON.stringify(graph);
+  }
+
+  async pasteNodes(
+    diff: string,
+    offsetX: number,
+    offsetY: number
+  ): Promise<void> {
+    if (!diff) return;
+    const graph = JSON.parse(diff);
+    this.applyDiff(this.compiler().pasteNodes(graph, offsetX, offsetY));
   }
 
   async clear() {
@@ -103,9 +119,9 @@ export class EditorAPIImp implements EditorAPI {
     this.deserializing = false;
   }
 
-  async loadGraph(_graphJson: string): Promise<void> {
+  async loadGraph(graphJson: string): Promise<void> {
     await this.clear();
-    this.applyDiff(this.compiler().loadGraph(JSON.parse(_graphJson)));
+    return this.applyDiff(this.compiler().loadGraph(JSON.parse(graphJson)));
   }
 
   saveGraph() {

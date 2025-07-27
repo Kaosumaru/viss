@@ -1,6 +1,6 @@
 import type { Node } from "@graph/node";
 import type { Context } from "./context";
-import { GraphHelper } from "./graphHelper";
+import { CompilerInternal } from "./logic/compilerInternal";
 import type { Graph, GraphDiff } from "@graph/graph";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
@@ -12,7 +12,7 @@ export interface CompilationOptions {
 
 export class Compiler {
   constructor(options?: CompilationOptions) {
-    this.graph = new GraphHelper(options ?? {});
+    this.graph = new CompilerInternal(options ?? {});
   }
 
   public getCustomFunctions(): FunctionDefinition[] {
@@ -39,6 +39,14 @@ export class Compiler {
     this.graph.translateNode(nodeId, x, y);
   }
 
+  public copyNodes(nodeIds: string[]): Graph {
+    return this.graph.copyNodes(nodeIds);
+  }
+
+  public pasteNodes(diff: Graph, offsetX: number, offsetY: number): GraphDiff {
+    return this.graph.pasteNodes(diff, offsetX, offsetY);
+  }
+
   public addConnection(connection: Connection): GraphDiff {
     return this.graph.addConnection(connection);
   }
@@ -56,7 +64,7 @@ export class Compiler {
   }
 
   getGraph() {
-    return this.graph.saveGraph();
+    return this.graph.getGraph();
   }
 
   loadGraph(graph: Graph): GraphDiff {
@@ -67,5 +75,5 @@ export class Compiler {
     return this.graph.clearGraph();
   }
 
-  protected graph: GraphHelper;
+  protected graph: CompilerInternal;
 }

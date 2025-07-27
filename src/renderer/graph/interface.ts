@@ -16,8 +16,12 @@ export interface EditorAPI {
     y?: number,
     params?: Parameters
   ) => Promise<void>;
+
   deleteNode: (nodeId: string) => Promise<void>;
   deleteNodes: (nodeIds: string[]) => Promise<void>;
+
+  copyNodes: (nodeIds: string[]) => string;
+  pasteNodes: (diff: string, offsetX: number, offsetY: number) => Promise<void>;
 
   loadGraph: (graphJson: string) => Promise<void>;
   saveGraph: () => Graph;

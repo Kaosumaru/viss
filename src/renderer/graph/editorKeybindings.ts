@@ -22,6 +22,31 @@ export class EditorKeybindings {
         event.preventDefault();
       }
     }
+
+    if (event.key === "x" && (event.ctrlKey || event.metaKey)) {
+      const selectedNodes = this.editor.getSelectedNodes();
+      if (selectedNodes.length > 0) {
+        const graphJson = this.editor.copyNodes(selectedNodes);
+        navigator.clipboard.writeText(graphJson);
+        this.editor.deleteNodes(selectedNodes);
+        event.preventDefault();
+      }
+    }
+
+    if (event.key === "c" && (event.ctrlKey || event.metaKey)) {
+      const selectedNodes = this.editor.getSelectedNodes();
+      if (selectedNodes.length > 0) {
+        const graphJson = this.editor.copyNodes(selectedNodes);
+        navigator.clipboard.writeText(graphJson);
+        event.preventDefault();
+      }
+    }
+    if (event.key === "v" && (event.ctrlKey || event.metaKey)) {
+      navigator.clipboard.readText().then((graphJson) => {
+        this.editor.pasteNodes(graphJson, 0, 0);
+        event.preventDefault();
+      });
+    }
   }
 
   public destroy() {
