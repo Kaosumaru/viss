@@ -3,6 +3,7 @@ import type { FunctionDefinition } from "@glsl/function";
 import type { Graph } from "@graph/graph";
 import type { Parameters } from "@graph/parameter";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
+import type { NodeId } from "rete";
 
 export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
@@ -30,3 +31,8 @@ export interface EditorAPI {
   compileNode: (nodeId?: string) => string | undefined;
   getCustomFunctions: () => FunctionDefinition[];
 }
+
+export type Selectable = {
+  select: (nodeId: NodeId, accumulate: boolean) => void;
+  unselect: (nodeId: NodeId) => void;
+};

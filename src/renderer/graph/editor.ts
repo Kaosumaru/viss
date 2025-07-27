@@ -10,7 +10,7 @@ import {
 } from "rete-auto-arrange-plugin";
 import type { AreaExtra, Schemes } from "./node";
 import { addCustomBackground } from "./nodes/customBackground";
-import type { EditorAPI } from "./interface";
+import type { EditorAPI, Selectable } from "./interface";
 
 import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
 import { EditorAPIImp } from "./editorAPIImpl";
@@ -28,12 +28,15 @@ export async function createEditor(
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = createRenderer(overlayContext);
   const arrange = new AutoArrangePlugin<Schemes>();
+  const selectable: Selectable = AreaExtensions.selectableNodes(
+    area,
+    AreaExtensions.selector(),
+    {
+      accumulating: AreaExtensions.accumulateOnCtrl(),
+    }
+  );
 
-  const editorData = new EditorAPIImp(editor, area, onChanged);
-
-  AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-    accumulating: AreaExtensions.accumulateOnCtrl(),
-  });
+  const editorData = new EditorAPIImp(editor, area, selectable, onChanged);
 
   addCustomBackground(area);
   connection.addPreset(ConnectionPresets.classic.setup());

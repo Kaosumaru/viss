@@ -1,5 +1,5 @@
 import type { NodeEditor } from "rete";
-import type { EditorAPI } from "./interface";
+import type { EditorAPI, Selectable } from "./interface";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import { AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
@@ -17,11 +17,13 @@ export class EditorAPIImp implements EditorAPI {
   constructor(
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
+    selectable: Selectable,
     onChanged?: OnGraphChanged
   ) {
     this.keybindings = new EditorKeybindings(this, area);
     this.editor = editor;
     this.area = area;
+    this.selectable = selectable;
     this.onOutputChanged = onChanged;
 
     this.area.addPipe((context) => {
@@ -143,11 +145,11 @@ export class EditorAPIImp implements EditorAPI {
 
   selectNodes(nodeIds: string[]) {
     // First, deselect all currently selected nodes
+
     const allNodes = this.editor.getNodes();
     for (const node of allNodes) {
       if (node.selected) {
-        node.selected = false;
-        this.area.update("node", node.id);
+        this.selectable.unselect(node.id);
       }
     }
 
@@ -155,8 +157,7 @@ export class EditorAPIImp implements EditorAPI {
     for (const nodeId of nodeIds) {
       const node = this.editor.getNode(nodeId);
       if (node) {
-        node.selected = true;
-        this.area.update("node", node.id);
+        this.selectable.select(nodeId, true);
       }
     }
   }
@@ -282,6 +283,7 @@ export class EditorAPIImp implements EditorAPI {
   private compilationHelper = new CompilationHelper();
   private deserializing = false;
   private keybindings: EditorKeybindings;
+  private selectable: Selectable;
 }
 
 function uiConnectionToConnection(
