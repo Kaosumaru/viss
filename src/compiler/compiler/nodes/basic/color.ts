@@ -1,18 +1,24 @@
 import { vector } from "@glsl/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
+import { toVec4 } from "@glsl/utils";
 
 class ColorNode extends CompilerNode {
   constructor() {
     super();
 
-    this.addParameter("value", "color", { type: "color", value: "#ff0000" });
+    this.addParameter("value", "color", {
+      type: "color",
+      value: [1, 1, 1, 1],
+    });
     this.addOutput("out", vector("float", 4));
   }
 
   override compile(node: NodeContext): Context {
+    const color = this.getParamValue(node, "value", "color");
+
     return this.createOutput(node, {
-      data: `vec4(1.0)`,
+      data: toVec4(color),
       type: vector("float", 4),
       trivial: true,
     });

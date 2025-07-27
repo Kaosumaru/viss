@@ -6,7 +6,7 @@
     - textures
 3. Global uniform parameters
 4. Pasting should translate nodes to current view
-
+5. Lokk at params getParamValue
 
 
 Optimization

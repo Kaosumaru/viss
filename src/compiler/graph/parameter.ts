@@ -13,9 +13,10 @@ export interface StringValue {
   value: string;
 }
 
+export type Color = [number, number, number, number]; // RGBA format
 export interface ColorValue {
   type: "color";
-  value: string; // HEX color value like "#ff0000"
+  value: Color;
 }
 
 export type ParameterValue =

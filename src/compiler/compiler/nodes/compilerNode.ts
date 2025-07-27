@@ -1,9 +1,14 @@
-import type { ParameterValue, ParameterValueType } from "@graph/parameter";
+import type {
+  Color,
+  ParameterValue,
+  ParameterValueType,
+} from "@graph/parameter";
 import type { Context, Expression, Variable } from "../context";
 import { scalar, type Type } from "@glsl/types";
 import type { CompilationOptions } from "@compiler/compiler";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Parameters as GraphParameters } from "@graph/parameter";
+import { toFloat } from "@glsl/utils";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -13,7 +18,13 @@ export type ParamExtractedValue<T> = Extract<
 */
 
 export type ParamExtractedValue<T extends ParameterValueType> =
-  T extends "number" ? number : T extends "boolean" ? boolean : never;
+  T extends "number"
+    ? number
+    : T extends "boolean"
+    ? boolean
+    : T extends "color"
+    ? Color
+    : never;
 
 export interface NodeContext {
   tryGetFunctionDefinition(name: string): FunctionDefinition | undefined;
@@ -220,6 +231,7 @@ export abstract class CompilerNode {
 
   getParamValue(node: NodeContext, name: string, type: "number"): number;
   getParamValue(node: NodeContext, name: string, type: "boolean"): boolean;
+  getParamValue(node: NodeContext, name: string, type: "color"): Color;
   getParamValue(
     node: NodeContext,
     name: string,
@@ -242,9 +254,10 @@ export abstract class CompilerNode {
     }
 
     // TODO
+
     const value = node.tryGetParamValue(name, "number");
     if (value !== undefined) {
-      return value.toLocaleString("en-GB", { minimumFractionDigits: 1 });
+      return toFloat(value);
     }
     throw new Error(`Input or parameter ${name} not found`);
   }

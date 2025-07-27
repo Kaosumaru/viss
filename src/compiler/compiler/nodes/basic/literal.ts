@@ -1,6 +1,7 @@
 import type { ScalarType } from "@glsl/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
+import { toFloat } from "@glsl/utils";
 
 export class LiteralNode<T extends ScalarType> extends CompilerNode {
   constructor(type: T) {
@@ -15,9 +16,8 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
 
   override compile(node: NodeContext): Context {
     const value = this.getParamValue(node, "value", "number");
-    const expression = value.toLocaleString("en-GB", {
-      minimumFractionDigits: 1,
-    });
+    const expression = toFloat(value);
+
     return this.createOutput(node, {
       data: expression,
       type: this.type,
