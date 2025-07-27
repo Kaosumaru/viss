@@ -7,7 +7,7 @@ import type {
 } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
-import { ColorControl } from "./controls/customColorControl";
+import { ColorControl } from "./controls/color/customColorControl";
 import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";

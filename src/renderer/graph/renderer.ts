@@ -12,7 +12,7 @@ import {
 import {
   ColorControl,
   CustomColorControl,
-} from "./nodes/controls/customColorControl";
+} from "./nodes/controls/color/customColorControl";
 import {
   PreviewControl,
   CustomPreviewControl,
