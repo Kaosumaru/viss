@@ -120,38 +120,30 @@ interface SelectionRect {
 
 ## Integration with Existing Editor
 
-To integrate with the existing Rete.js editor:
+The SelectionArea is now integrated with the main node editor in `EditorView.tsx`. The integration includes:
 
-```tsx
-// In your editor component
-import { NodeSelectionArea, getNodesInSelectionArea } from './components/selectionArea';
+1. **Automatic Node Selection**: Middle-click and drag to select multiple nodes
+2. **Editor API Integration**: Uses the existing `selectNodes` method from EditorAPI
+3. **Node Detection**: Automatically detects nodes with `data-node-id` attributes
+4. **Visual Feedback**: Selected nodes use the existing selection styling
 
-const EditorView = () => {
-  const editorRef = useRef<HTMLDivElement>(null);
+### How it works:
 
-  const handleNodeSelection = useCallback((nodeIds: string[]) => {
-    // Use your existing selection API
-    nodeIds.forEach(nodeId => {
-      editorAPI.selectNode(nodeId);
-    });
-  }, []);
+The `NodeSelectionArea` component wraps the Rete.js editor container and:
+- Listens for middle-mouse button drag events
+- Calculates which nodes intersect with the selection rectangle
+- Calls `editorRef.current.selectNodes(nodeIds)` to update the selection
+- Integrates with the existing selectable extension for consistent behavior
 
-  const getNodesInArea = useCallback((rect: SelectionRect) => {
-    if (!editorRef.current) return [];
-    return getNodesInSelectionArea(rect, editorRef.current);
-  }, []);
+### Usage:
 
-  return (
-    <NodeSelectionArea
-      onNodeSelection={handleNodeSelection}
-      getNodesInArea={getNodesInArea}
-    >
-      <div ref={editorRef}>
-        {/* Your existing Rete.js editor */}
-      </div>
-    </NodeSelectionArea>
-  );
-};
+The selection area is automatically available in the editor:
+1. Hold down the middle mouse button
+2. Drag to create a selection rectangle
+3. Release to select all nodes within the rectangle
+4. Selected nodes will be highlighted using the existing selection system
+
+No additional setup is required - the feature is now part of the standard editor experience.
 ```
 
 ## Styling
