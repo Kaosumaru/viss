@@ -56,7 +56,7 @@ export class Selector<E extends SelectorEntity> {
   }
 
   add(entity: E, accumulate: boolean) {
-    if (!accumulate) this.unselectAll();
+    if (!accumulate && !this.isSelected(entity)) this.unselectAll();
     this.entities.set(`${entity.label}_${entity.id}`, entity);
   }
 

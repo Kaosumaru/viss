@@ -16,7 +16,12 @@ import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/S
 import { EditorAPIImp } from "./editorAPIImpl";
 import { createRenderer } from "./renderer";
 
-import { selectableNodes, type SelectableAPI } from "./extensions/selectable";
+import {
+  accumulateOnCtrl,
+  selectableNodes,
+  selector,
+  type SelectableAPI,
+} from "./extensions/selectable";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -30,13 +35,9 @@ export async function createEditor(
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = createRenderer(overlayContext);
   const arrange = new AutoArrangePlugin<Schemes>();
-  const selectable: SelectableAPI = selectableNodes(
-    area,
-    AreaExtensions.selector(),
-    {
-      accumulating: AreaExtensions.accumulateOnCtrl(),
-    }
-  );
+  const selectable: SelectableAPI = selectableNodes(area, selector(), {
+    accumulating: accumulateOnCtrl(),
+  });
 
   const editorData = new EditorAPIImp(editor, area, selectable, onChanged);
 
