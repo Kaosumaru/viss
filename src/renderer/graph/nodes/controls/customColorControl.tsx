@@ -137,6 +137,8 @@ function ColorWheel({
   const [saturation, setSaturation] = useState(1);
   const [value, setValue] = useState(1);
   const [alpha, setAlpha] = useState(color[3]);
+  const [isDraggingHue, setIsDraggingHue] = useState(false);
+  const [isDraggingSV, setIsDraggingSV] = useState(false);
 
   // Convert current color to HSV
   useEffect(() => {
@@ -246,7 +248,7 @@ function ColorWheel({
     drawSVArea();
   }, [drawSVArea]);
 
-  const handleHueClick = useCallback(
+  const handleHueInteraction = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -275,7 +277,28 @@ function ColorWheel({
     [saturation, value, alpha, onChange]
   );
 
-  const handleSVClick = useCallback(
+  const handleHueMouseDown = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      setIsDraggingHue(true);
+      handleHueInteraction(event);
+    },
+    [handleHueInteraction]
+  );
+
+  const handleHueMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (isDraggingHue) {
+        handleHueInteraction(event);
+      }
+    },
+    [isDraggingHue, handleHueInteraction]
+  );
+
+  const handleHueMouseUp = useCallback(() => {
+    setIsDraggingHue(false);
+  }, []);
+
+  const handleSVInteraction = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
       const canvas = svAreaRef.current;
       if (!canvas) return;
@@ -296,6 +319,91 @@ function ColorWheel({
     [hue, alpha, onChange]
   );
 
+  const handleSVMouseDown = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      setIsDraggingSV(true);
+      handleSVInteraction(event);
+    },
+    [handleSVInteraction]
+  );
+
+  const handleSVMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (isDraggingSV) {
+        handleSVInteraction(event);
+      }
+    },
+    [isDraggingSV, handleSVInteraction]
+  );
+
+  const handleSVMouseUp = useCallback(() => {
+    setIsDraggingSV(false);
+  }, []);
+
+  // Global mouse event handlers for dragging
+  useEffect(() => {
+    const handleGlobalMouseMove = (event: MouseEvent) => {
+      if (isDraggingHue && canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const centerX = canvasRef.current.width / 2;
+        const centerY = canvasRef.current.height / 2;
+        const x = event.clientX - rect.left - centerX;
+        const y = event.clientY - rect.top - centerY;
+
+        const distance = Math.sqrt(x * x + y * y);
+        const outerRadius = Math.min(centerX, centerY) - 5;
+        const innerRadius = outerRadius - 20;
+
+        if (distance >= innerRadius && distance <= outerRadius) {
+          let angle = (Math.atan2(y, x) * 180) / Math.PI + 90;
+          if (angle < 0) angle += 360;
+
+          const newHue = angle;
+          setHue(newHue);
+
+          const [r, g, b] = hsvToRgb(newHue, saturation, value);
+          onChange([r, g, b, alpha]);
+        }
+      }
+
+      if (isDraggingSV && svAreaRef.current) {
+        const rect = svAreaRef.current.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const newSaturation = Math.max(
+          0,
+          Math.min(1, x / svAreaRef.current.width)
+        );
+        const newValue = Math.max(
+          0,
+          Math.min(1, 1 - y / svAreaRef.current.height)
+        );
+
+        setSaturation(newSaturation);
+        setValue(newValue);
+
+        const [r, g, b] = hsvToRgb(hue, newSaturation, newValue);
+        onChange([r, g, b, alpha]);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsDraggingHue(false);
+      setIsDraggingSV(false);
+    };
+
+    if (isDraggingHue || isDraggingSV) {
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
+    }
+  }, [isDraggingHue, isDraggingSV, hue, saturation, value, alpha, onChange]);
+
   const handleAlphaChange = (newAlpha: number) => {
     setAlpha(newAlpha);
     const [r, g, b] = hsvToRgb(hue, saturation, value);
@@ -311,7 +419,10 @@ function ColorWheel({
             ref={canvasRef}
             width={120}
             height={120}
-            onClick={handleHueClick}
+            onMouseDown={handleHueMouseDown}
+            onMouseMove={handleHueMouseMove}
+            onMouseUp={handleHueMouseUp}
+            onClick={handleHueInteraction}
             style={{ cursor: "pointer", display: "block" }}
           />
         </Box>
@@ -322,7 +433,10 @@ function ColorWheel({
             ref={svAreaRef}
             width={120}
             height={120}
-            onClick={handleSVClick}
+            onMouseDown={handleSVMouseDown}
+            onMouseMove={handleSVMouseMove}
+            onMouseUp={handleSVMouseUp}
+            onClick={handleSVInteraction}
             style={{
               cursor: "pointer",
               display: "block",
