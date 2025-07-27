@@ -4,14 +4,13 @@
 2. More types of properties
     - textures
 3. Global uniform parameters
-4. Pasting should translate nodes to current view
-5. Look at params getParamValue
-6. Node selection + drag via right mouse button
-7. Colored pins, displaying types, validation
-8. Loops validation
-9. templated functions (add, etc)
-10. Error messages on nodes
-11. Can we move compiler/graph above, so graph isn't cleared on every hot reload?
+4. Look at params getParamValue
+5. Node selection + drag via right mouse button
+6. Colored pins, displaying types, validation
+7. Loops validation
+8. templated functions (add, etc)
+9. Error messages on nodes
+10. Can we move compiler/graph above, so graph isn't cleared on every hot reload?
 
 Optimization
 1. coords nodes could have a global cache

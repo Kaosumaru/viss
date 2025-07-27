@@ -107,10 +107,17 @@ export class EditorAPIImp implements EditorAPI {
 
   async pasteNodes(
     json: string,
+    space: "screen" | "absolute",
     offsetX: number,
     offsetY: number
   ): Promise<void> {
     if (!json) return;
+
+    if (space === "screen") {
+      const transform = this.area.area.transform;
+      offsetX = (offsetX - transform.x) / transform.k;
+      offsetY = (offsetY - transform.y) / transform.k;
+    }
     const graph = JSON.parse(json);
     const diff = this.compiler().pasteNodes(graph, offsetX, offsetY);
     await this.applyDiff(diff);

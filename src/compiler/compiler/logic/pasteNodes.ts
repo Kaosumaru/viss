@@ -1,5 +1,6 @@
 import { mergeGraphDiffs, type Graph, type GraphDiff } from "@graph/graph";
 import type { CompilerInternal } from "./compilerInternal";
+import type { Position } from "@graph/position";
 
 export function pasteNodes(
   compiler: CompilerInternal,
@@ -10,10 +11,12 @@ export function pasteNodes(
   let resultingDiff: GraphDiff = {};
   const remappedNodeIds = new Map<string, string>();
 
+  const center = calculateGraphCenter(graph);
+
   graph.nodes.forEach((node) => {
     const copiedNode = { ...node };
-    copiedNode.position.x += offsetX;
-    copiedNode.position.y += offsetY;
+    copiedNode.position.x += -center.x + offsetX;
+    copiedNode.position.y += -center.y + offsetY;
 
     if (compiler.hasNode(copiedNode.identifier)) {
       // If the node already exists, we need to generate a new identifier
@@ -42,4 +45,13 @@ export function pasteNodes(
   });
 
   return resultingDiff;
+}
+
+function calculateGraphCenter(graph: Graph): Position {
+  const positions = graph.nodes.map((node) => node.position);
+  const centerX =
+    positions.reduce((sum, pos) => sum + pos.x, 0) / positions.length;
+  const centerY =
+    positions.reduce((sum, pos) => sum + pos.y, 0) / positions.length;
+  return { x: centerX, y: centerY };
 }

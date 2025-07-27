@@ -1,6 +1,7 @@
 import type { EditorAPI } from "./interface";
 import { AreaPlugin } from "rete-area-plugin";
 import type { AreaExtra, Schemes } from "./node";
+import type { Position } from "@graph/position";
 
 export class EditorKeybindings {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
@@ -12,6 +13,15 @@ export class EditorKeybindings {
     this.area.container.addEventListener("keydown", (event) => {
       this.handleKeyDown(event);
     });
+
+    this.area.container.addEventListener("mousemove", (event) => {
+      this.handleMouseMove(event);
+    });
+  }
+  handleMouseMove(event: MouseEvent) {
+    const rect = this.area.container.getBoundingClientRect();
+    this.mousePosition.x = event.clientX - rect.left;
+    this.mousePosition.y = event.clientY - rect.top;
   }
 
   public handleKeyDown(event: KeyboardEvent): void {
@@ -43,7 +53,10 @@ export class EditorKeybindings {
     }
     if (event.key === "v" && (event.ctrlKey || event.metaKey)) {
       navigator.clipboard.readText().then((graphJson) => {
-        this.editor.pasteNodes(graphJson, 0, 0);
+        const offsetX = this.mousePosition.x;
+        const offsetY = this.mousePosition.y;
+
+        this.editor.pasteNodes(graphJson, "screen", offsetX, offsetY);
         event.preventDefault();
       });
     }
@@ -53,6 +66,7 @@ export class EditorKeybindings {
     this.area.container.removeEventListener("keydown", this.handleKeyDown);
   }
 
+  private mousePosition: Position = { x: 0, y: 0 };
   private editor: EditorAPI;
   private area: AreaPlugin<Schemes, AreaExtra>;
 }
