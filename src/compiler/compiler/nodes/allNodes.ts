@@ -16,6 +16,7 @@ import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
 import { multiply } from "./operators/multiply";
 import { glslFunction } from "./functions/glslFunction";
+import { color } from "./basic/color";
 
 export interface NodeCategory {
   id: string;
@@ -45,6 +46,7 @@ const literals = createCategory({
   nodes: {
     float: new LiteralNode(scalar("float")),
     bool: new BooleanLiteralNode(),
+    color,
 
     // vector2: new LiteralNode(vector("float", 2)),
     // vector3: new LiteralNode(vector("float", 3)),

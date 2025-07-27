@@ -1,20 +1,15 @@
-Bugs:
-1. Sometimes connection isn't created in the compiler
-2. loading and saving doesn't restore parameters
-
-1. Preview in nodes
-2. splitting things to variables
+1. splitting things to variables
  - when output is connected to multiple things
  - when we would want to use input more than once (is that necessary?)
-3. More types of properties
+2. More types of properties
     - colors
     - textures
-4. Global uniform parameters
-5. Think about how multiple additions/removals should be handled
+3. Global uniform parameters
+4. Pasting should translate nodes to current view
+
 
 
 Optimization
 1. coords nodes could have a global cache
-2. nodes with preview are generating unnecessary variable - variables there should be created per output
-3. Three shaker for functions - now every include is added to result
-4. Right compilation of a node is stack based, we could fix that (maybe first analyze tree and compile leafs so we won't actually change internal API)
+2. Three shaker for functions - now every include is added to result
+3. Right compilation of a node is stack based, we could fix that (maybe first analyze tree and compile leafs so we won't actually change internal API)

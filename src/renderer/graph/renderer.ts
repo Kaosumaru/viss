@@ -10,6 +10,10 @@ import {
   CustomBooleanControl,
 } from "./nodes/controls/customBooleanControl";
 import {
+  ColorControl,
+  CustomColorControl,
+} from "./nodes/controls/customColorControl";
+import {
   PreviewControl,
   CustomPreviewControl,
 } from "./nodes/controls/customPreviewControl";
@@ -64,6 +68,10 @@ export function createRenderer(
           if (data.payload instanceof BooleanControl) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return CustomBooleanControl as any;
+          }
+          if (data.payload instanceof ColorControl) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return CustomColorControl as any;
           }
           if (data.payload instanceof PreviewControl) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

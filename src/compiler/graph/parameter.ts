@@ -13,7 +13,16 @@ export interface StringValue {
   value: string;
 }
 
-export type ParameterValue = NumberValue | BooleanValue | StringValue;
+export interface ColorValue {
+  type: "color";
+  value: string; // HEX color value like "#ff0000"
+}
+
+export type ParameterValue =
+  | NumberValue
+  | BooleanValue
+  | StringValue
+  | ColorValue;
 export type ParameterValueType = ParameterValue["type"];
 
 export interface Parameters {

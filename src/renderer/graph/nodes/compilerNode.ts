@@ -7,6 +7,7 @@ import type {
 } from "@compiler/nodes/compilerNode";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
+import { ColorControl } from "./controls/customColorControl";
 import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
@@ -117,6 +118,8 @@ export class UICompilerNode extends ClassicPreset.Node {
     switch (param.type) {
       case "boolean":
         return new BooleanControl(param.defaultValue, param, callback);
+      case "color":
+        return new ColorControl(param.defaultValue, param, callback);
       case "number":
         return new ClassicPreset.InputControl("number", {
           initial: param.defaultValue?.value || 0,
