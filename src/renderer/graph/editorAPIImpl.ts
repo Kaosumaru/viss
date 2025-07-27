@@ -1,5 +1,5 @@
 import type { NodeEditor } from "rete";
-import type { EditorAPI, Selectable } from "./interface";
+import type { EditorAPI } from "./interface";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import { AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
@@ -12,12 +12,13 @@ import type { AddedNodeInfo, GraphDiff } from "@graph/graph";
 import type { Parameters } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
+import type { SelectableAPI } from "./extensions/selectable";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
-    selectable: Selectable,
+    selectable: SelectableAPI,
     onChanged?: OnGraphChanged
   ) {
     this.keybindings = new EditorKeybindings(this, area);
@@ -283,7 +284,7 @@ export class EditorAPIImp implements EditorAPI {
   private compilationHelper = new CompilationHelper();
   private deserializing = false;
   private keybindings: EditorKeybindings;
-  private selectable: Selectable;
+  private selectable: SelectableAPI;
 }
 
 function uiConnectionToConnection(

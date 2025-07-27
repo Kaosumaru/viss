@@ -10,11 +10,13 @@ import {
 } from "rete-auto-arrange-plugin";
 import type { AreaExtra, Schemes } from "./node";
 import { addCustomBackground } from "./nodes/customBackground";
-import type { EditorAPI, Selectable } from "./interface";
+import type { EditorAPI } from "./interface";
 
 import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
 import { EditorAPIImp } from "./editorAPIImpl";
 import { createRenderer } from "./renderer";
+
+import { selectableNodes, type SelectableAPI } from "./extensions/selectable";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -28,7 +30,7 @@ export async function createEditor(
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = createRenderer(overlayContext);
   const arrange = new AutoArrangePlugin<Schemes>();
-  const selectable: Selectable = AreaExtensions.selectableNodes(
+  const selectable: SelectableAPI = selectableNodes(
     area,
     AreaExtensions.selector(),
     {
