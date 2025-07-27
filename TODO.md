@@ -5,7 +5,6 @@
     - textures
 3. Global uniform parameters
 4. Look at params getParamValue
-5. Node selection + drag via right mouse button
 6. Colored pins, displaying types, validation
 7. Loops validation
 8. templated functions (add, etc)
