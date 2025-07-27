@@ -11,6 +11,7 @@
 8. Loops validation
 9. templated functions (add, etc)
 10. Error messages on nodes
+11. Can we move compiler/graph above, so graph isn't cleared on every hot reload?
 
 Optimization
 1. coords nodes could have a global cache
