@@ -21,18 +21,22 @@ export const EditorSelectionExample: React.FC<EditorSelectionExampleProps> = ({
     (nodeIds: string[]) => {
       console.log("Selected nodes:", nodeIds);
       onNodesSelected?.(nodeIds);
-      
+
       // Example: Add visual feedback to selected nodes
       if (editorContainerRef.current) {
         // Remove previous selection highlights
-        const previouslySelected = editorContainerRef.current.querySelectorAll(".selection-highlight");
+        const previouslySelected = editorContainerRef.current.querySelectorAll(
+          ".selection-highlight"
+        );
         previouslySelected.forEach((el) => {
           el.classList.remove("selection-highlight");
         });
 
         // Add selection highlights to new selection
         nodeIds.forEach((nodeId) => {
-          const nodeElement = editorContainerRef.current?.querySelector(`[data-node-id="${nodeId}"]`);
+          const nodeElement = editorContainerRef.current?.querySelector(
+            `[data-node-id="${nodeId}"]`
+          );
           if (nodeElement) {
             nodeElement.classList.add("selection-highlight");
           }
@@ -42,20 +46,17 @@ export const EditorSelectionExample: React.FC<EditorSelectionExampleProps> = ({
     [onNodesSelected]
   );
 
-  const getNodesInArea = useCallback(
-    (rect: SelectionRect): string[] => {
-      if (!editorContainerRef.current) return [];
-      return getNodesInSelectionArea(rect, editorContainerRef.current);
-    },
-    []
-  );
+  const getNodesInArea = useCallback((rect: SelectionRect): string[] => {
+    if (!editorContainerRef.current) return [];
+    return getNodesInSelectionArea(rect, editorContainerRef.current);
+  }, []);
 
   return (
     <Box sx={{ p: 3, minHeight: "100vh", backgroundColor: "#1e1e1e" }}>
       <Typography variant="h4" sx={{ mb: 3, color: "#ffffff" }}>
         Node Editor with Selection Area
       </Typography>
-      
+
       <Paper sx={{ p: 2, mb: 3, backgroundColor: "#2d2d30", color: "#ffffff" }}>
         <Typography variant="body2" sx={{ mb: 1 }}>
           • Hold down the middle mouse button and drag to select nodes
@@ -79,7 +80,7 @@ export const EditorSelectionExample: React.FC<EditorSelectionExampleProps> = ({
           position: "relative",
         }}
       >
-        <div 
+        <div
           ref={editorContainerRef}
           style={{ width: "100%", height: "100%", position: "relative" }}
         >
@@ -113,19 +114,17 @@ export const EditorSelectionExample: React.FC<EditorSelectionExampleProps> = ({
                 },
               }}
             >
-              <Typography variant="body2">
-                Node {index + 1}
-              </Typography>
+              <Typography variant="body2">Node {index + 1}</Typography>
             </Box>
           ))}
-          
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              position: "absolute", 
-              bottom: "20px", 
-              left: "20px", 
-              color: "#cccccc" 
+
+          <Typography
+            variant="body2"
+            sx={{
+              position: "absolute",
+              bottom: "20px",
+              left: "20px",
+              color: "#cccccc",
             }}
           >
             Middle-click and drag to select nodes

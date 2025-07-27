@@ -38,7 +38,10 @@ export const getNodesInSelectionArea = (
 
   nodeElements.forEach((element) => {
     const nodeId = element.getAttribute("data-node-id");
-    if (nodeId && isNodeInSelectionRect(element as HTMLElement, rect, containerElement)) {
+    if (
+      nodeId &&
+      isNodeInSelectionRect(element as HTMLElement, rect, containerElement)
+    ) {
       selectedNodeIds.push(nodeId);
     }
   });

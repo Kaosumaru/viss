@@ -159,7 +159,7 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
       }}
     >
       {children}
-      
+
       {/* Selection overlay */}
       <div style={getSelectionBoxStyle()} />
     </Box>

@@ -28,7 +28,7 @@ export const NodeSelectionArea: React.FC<NodeSelectionAreaProps> = ({
   const handleSelectionChange = useCallback(
     (rect: SelectionRect | null) => {
       setIsSelecting(rect !== null);
-      
+
       // Optionally provide real-time feedback during selection
       if (rect && getNodesInArea) {
         const selectedNodes = getNodesInArea(rect);
