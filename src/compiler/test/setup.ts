@@ -31,6 +31,7 @@ export function setup<T extends Descriptors>(
 ): Connector<Extract<keyof T, string>> {
   return {
     graph: {
+      version: 1,
       includes: [],
       nodes: Object.entries(desc).reduce((acc, [key, value]) => {
         acc.push({

@@ -103,13 +103,17 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async pasteNodes(
-    diff: string,
+    json: string,
     offsetX: number,
     offsetY: number
   ): Promise<void> {
-    if (!diff) return;
-    const graph = JSON.parse(diff);
-    this.applyDiff(this.compiler().pasteNodes(graph, offsetX, offsetY));
+    if (!json) return;
+    const graph = JSON.parse(json);
+    const diff = this.compiler().pasteNodes(graph, offsetX, offsetY);
+    await this.applyDiff(diff);
+    this.selectNodes(
+      diff.addedNodes?.map((node) => node.node.identifier) || []
+    );
   }
 
   async clear() {
@@ -135,6 +139,26 @@ export class EditorAPIImp implements EditorAPI {
 
   compileNode(nodeId?: string): string | undefined {
     return this.compilationHelper.compileNode(nodeId);
+  }
+
+  selectNodes(nodeIds: string[]) {
+    // First, deselect all currently selected nodes
+    const allNodes = this.editor.getNodes();
+    for (const node of allNodes) {
+      if (node.selected) {
+        node.selected = false;
+        this.area.update("node", node.id);
+      }
+    }
+
+    // Then select the specified nodes
+    for (const nodeId of nodeIds) {
+      const node = this.editor.getNode(nodeId);
+      if (node) {
+        node.selected = true;
+        this.area.update("node", node.id);
+      }
+    }
   }
 
   destroy() {

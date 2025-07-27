@@ -7,6 +7,7 @@ import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
   getSelectedNodes: () => string[];
+  selectNodes: (nodeIds: string[]) => void;
   destroy: () => void;
   clear: () => void;
   createNode: (
