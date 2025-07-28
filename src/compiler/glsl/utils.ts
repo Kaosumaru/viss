@@ -1,7 +1,9 @@
 import type { Color } from "@graph/parameter";
 
 export function toFloat(n: number): string {
-  const expression = n.toLocaleString("en-GB");
+  const expression = n.toLocaleString("en-GB", {
+    minimumFractionDigits: 1,
+  });
   return expression;
 }
 

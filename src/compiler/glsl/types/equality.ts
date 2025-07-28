@@ -16,8 +16,30 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
       return type1.type === type2.type;
     case "vector":
       assertSameTypes(type1, type2);
-      return (
-        type1.type === type2.type && type1.size === type2.size
-      );
+      return type1.type === type2.type && type1.size === type2.size;
+    case "variant":
+      assertSameTypes(type1, type2);
+      return areVariantsEqual(type1.types, type2.types);
   }
+}
+
+function areVariantsEqual(types1: Set<Type>, types2: Set<Type>): boolean {
+  if (types1.size !== types2.size) {
+    return false;
+  }
+
+  for (const type of types1) {
+    let foundEqualType = false;
+    for (const otherType of types2) {
+      if (areTypesEqual(type, otherType)) {
+        foundEqualType = true;
+        break;
+      }
+    }
+    if (!foundEqualType) {
+      return false;
+    }
+  }
+
+  return true;
 }

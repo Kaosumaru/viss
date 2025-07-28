@@ -10,7 +10,7 @@ import { UniformNode } from "./uniforms/uniform";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
 import { composeVector4 } from "./vector/composeVector4";
-import { FunctionNode } from "./functions/functionNode";
+import { FunctionNode, template } from "./functions/functionNode";
 import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
@@ -79,10 +79,10 @@ const functions = createCategory({
       ["in", scalar("float")],
     ]),
     // TODo this doesn't work correctly, as we are returning any type, and output node can't display it
-    mix: new FunctionNode("mix", "Linear interpolation", Any, [
-      ["x", Any],
-      ["y", Any],
-      ["a", Any],
+    mix: new FunctionNode("mix", "Linear interpolation", template(), [
+      ["x", template()],
+      ["y", template()],
+      ["a", scalar("float")],
     ]),
   },
 });

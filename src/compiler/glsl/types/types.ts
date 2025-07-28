@@ -19,7 +19,12 @@ export interface VectorType {
   size: number;
 }
 
-export type Type = AnyType | ScalarType | VectorType;
+export interface VariantType {
+  id: "variant";
+  types: Set<Type>;
+}
+
+export type Type = AnyType | ScalarType | VectorType | VariantType;
 
 export function scalar(type: ScalarTypeName): ScalarType {
   return {
@@ -34,4 +39,23 @@ export function vector(type: ScalarTypeName, size: number): VectorType {
     size,
     type,
   };
+}
+
+export function variant(types: Type[]): VariantType {
+  return {
+    id: "variant",
+    types: new Set(flattenVariantTypes(types)),
+  };
+}
+
+function flattenVariantTypes(types: Type[]): Type[] {
+  const result: Type[] = [];
+  for (const type of types) {
+    if (type.id === "variant") {
+      result.push(...flattenVariantTypes(Array.from(type.types)));
+    } else {
+      result.push(type);
+    }
+  }
+  return result;
 }
