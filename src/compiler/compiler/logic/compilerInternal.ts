@@ -19,6 +19,7 @@ import { copyNodes } from "./copyNodes";
 import { pasteNodes } from "./pasteNodes";
 import type { Type } from "@glsl/types/types";
 import type { SocketReference } from "@graph/socket";
+import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 
 export interface InputConnection {
   node: Node;
@@ -76,6 +77,24 @@ export class CompilerInternal {
 
   generateNodeId(): string {
     return uuidv4().replaceAll("-", "_");
+  }
+
+  public canConnect(output: SocketReference, input: SocketReference): boolean {
+    const outputType = this.getOutputType(output);
+    const node = this.getNodeById(input.nodeId);
+    if (!node) {
+      return false;
+    }
+    const nodeClass = getNode(node.nodeType as NodeType);
+    if (!nodeClass) {
+      return false;
+    }
+    const info = nodeClass.getInfo(this.createNodeContextFor(node));
+    const inputPin = info.inputs.find((pin) => pin.name === input.socketId);
+    if (!inputPin) {
+      return false;
+    }
+    return canBeImplicitlyConverted(outputType, inputPin.type);
   }
 
   addNode(node: Omit<Node, "identifier">): GraphDiff {
@@ -341,7 +360,6 @@ export class CompilerInternal {
   }
 
   protected cachedContexts: Map<string, Context> = new Map();
-
   protected getConnectedNode: Map<string, InputConnection> = new Map();
   protected nodes: Map<string, Node> = new Map();
   protected nameToFunction: Record<string, FunctionDefinition> = {};

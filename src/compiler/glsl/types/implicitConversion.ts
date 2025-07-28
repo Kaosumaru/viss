@@ -2,7 +2,11 @@ import type { Type, VectorType } from "./types";
 import { assertSameTypes } from "./utils";
 import type { ScalarTypeName } from "./typenames";
 
-export function canBeImplicitlyConverter(from: Type, to: Type): boolean {
+export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
+  if (to.id == "any" || from.id == "any") {
+    return true;
+  }
+
   if (from.id !== to.id) {
     return false;
   }

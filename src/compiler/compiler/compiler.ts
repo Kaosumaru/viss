@@ -5,6 +5,7 @@ import type { Graph, GraphDiff } from "@graph/graph";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
+import type { SocketReference } from "@graph/socket";
 
 export interface CompilationOptions {
   noVariables?: boolean;
@@ -21,6 +22,10 @@ export class Compiler {
 
   compile(nodeId: string): Context {
     return this.graph.compile(nodeId);
+  }
+
+  public canConnect(output: SocketReference, input: SocketReference): boolean {
+    return this.graph.canConnect(output, input);
   }
 
   public addNode(node: Omit<Node, "identifier">): GraphDiff {

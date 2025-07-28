@@ -54,6 +54,14 @@ export class EditorAPIImp implements EditorAPI {
       }
       if (context.type === "connectioncreate") {
         context.data.id = generateUIConnectionId(context.data);
+        const connection = uiConnectionToConnection(context.data);
+        if (
+          !this.compilationHelper
+            .compiler()
+            .canConnect(connection.from, connection.to)
+        ) {
+          return;
+        }
       }
       if (context.type === "connectioncreated") {
         this.applyDiff(
