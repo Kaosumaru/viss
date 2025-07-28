@@ -21,3 +21,4 @@ Check
 bugs
 1. Fix color picker wheel
 2. mix function should return x or y
+3. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile

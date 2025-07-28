@@ -216,6 +216,10 @@ export class EditorAPIImp implements EditorAPI {
       if (diff.removedConnections) {
         for (const connection of diff.removedConnections) {
           const id = getUIConnectionId(connection);
+          if (!this.editor.getConnection(id)) {
+            console.warn(`Connection ${id} not found in editor`);
+            continue;
+          }
           await this.editor.removeConnection(id);
         }
       }

@@ -179,7 +179,9 @@ export class CompilerInternal {
       areConnectionsSame(conn, connection)
     );
     if (index === -1) {
-      throw new Error("Connection not found in graph");
+      return {};
+      // TODO this happen when playing with reapplied connections
+      //throw new Error("Connection not found in graph");
     }
 
     this.graph.connections.splice(index, 1);
