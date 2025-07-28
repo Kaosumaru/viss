@@ -1,4 +1,5 @@
 import type { Type } from "./types";
+import { assertSameTypes } from "./utils";
 
 export function areTypesEqual(type1: Type, type2: Type): boolean {
   if (type1.id !== type2.id) {
@@ -18,11 +19,5 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
       return (
         type1.type === type2.type && type1.size === type2.size
       );
-  }
-}
-
-function assertSameTypes<T extends Type>(type1: T, type2: Type): asserts type2 is T {
-  if (type1.id !== type2.id) {
-    throw new Error(`Expected type ${type1.id}, but got ${type2.id}`);
   }
 }
