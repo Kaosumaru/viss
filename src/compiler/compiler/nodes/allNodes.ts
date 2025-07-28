@@ -78,7 +78,6 @@ const functions = createCategory({
     abs: new FunctionNode("abs", "Absolute value", scalar("float"), [
       ["in", scalar("float")],
     ]),
-    // TODo this doesn't work correctly, as we are returning any type, and output node can't display it
     mix: new FunctionNode("mix", "Linear interpolation", template(), [
       ["x", template()],
       ["y", template()],
