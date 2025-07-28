@@ -12,8 +12,6 @@ export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
   }
 
   switch (from.id) {
-    case "any":
-      return true;
     case "scalar":
       assertSameTypes(from, to);
       return canScalarBeImplicitlyConverted(from.type, to.type);

@@ -5,10 +5,9 @@
     - textures
 3. Global uniform parameters
 4. Look at params getParamValue
-6. Colored pins, displaying types, validation
-7. Loops validation
-8. templated functions (add, etc)
-9. Error messages on nodes
+5. Loops validation
+6. templated functions (add, etc)
+7. Error messages on nodes
 
 Optimization
 1. coords nodes could have a global cache
