@@ -1,5 +1,4 @@
-import type { V } from "vitest/dist/chunks/environment.d.cL3nLXbE.js";
-import type { ScalarType, Type, VectorType } from "./types";
+import type { Type, VectorType } from "./types";
 import { assertSameTypes } from "./utils";
 import type { ScalarTypeName } from "./typenames";
 
@@ -44,11 +43,9 @@ function canVectorBeImplicitlyConverted(
   from: VectorType,
   to: VectorType
 ): boolean {
-
   if (from.size !== to.size) {
     return false;
   }
-  
+
   return canScalarBeImplicitlyConverted(from.type, to.type);
 }
-
