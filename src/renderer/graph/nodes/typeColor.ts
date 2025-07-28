@@ -1,4 +1,4 @@
-import type { Type } from "@glsl/types";
+import type { Type } from "@glsl/types/types";
 
 // Function to get color based on socket type
 export function getTypeColor(type?: Type): string {

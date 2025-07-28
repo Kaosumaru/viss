@@ -1,6 +1,6 @@
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
-import { scalar } from "@glsl/types";
+import { scalar } from "@glsl/types/types";
 
 export class BooleanLiteralNode extends CompilerNode {
   constructor() {

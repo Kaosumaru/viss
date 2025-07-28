@@ -5,7 +5,7 @@ import type {
   Parameters,
   Pins,
 } from "@compiler/nodes/compilerNode";
-import type { Type } from "@glsl/types";
+import type { Type } from "@glsl/types/types";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
 import { ColorControl } from "./controls/color/customColorControl";

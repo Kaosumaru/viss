@@ -1,4 +1,4 @@
-import { vector } from "@glsl/types";
+import { vector } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 

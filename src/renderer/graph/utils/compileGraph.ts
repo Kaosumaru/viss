@@ -1,6 +1,6 @@
 import { Compiler } from "@compiler/compiler";
 import type { Context, Variable } from "@compiler/context";
-import { typeToGlsl } from "@glsl/typeToString";
+import { typeToGlsl } from "@glsl/types/typeToString";
 import type { FunctionDefinition } from "@glsl/function";
 
 export class CompilationHelper {

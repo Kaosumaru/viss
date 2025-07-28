@@ -2,7 +2,7 @@ import { ClassicPreset, type GetSchemes } from "rete";
 import type { ContextMenuExtra } from "rete-context-menu-plugin";
 import type { ReactArea2D } from "rete-react-plugin";
 import type { UICompilerNode } from "./nodes/compilerNode";
-import type { Type } from "@glsl/types";
+import type { Type } from "@glsl/types/types";
 
 export type Node = UICompilerNode;
 export type Schemes = GetSchemes<Node, Connection<Node, Node>>;

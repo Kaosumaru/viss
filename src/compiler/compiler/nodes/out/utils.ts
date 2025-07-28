@@ -1,5 +1,5 @@
 import type { Expression } from "@compiler/context";
-import { vector } from "@glsl/types";
+import { vector } from "@glsl/types/types";
 import type { OutputExpression } from "../compilerNode";
 
 export function createPreviewExpression(in_: Expression) {

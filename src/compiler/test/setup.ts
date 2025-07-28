@@ -1,7 +1,7 @@
 import { Compiler } from "@compiler/compiler";
 import type { Context } from "@compiler/context";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import type { Type } from "@glsl/types";
+import type { Type } from "@glsl/types/types";
 import type { Graph } from "@graph/graph";
 import type { Node } from "@graph/node";
 import type { Parameters } from "@graph/parameter";

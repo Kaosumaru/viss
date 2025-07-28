@@ -1,4 +1,4 @@
-import type { Type } from "../glsl/types";
+import type { Type } from "../glsl/types/types";
 
 export interface Variable {
   name: string;

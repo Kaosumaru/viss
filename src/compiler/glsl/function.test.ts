@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { listFunctions } from "./function";
-import { scalar } from "./types";
+import { scalar } from "./types/types";
 
 test("Parses simple function", () => {
   const list = listFunctions(

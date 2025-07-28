@@ -1,4 +1,4 @@
-import { Any, scalar, vector } from "@glsl/types";
+import { Any, scalar, vector } from "@glsl/types/types";
 import { LiteralNode } from "./basic/literal";
 import { BooleanLiteralNode } from "./basic/booleanLiteral";
 import type { CompilerNode } from "./compilerNode";

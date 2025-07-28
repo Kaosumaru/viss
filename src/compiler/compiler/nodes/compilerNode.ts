@@ -4,7 +4,7 @@ import type {
   ParameterValueType,
 } from "@graph/parameter";
 import type { Context, Expression, Variable } from "../context";
-import { scalar, type Type } from "@glsl/types";
+import { scalar, type Type } from "@glsl/types/types";
 import type { CompilationOptions } from "@compiler/compiler";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Parameters as GraphParameters } from "@graph/parameter";

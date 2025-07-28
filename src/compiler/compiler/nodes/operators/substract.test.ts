@@ -1,4 +1,4 @@
-import { scalar } from "@glsl/types";
+import { scalar } from "@glsl/types/types";
 import { expectedOutput, setup } from "@test/setup";
 import { expect, test } from "vitest";
 

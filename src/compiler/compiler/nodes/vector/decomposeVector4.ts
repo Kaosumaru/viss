@@ -1,6 +1,6 @@
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
-import { scalar, vector } from "@glsl/types";
+import { scalar, vector } from "@glsl/types/types";
 
 class DecomposeVector4 extends CompilerNode {
   constructor() {

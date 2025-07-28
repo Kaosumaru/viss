@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Socket } from "rete/_types/presets/classic";
 import styled from "styled-components";
-import type { Type } from "@glsl/types";
-import { typeToName } from "@glsl/typeToString";
+import type { Type } from "@glsl/types/types";
+import { typeToName } from "@glsl/types/typeToString";
 import { getTypeBorderColor, getTypeColor } from "./typeColor";
 
 interface SocketWithType extends Socket {

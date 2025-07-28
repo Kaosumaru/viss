@@ -3,7 +3,7 @@ import type {
   ParameterDeclarationNode,
   TypeSpecifierNode,
 } from "@shaderfrog/glsl-parser/ast";
-import { scalar, vector, type Type } from "./types";
+import { scalar, vector, type Type } from "./types/types";
 import { parse } from "@shaderfrog/glsl-parser";
 import type { Graph } from "@graph/graph";
 
