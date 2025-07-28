@@ -236,8 +236,11 @@ export class EditorAPIImp implements EditorAPI {
       if (diff.addedConnections) {
         for (const connection of diff.addedConnections) {
           const id = getUIConnectionId(connection);
-          if (this.editor.getConnection(id)) {
-            continue; // already exists
+          const uiConnection = this.editor.getConnection(id);
+          if (uiConnection) {
+            uiConnection.type = connection.type;
+            this.area.update("connection", uiConnection.id);
+            continue;
           }
           await this.editor.addConnection(
             connectionToUIConnection(id, connection)
@@ -325,6 +328,7 @@ function connectionToUIConnection(
     sourceOutput: connection.from.socketId,
     target: connection.to.nodeId,
     targetInput: connection.to.socketId,
+    type: connection.type,
   };
 }
 
