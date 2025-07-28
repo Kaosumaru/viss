@@ -17,6 +17,8 @@ import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
 import { getBuiltInFunctions } from "@glsl/builtInIncludes";
 import { copyNodes } from "./copyNodes";
 import { pasteNodes } from "./pasteNodes";
+import type { Type } from "@glsl/types/types";
+import type { SocketReference } from "@graph/socket";
 
 export interface InputConnection {
   node: Node;
@@ -146,6 +148,13 @@ export class CompilerInternal {
   }
 
   addConnection(connection: Connection): GraphDiff {
+    const fromNode = this.getNodeById(connection.from.nodeId);
+    if (!fromNode) {
+      throw new Error(
+        `From node with id ${connection.from.nodeId} not found in graph`
+      );
+    }
+
     // TODO throw error if connection is invalid (would cause loop or is of invalid type)
     const index = this.graph.connections.findIndex((conn) =>
       areConnectionsSame(conn, connection)
@@ -155,6 +164,7 @@ export class CompilerInternal {
     }
     const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
 
+    connection.type = this.getOutputType(connection.from);
     this.graph.connections.push(connection);
     this.cacheConnection(connection);
 
@@ -315,6 +325,17 @@ export class CompilerInternal {
     }
 
     return invalidatedNodeIds;
+  }
+
+  protected getOutputType(ref: SocketReference): Type {
+    const ctx = this.compile(ref.nodeId);
+    const socket = ctx.outputs[ref.socketId];
+    if (!socket) {
+      throw new Error(
+        `Output socket with id ${ref.socketId} not found in node ${ref.nodeId}`
+      );
+    }
+    return socket.type;
   }
 
   protected cachedContexts: Map<string, Context> = new Map();
