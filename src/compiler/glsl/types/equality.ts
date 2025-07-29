@@ -23,8 +23,8 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
   }
 }
 
-function areVariantsEqual(types1: Set<Type>, types2: Set<Type>): boolean {
-  if (types1.size !== types2.size) {
+function areVariantsEqual(types1: Type[], types2: Type[]): boolean {
+  if (types1.length !== types2.length) {
     return false;
   }
 
