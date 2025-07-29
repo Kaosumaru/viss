@@ -69,12 +69,29 @@ const functions = createCategory({
   id: "functions",
   name: "Functions",
   nodes: {
-    length: new FunctionNode("length", "Length of a vector", signature(genFDComponent, [
-      ["in", genFDType],
-    ])),
-
     abs: new FunctionNode("abs", "Absolute value", signature(genFIDType, [
       ["in", genFIDType],
+    ])),
+    sign: new FunctionNode("sign", "Sign of a value", signature(genFIDType, [
+      ["in", genFIDType],
+    ])),
+    floor: new FunctionNode("floor", "Floor of a value", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    trunc: new FunctionNode("trunc", "Truncate a value", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    round: new FunctionNode("round", "Round a value", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    roundEven: new FunctionNode("roundEven", "Round to nearest even", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    ceil: new FunctionNode("ceil", "Ceiling of a value", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    fract: new FunctionNode("fract", "Fractional part of a value", signature(genFDType, [
+      ["in", genFDType],
     ])),
 
     // TODO mix have quite a bit of overloads
@@ -109,6 +126,42 @@ const functionsTrig = createCategory({
     sinh: new FunctionNode("sinh", "Hyperbolic sine function", trigSignature),
     cosh: new FunctionNode("cosh", "Hyperbolic cosine function", trigSignature),
     tanh: new FunctionNode("tanh", "Hyperbolic tangent function", trigSignature),
+  },
+});
+
+const functionsVec = createCategory({
+  id: "functionsVec",
+  name: "Vector Functions",
+  nodes: {
+    length: new FunctionNode("length", "Length of a vector", signature(genFDComponent, [
+      ["in", genFDType],
+    ])),
+    distance: new FunctionNode("distance", "Distance between two points", signature(genFDComponent, [
+      ["p1", genFDType],
+      ["p2", genFDType],
+    ])),
+    dot: new FunctionNode("dot", "Dot product of two vectors", signature(genFDComponent, [
+      ["v1", genFDType],
+      ["v2", genFDType],
+    ])),
+    // TODO cross
+    normalize: new FunctionNode("normalize", "Normalize a vector", signature(genFDType, [
+      ["in", genFDType],
+    ])),
+    faceforward: new FunctionNode("faceforward", "Face forward vector", signature(genFDType, [
+      ["N", genFDType],
+      ["I", genFDType],
+      ["Nref", genFDType],
+    ])),
+    reflect: new FunctionNode("reflect", "Reflect a vector", signature(genFDType, [
+      ["I", genFDType],
+      ["N", genFDType],
+    ])),
+    refract: new FunctionNode("refract", "Refract a vector", signature(genFDType, [
+      ["I", genFDType],
+      ["N", genFDType],
+      ["eta", genFDComponent],
+    ])),
   },
 });
 
@@ -173,6 +226,7 @@ export const nodeCategories = [
   operators,
   functions,
   functionsTrig,
+  functionsVec,
   vectors,
   uniforms,
   output,
@@ -186,6 +240,7 @@ export const nodes = {
   ...operators.nodes,
   ...functions.nodes,
   ...functionsTrig.nodes,
+  ...functionsVec.nodes,
   ...vectors.nodes,
   ...uniforms.nodes,
   ...output.nodes,
