@@ -21,7 +21,7 @@ export interface VectorType {
 
 export interface VariantType {
   id: "variant";
-  types: Set<Type>;
+  types: Type[];
 }
 
 export type Type = AnyType | ScalarType | VectorType | VariantType;
@@ -44,19 +44,24 @@ export function vector(type: ScalarTypeName, size: number): VectorType {
 export function variant(types: Type[]): VariantType {
   return {
     id: "variant",
-    types: new Set(flattenVariantTypes(types)),
+    types: flattenVariantTypes(types),
   };
 }
 
 export function variantGeneric(type: ScalarTypeName): VariantType {
-  return variant([scalar(type), vector(type, 2), vector(type, 3), vector(type, 4)]);
+  return variant([
+    scalar(type),
+    vector(type, 2),
+    vector(type, 3),
+    vector(type, 4),
+  ]);
 }
 
 function flattenVariantTypes(types: Type[]): Type[] {
   const result: Type[] = [];
   for (const type of types) {
     if (type.id === "variant") {
-      result.push(...flattenVariantTypes(Array.from(type.types)));
+      result.push(...flattenVariantTypes(type.types));
     } else {
       result.push(type);
     }

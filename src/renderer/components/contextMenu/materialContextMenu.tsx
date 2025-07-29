@@ -35,7 +35,7 @@ const ContextMenuContainer = styled(Paper)(() => ({
 }));
 
 const SearchContainer = styled(Box)(() => ({
-  padding: "8px 12px",
+  padding: "8px 8px",
   borderBottom: "1px solid #464647",
   backgroundColor: "#383838",
 }));
@@ -79,7 +79,7 @@ const CategoryList = styled(List)(() => ({
 const CategoryHeader = styled(ListItem)(() => ({
   backgroundColor: "#323233",
   borderBottom: "1px solid #464647",
-  padding: "8px 16px",
+  padding: "2px 8px",
   cursor: "pointer",
   "&:hover": {
     backgroundColor: "#404041",
@@ -87,7 +87,7 @@ const CategoryHeader = styled(ListItem)(() => ({
 }));
 
 const NodeItem = styled(ListItem)(() => ({
-  padding: "6px 32px",
+  padding: "0px 10px",
   cursor: "pointer",
   borderLeft: "2px solid transparent",
   "&:hover": {
@@ -263,16 +263,14 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
                 >
                   <ListItemText
                     primary={
-                      <Typography variant="body2" color="#ffffff">
-                        {item.name}
-                      </Typography>
-                    }
-                    secondary={
-                      item.description && (
-                        <Typography variant="caption" color="#cccccc">
-                          {item.description}
+                      <>
+                        <Typography variant="body2" color="#ffffff">
+                          {item.name}{" "}
+                          <Typography variant="caption" color="#cccccc">
+                            {item.description}
+                          </Typography>
                         </Typography>
-                      )
+                      </>
                     }
                   />
                 </NodeItem>

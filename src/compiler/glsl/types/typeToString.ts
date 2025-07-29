@@ -16,8 +16,8 @@ export function typeToGlsl(type: Type): string {
       return type.type;
     case "vector":
       return `${scalarToVectorPrefix(type.type)}${type.size}`;
-    default:
-      throw new Error(`Unknown type: ${JSON.stringify(type)}`);
+    case "variant":
+      return type.types.map(typeToGlsl).join(" | ");
   }
 }
 
@@ -29,7 +29,9 @@ function scalarToVectorPrefix(scalar: ScalarTypeName): string {
       return "ivec";
     case "bool":
       return "bvec";
-    default:
-      throw new Error(`Unknown scalar type: ${scalar}`);
+    case "uint":
+      return "uvec";
+    case "double":
+      return "dvec";
   }
 }
