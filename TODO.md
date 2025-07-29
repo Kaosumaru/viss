@@ -8,6 +8,7 @@
 5. Loops validation
 6. templated functions (add, etc)
 7. Error messages on nodes
+8. Fuinctions should only accept EXACT type (implicit conversion is for rare cases, like constructors)
 
 Optimization
 1. coords nodes could have a global cache
@@ -15,7 +16,7 @@ Optimization
 3. Right compilation of a node is stack based, we could fix that (maybe first analyze tree and compile leafs so we won't actually change internal API)
 
 Check
-1. If we don't need to onherint from rete socket
+1. If we don't need to inherit from rete socket
 
 bugs
 1. Fix color picker wheel

@@ -48,6 +48,10 @@ export function variant(types: Type[]): VariantType {
   };
 }
 
+export function variantGeneric(type: ScalarTypeName): VariantType {
+  return variant([scalar(type), vector(type, 2), vector(type, 3), vector(type, 4)]);
+}
+
 function flattenVariantTypes(types: Type[]): Type[] {
   const result: Type[] = [];
   for (const type of types) {

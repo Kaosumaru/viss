@@ -1,4 +1,4 @@
-import { Any, scalar, vector } from "@glsl/types/types";
+import { scalar, vector } from "@glsl/types/types";
 import { LiteralNode } from "./basic/literal";
 import { BooleanLiteralNode } from "./basic/booleanLiteral";
 import type { CompilerNode } from "./compilerNode";
@@ -10,7 +10,7 @@ import { UniformNode } from "./uniforms/uniform";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
 import { composeVector4 } from "./vector/composeVector4";
-import { FunctionNode, template } from "./functions/functionNode";
+import { FunctionNode, genFDComponent, genFDType, genFIDType, genFType, signature } from "./functions/functionNode";
 import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
@@ -69,20 +69,46 @@ const functions = createCategory({
   id: "functions",
   name: "Functions",
   nodes: {
-    length: new FunctionNode("length", "Length of a vector", scalar("float"), [
-      ["in", Any],
-    ]),
-    sin: new FunctionNode("sin", "Sine function", scalar("float"), [
-      ["in", scalar("float")],
-    ]),
-    abs: new FunctionNode("abs", "Absolute value", scalar("float"), [
-      ["in", scalar("float")],
-    ]),
-    mix: new FunctionNode("mix", "Linear interpolation", template(), [
-      ["x", template()],
-      ["y", template()],
+    length: new FunctionNode("length", "Length of a vector", signature(genFDComponent, [
+      ["in", genFDType],
+    ])),
+
+    abs: new FunctionNode("abs", "Absolute value", signature(genFIDType, [
+      ["in", genFIDType],
+    ])),
+
+    // TODO mix have quite a bit of overloads
+    mix: new FunctionNode("mix", "Linear interpolation", signature(genFDType, [
+      ["x", genFDType],
+      ["y", genFDType],
       ["a", scalar("float")],
-    ]),
+    ])),
+  },
+});
+
+
+const trigSignature = signature(genFType, [
+  ["in", genFType],
+]);
+
+const functionsTrig = createCategory({
+  id: "functionsTrig",
+  name: "Trigonometry",
+  nodes: {
+
+    radians: new FunctionNode("radians", "Convert degrees to radians", trigSignature),
+    degrees: new FunctionNode("degrees", "Convert radians to degrees", trigSignature),
+    sin: new FunctionNode("sin", "Sine function", trigSignature),
+    cos: new FunctionNode("cos", "Cosine function", trigSignature),
+    tan: new FunctionNode("tan", "Tangent function", trigSignature),
+    asin: new FunctionNode("asin", "Arcsine function", trigSignature),
+    acos: new FunctionNode("acos", "Arccosine function", trigSignature),
+    atan: new FunctionNode("atan", "Arctangent function", trigSignature),
+
+    // TODO missing atan2 override, which has two inputs
+    sinh: new FunctionNode("sinh", "Hyperbolic sine function", trigSignature),
+    cosh: new FunctionNode("cosh", "Hyperbolic cosine function", trigSignature),
+    tanh: new FunctionNode("tanh", "Hyperbolic tangent function", trigSignature),
   },
 });
 
@@ -146,6 +172,7 @@ export const nodeCategories = [
   literals,
   operators,
   functions,
+  functionsTrig,
   vectors,
   uniforms,
   output,
@@ -158,6 +185,7 @@ export const nodes = {
   ...literals.nodes,
   ...operators.nodes,
   ...functions.nodes,
+  ...functionsTrig.nodes,
   ...vectors.nodes,
   ...uniforms.nodes,
   ...output.nodes,

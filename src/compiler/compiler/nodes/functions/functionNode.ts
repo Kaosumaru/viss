@@ -1,4 +1,4 @@
-import { Any, type Type } from "@glsl/types/types";
+import { Any, scalar, variant, variantGeneric, type Type } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
@@ -9,6 +9,18 @@ export interface TemplateType {
   constraint?: Type;
 }
 
+export interface TemplateComponentType {
+  id: "templateComponent";
+  name: string;
+}
+
+export function templateComponent(name: string): TemplateComponentType {
+  return {
+    id: "templateComponent",
+    name,
+  };
+}
+
 export function template(constraint?: Type, name: string = "T"): TemplateType {
   return {
     id: "template",
@@ -17,34 +29,58 @@ export function template(constraint?: Type, name: string = "T"): TemplateType {
   };
 }
 
-type Param = [string, Type | TemplateType];
+export const genFType = template(variantGeneric("float"), "F");
+export const genDType = template(variantGeneric("double"), "D");
+export const genFDType = template(variant([variantGeneric("float"), variantGeneric("double")]), "FD");
+export const genFIDType = template(variant([variantGeneric("float"), variantGeneric("int"), variantGeneric("double")]), "FID");
+export const genFDComponent = templateComponent("FD");
+
+type Param = [string, Type | TemplateType | TemplateComponentType];
+
+export interface Signature {
+    outType: Type | TemplateType | TemplateComponentType;
+    params: Param[];
+}
+
+export function signature(
+  outType: Type | TemplateType | TemplateComponentType,
+  params: Param[]
+): Signature {
+  return {
+    outType,
+    params,
+  };
+}
 
 export class FunctionNode extends CompilerNode {
   constructor(
     name: string,
     description: string,
-    outType: Type | TemplateType,
-    params: Param[]
+    signature: Signature
   ) {
     super();
     this.name = name;
-    this.outType = outType;
+    this.outType = signature.outType;
+    this.params = signature.params;
     this.description = description;
-    for (const [name, type] of params) {
+    for (const [name, type] of signature.params) {
       if (type.id === "template") {
+        this.addInput(name, type.constraint ?? Any);
+        continue;
+      }
+      if (type.id === "templateComponent") {
+        // TODO we could add constraint here
         this.addInput(name, Any);
         continue;
       }
       this.addInput(name, type);
     }
 
-    if (outType.id === "template") {
+    if (signature.outType.id === "template" || signature.outType.id === "templateComponent") {
       this.addOutput("out", Any);
     } else {
-      this.addOutput("out", outType);
+      this.addOutput("out", signature.outType);
     }
-
-    this.params = params;
   }
 
   override compile(node: NodeContext): Context {
@@ -66,6 +102,17 @@ export class FunctionNode extends CompilerNode {
         data: callExpression,
       });
     }
+    if (this.outType.id === "templateComponent") {
+      let resolvedType = resolver.getResolvedType(this.outType.name);
+      if (resolvedType.id === "vector") {
+        resolvedType = scalar(resolvedType.type);
+      }
+      return this.createOutput(node, {
+        type: resolvedType,
+        data: callExpression,
+      });
+    }
+
     return this.createOutput(node, callExpression);
   }
 
@@ -77,7 +124,7 @@ export class FunctionNode extends CompilerNode {
     return this.description;
   }
 
-  outType: Type | TemplateType;
+  outType: Type | TemplateType | TemplateComponentType;
   params: Param[];
   name: string;
   description: string;
