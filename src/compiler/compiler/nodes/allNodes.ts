@@ -10,7 +10,14 @@ import { UniformNode } from "./uniforms/uniform";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
 import { composeVector4 } from "./vector/composeVector4";
-import { FunctionNode, genFDComponent, genFDType, genFIDType, genFType, signature } from "./functions/functionNode";
+import {
+  FunctionNode,
+  genFDComponent,
+  genFDType,
+  genFIDType,
+  genFType,
+  signature,
+} from "./functions/functionNode";
 import { decomposeVector4 } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
@@ -69,52 +76,76 @@ const functions = createCategory({
   id: "functions",
   name: "Functions",
   nodes: {
-    abs: new FunctionNode("abs", "Absolute value", signature(genFIDType, [
-      ["in", genFIDType],
-    ])),
-    sign: new FunctionNode("sign", "Sign of a value", signature(genFIDType, [
-      ["in", genFIDType],
-    ])),
-    floor: new FunctionNode("floor", "Floor of a value", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    trunc: new FunctionNode("trunc", "Truncate a value", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    round: new FunctionNode("round", "Round a value", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    roundEven: new FunctionNode("roundEven", "Round to nearest even", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    ceil: new FunctionNode("ceil", "Ceiling of a value", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    fract: new FunctionNode("fract", "Fractional part of a value", signature(genFDType, [
-      ["in", genFDType],
-    ])),
+    abs: new FunctionNode(
+      "abs",
+      "Absolute value",
+      signature(genFIDType, [["in", genFIDType]])
+    ),
+    sign: new FunctionNode(
+      "sign",
+      "Sign of a value",
+      signature(genFIDType, [["in", genFIDType]])
+    ),
+    floor: new FunctionNode(
+      "floor",
+      "Floor of a value",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    trunc: new FunctionNode(
+      "trunc",
+      "Truncate a value",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    round: new FunctionNode(
+      "round",
+      "Round a value",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    roundEven: new FunctionNode(
+      "roundEven",
+      "Round to nearest even",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    ceil: new FunctionNode(
+      "ceil",
+      "Ceiling of a value",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    fract: new FunctionNode(
+      "fract",
+      "Fractional part of a value",
+      signature(genFDType, [["in", genFDType]])
+    ),
 
     // TODO mix have quite a bit of overloads
-    mix: new FunctionNode("mix", "Linear interpolation", signature(genFDType, [
-      ["x", genFDType],
-      ["y", genFDType],
-      ["a", scalar("float")],
-    ])),
+    mix: new FunctionNode(
+      "mix",
+      "Linear interpolation",
+      signature(genFDType, [
+        ["x", genFDType],
+        ["y", genFDType],
+        ["a", scalar("float")],
+      ])
+    ),
   },
 });
 
-
-const trigSignature = signature(genFType, [
-  ["in", genFType],
-]);
+const trigSignature = signature(genFType, [["in", genFType]]);
 
 const functionsTrig = createCategory({
   id: "functionsTrig",
   name: "Trigonometry",
   nodes: {
-
-    radians: new FunctionNode("radians", "Convert degrees to radians", trigSignature),
-    degrees: new FunctionNode("degrees", "Convert radians to degrees", trigSignature),
+    radians: new FunctionNode(
+      "radians",
+      "Convert degrees to radians",
+      trigSignature
+    ),
+    degrees: new FunctionNode(
+      "degrees",
+      "Convert radians to degrees",
+      trigSignature
+    ),
     sin: new FunctionNode("sin", "Sine function", trigSignature),
     cos: new FunctionNode("cos", "Cosine function", trigSignature),
     tan: new FunctionNode("tan", "Tangent function", trigSignature),
@@ -125,7 +156,11 @@ const functionsTrig = createCategory({
     // TODO missing atan2 override, which has two inputs
     sinh: new FunctionNode("sinh", "Hyperbolic sine function", trigSignature),
     cosh: new FunctionNode("cosh", "Hyperbolic cosine function", trigSignature),
-    tanh: new FunctionNode("tanh", "Hyperbolic tangent function", trigSignature),
+    tanh: new FunctionNode(
+      "tanh",
+      "Hyperbolic tangent function",
+      trigSignature
+    ),
   },
 });
 
@@ -133,35 +168,59 @@ const functionsVec = createCategory({
   id: "functionsVec",
   name: "Vector Functions",
   nodes: {
-    length: new FunctionNode("length", "Length of a vector", signature(genFDComponent, [
-      ["in", genFDType],
-    ])),
-    distance: new FunctionNode("distance", "Distance between two points", signature(genFDComponent, [
-      ["p1", genFDType],
-      ["p2", genFDType],
-    ])),
-    dot: new FunctionNode("dot", "Dot product of two vectors", signature(genFDComponent, [
-      ["v1", genFDType],
-      ["v2", genFDType],
-    ])),
+    length: new FunctionNode(
+      "length",
+      "Length of a vector",
+      signature(genFDComponent, [["in", genFDType]])
+    ),
+    distance: new FunctionNode(
+      "distance",
+      "Distance between two points",
+      signature(genFDComponent, [
+        ["p1", genFDType],
+        ["p2", genFDType],
+      ])
+    ),
+    dot: new FunctionNode(
+      "dot",
+      "Dot product of two vectors",
+      signature(genFDComponent, [
+        ["v1", genFDType],
+        ["v2", genFDType],
+      ])
+    ),
     // TODO cross
-    normalize: new FunctionNode("normalize", "Normalize a vector", signature(genFDType, [
-      ["in", genFDType],
-    ])),
-    faceforward: new FunctionNode("faceforward", "Face forward vector", signature(genFDType, [
-      ["N", genFDType],
-      ["I", genFDType],
-      ["Nref", genFDType],
-    ])),
-    reflect: new FunctionNode("reflect", "Reflect a vector", signature(genFDType, [
-      ["I", genFDType],
-      ["N", genFDType],
-    ])),
-    refract: new FunctionNode("refract", "Refract a vector", signature(genFDType, [
-      ["I", genFDType],
-      ["N", genFDType],
-      ["eta", genFDComponent],
-    ])),
+    normalize: new FunctionNode(
+      "normalize",
+      "Normalize a vector",
+      signature(genFDType, [["in", genFDType]])
+    ),
+    faceforward: new FunctionNode(
+      "faceforward",
+      "Face forward vector",
+      signature(genFDType, [
+        ["N", genFDType],
+        ["I", genFDType],
+        ["Nref", genFDType],
+      ])
+    ),
+    reflect: new FunctionNode(
+      "reflect",
+      "Reflect a vector",
+      signature(genFDType, [
+        ["I", genFDType],
+        ["N", genFDType],
+      ])
+    ),
+    refract: new FunctionNode(
+      "refract",
+      "Refract a vector",
+      signature(genFDType, [
+        ["I", genFDType],
+        ["N", genFDType],
+        ["eta", genFDComponent],
+      ])
+    ),
   },
 });
 
