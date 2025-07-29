@@ -153,7 +153,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       controls.length * 36;
 
     if (description.showPreview) {
-      this.height += 140; // Add height for preview control
+      this.height += 145; // Add height for preview control
     }
   }
 

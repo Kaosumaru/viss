@@ -1,8 +1,10 @@
 /* eslint-disable no-constant-binary-expression */
 import { type RenderEmit, Presets } from "rete-react-plugin";
-import styled from "styled-components";
+import { Paper } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
+import { Padding } from "@mui/icons-material";
 
 type NodeExtraData = { width?: number; height?: number };
 
@@ -21,94 +23,77 @@ function sortByIndex<T extends [string, undefined | { index?: number }][]>(
 
 export const selectedShadow = "0px 2px 6px 2px #985700, 0 0 0px 5px #c9b144;";
 
-const NodeStyles = styled(Presets.classic.NodeStyles)`
-  min-width: auto;
-  /* outline: ${(props) => (props.selected ? "4px solid #c9b144" : "none")}; */
-  border: 1px solid #000 !important;
-  border-radius: 20px !important;
-  box-shadow: ${(props) =>
-    props.selected ? selectedShadow : "0 5px 5px 1px rgba(0,0,0,.3)"};
-  background-color: hsla(0, 0%, 6%, 0.55) !important;
-  z-index: 1;
-  .glossy {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-top: 1.5px solid #ffffffb3;
-    border-radius: inherit;
-    background: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 25%) 0px,
-      rgb(255 255 255 / 21%) 3px,
-      rgb(255 255 255 / 14%) 6px,
-      rgb(255 255 255 / 10%) 9px,
-      rgb(255 255 255 / 10%) 13px,
-      transparent 13px
-    );
-    z-index: -1;
-  }
-  .output,
-  .input {
-    display: flex;
-    align-items: center;
-  }
-  .output {
-    justify-content: flex-end;
-  }
-  .title {
-    white-space: nowrap;
-    background: radial-gradient(50% 90%, #3f80c39e 0%, transparent 80%);
-    font-size: 20px;
-    padding: 5px;
-    border-radius: 15px 15px 0 0;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .title,
-  .input-title,
-  .output-title {
-    font-family: "Montserrat", sans-serif !important;
-    font-weight: 300;
-  }
-  .input-title,
-  .output-title {
-    font-size: 14px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  .input-socket,
-  .output-socket {
-    position: relative;
-    z-index: 5;
-  }
-  .input-socket {
-    margin-left: 5px !important; // -15px;
-  }
-  .output-socket {
-    margin-right: 5px !important; // -15px;
-  }
-  .input-control {
-    overflow: hidden;
-    padding: 2px;
-  }
+const StyledPaper = styled(Paper)<{ selected?: boolean }>(({ selected }) => ({
+  minWidth: "auto",
+  border: "1px solid #000 !important",
 
-  .columns {
-    display: flex;
-    .column {
-      overflow: hidden;
-      flex: 1;
-      flex-basis: content;
-    }
-  }
-  ${(props) => (props.styles ? props.styles(props) : "")}
-`;
+  boxShadow: selected ? selectedShadow : "0 5px 5px 1px rgba(0,0,0,.3)",
+  zIndex: 1,
+  position: "relative",
+
+  "& .output, & .input": {
+    display: "flex",
+    alignItems: "center",
+  },
+
+  "& .output": {
+    justifyContent: "flex-end",
+  },
+
+  "& .title": {
+    whiteSpace: "nowrap",
+    fontSize: "20px",
+    padding: "5px",
+    borderRadius: "15px 15px 0 0",
+    textAlign: "center",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    fontFamily: '"Montserrat", sans-serif !important',
+    fontWeight: 300,
+  },
+
+  "& .input-title, & .output-title": {
+    fontFamily: '"Montserrat", sans-serif !important',
+    fontWeight: 300,
+    fontSize: "14px",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+  },
+
+  "& .input-socket, & .output-socket": {
+    position: "relative",
+    zIndex: 5,
+  },
+
+  "& .controls": {
+    padding: "0px 10px 0px 10px",
+  },
+
+  "& .input-socket": {
+    marginLeft: "5px !important",
+  },
+
+  "& .output-socket": {
+    marginRight: "5px !important",
+  },
+
+  "& .input-control": {
+    overflow: "hidden",
+    padding: "2px",
+  },
+
+  "& .columns": {
+    display: "flex",
+    "& .column": {
+      overflow: "hidden",
+      flex: 1,
+      flexBasis: "content",
+    },
+  },
+}));
 
 type Props<S extends Schemes> = {
   data: S["Node"] & NodeExtraData;
-  styles?: () => unknown;
   emit: RenderEmit<S>;
 };
 
@@ -127,11 +112,11 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
   sortByIndex(controls);
 
   return (
-    <NodeStyles
+    <StyledPaper
       selected={selected}
       style={{ width: props.data.width, height: props.data.height }}
-      styles={props.styles}
       data-node-id={props.data.id}
+      elevation={selected ? 8 : 3}
     >
       {/* <div style={{ position: 'absolute', top: '-1em', right: '1em' }}>{props.data.id}</div> */}
       <div className="glossy rete-node"></div>
@@ -214,6 +199,6 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
           ) : null;
         })}
       </div>
-    </NodeStyles>
+    </StyledPaper>
   );
 }

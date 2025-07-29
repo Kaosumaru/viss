@@ -88,8 +88,8 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
     <div
       ref={divRef}
       style={{
-        width: "165px",
-        height: "165px",
+        width: "180px",
+        height: "180px",
         borderRadius: "2px",
       }}
     />
