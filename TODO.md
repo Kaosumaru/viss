@@ -4,6 +4,8 @@
 4. Error messages on nodes
 5. Fuinctions should only accept EXACT type (implicit conversion is for rare cases, like constructors)
 6. Portals
+7. Undo/redo
+8. Remove Any type
 
 Optimization
 1. splitting things to variables

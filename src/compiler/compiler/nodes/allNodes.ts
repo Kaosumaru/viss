@@ -18,7 +18,7 @@ import {
   genFType,
   signature,
 } from "./functions/functionNode";
-import { decomposeVector4 } from "./vector/decomposeVector4";
+import { decomposeVector } from "./vector/decomposeVector4";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
 import { multiply } from "./operators/multiply";
@@ -233,7 +233,7 @@ const vectors = createCategory({
 
     composeVector4,
     decomposeVector2,
-    decomposeVector4,
+    decomposeVector4: decomposeVector,
   },
 });
 

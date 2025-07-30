@@ -9,6 +9,7 @@ import type { CompilationOptions } from "@compiler/compiler";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Parameters as GraphParameters } from "@graph/parameter";
 import { toFloat } from "@glsl/utils";
+import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -44,7 +45,12 @@ export interface Pin {
   type: Type;
 }
 
+export interface InputPin extends Pin {
+  defaultValue?: Expression;
+}
+
 export type Pins = Pin[];
+export type InputPins = InputPin[];
 
 export interface Parameter {
   name: string;
@@ -70,7 +76,7 @@ export interface NodeInfo {
 
 export type Parameters = Parameter[];
 export abstract class CompilerNode {
-  private inputs_: Pins = [];
+  private inputs_: InputPins = [];
   private parameters_: Parameters = [];
   private outputs_: Pins = [];
   abstract compile(node: NodeContext): Context;
@@ -92,8 +98,12 @@ export abstract class CompilerNode {
     };
   }
 
-  protected addInput(name: string, type: Type): void {
-    this.inputs_.push({ name, type });
+  protected addInput(
+    name: string,
+    type: Type,
+    defaultValue?: Expression
+  ): void {
+    this.inputs_.push({ name, type, defaultValue });
   }
 
   protected addOutput(name: string, type: Type): void {
@@ -216,7 +226,20 @@ export abstract class CompilerNode {
     if (input) {
       return input;
     }
+    const inputPin = this.getInputPin(name);
+    if (inputPin) {
+      if (inputPin.defaultValue) {
+        return inputPin.defaultValue;
+      }
+      if (inputPin.type.id !== "any") {
+        return defaultExpressionForType(inputPin.type);
+      }
+    }
     throw new Error(`Input '${name}' not found in node ${node.info()}`);
+  }
+
+  protected getInputPin(name: string): InputPin | undefined {
+    return this.inputs_.find((input) => input.name === name);
   }
 
   getDefaultParameters(): GraphParameters {

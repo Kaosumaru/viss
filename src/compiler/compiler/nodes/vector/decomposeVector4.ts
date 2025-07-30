@@ -1,16 +1,15 @@
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
-import { scalar, vector } from "@glsl/types/types";
+import { variant, vector } from "@glsl/types/types";
 
-class DecomposeVector4 extends CompilerNode {
+class DecomposeVector extends CompilerNode {
   constructor() {
     super();
 
-    this.addInput("in", vector("float", 4));
-    this.addOutput("x", scalar("float"));
-    this.addOutput("y", scalar("float"));
-    this.addOutput("z", scalar("float"));
-    this.addOutput("w", scalar("float"));
+    this.addInput(
+      "in",
+      variant([vector("float", 2), vector("float", 3), vector("float", 4)])
+    );
   }
 
   override compile(node: NodeContext): Context {
@@ -25,12 +24,12 @@ class DecomposeVector4 extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "decompose Vec4";
+    return "decompose Vector";
   }
 
   override getDescription(): string {
-    return "Decompose a vec4 into its x, y, z, and w components";
+    return "Decompose a vec4 into its components";
   }
 }
 
-export const decomposeVector4 = new DecomposeVector4();
+export const decomposeVector = new DecomposeVector();
