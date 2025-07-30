@@ -21,7 +21,7 @@ class DecomposeVector2 extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Decompose Vec2";
+    return "decompose Vec2";
   }
 
   override getDescription(): string {

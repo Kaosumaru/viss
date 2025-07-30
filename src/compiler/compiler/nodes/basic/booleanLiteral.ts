@@ -23,7 +23,7 @@ export class BooleanLiteralNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Bool";
+    return "bool";
   }
 
   override getDescription(): string {

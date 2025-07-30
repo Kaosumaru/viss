@@ -25,7 +25,7 @@ class ColorNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Color";
+    return "color";
   }
 
   override getDescription(): string {

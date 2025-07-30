@@ -44,7 +44,7 @@ class OutputNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Output";
+    return "output";
   }
 
   override getDescription(): string {

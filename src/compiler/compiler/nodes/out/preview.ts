@@ -24,7 +24,7 @@ class PreviewNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Preview";
+    return "preview";
   }
 
   override getDescription(): string {

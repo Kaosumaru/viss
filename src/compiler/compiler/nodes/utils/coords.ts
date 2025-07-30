@@ -35,7 +35,7 @@ class CoordsNode extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Coords";
+    return "coords";
   }
 
   override getDescription(): string {

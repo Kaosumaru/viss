@@ -19,7 +19,7 @@ export class GetMember extends CompilerNode {
   }
 
   override getLabel(): string {
-    return `Get ${this.member.toUpperCase()}`;
+    return `get ${this.member.toUpperCase()}`;
   }
 
   override getDescription(): string {

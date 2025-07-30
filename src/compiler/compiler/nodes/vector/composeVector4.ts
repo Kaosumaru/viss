@@ -23,7 +23,7 @@ class ComposeVector4 extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "Compose Vec4";
+    return "compose Vec4";
   }
 
   override getDescription(): string {
