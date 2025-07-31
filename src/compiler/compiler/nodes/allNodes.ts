@@ -18,7 +18,7 @@ import {
   genFType,
   signature,
 } from "./functions/functionNode";
-import { decomposeVector } from "./vector/decomposeVector4";
+import { decomposeVector } from "./vector/decomposeVector";
 import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
 import { multiply } from "./operators/multiply";

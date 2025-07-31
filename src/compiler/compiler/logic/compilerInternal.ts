@@ -91,7 +91,10 @@ export class CompilerInternal {
     }
 
     const compiledContext = this.compile(output.nodeId);
-    const info = nodeClass.getInfo(this.createNodeContextFor(node), compiledContext);
+    const info = nodeClass.getInfo(
+      this.createNodeContextFor(node),
+      compiledContext
+    );
     const inputPin = info.inputs.find((pin) => pin.name === input.socketId);
     if (!inputPin) {
       return false;
@@ -119,7 +122,7 @@ export class CompilerInternal {
     this.graph.nodes.push(newNode);
 
     return {
-      addedNodes: [this.getAddedNodeInfo(newNode)],
+      addedNodes: [this.getNodeInfo(newNode)],
     };
   }
 
@@ -156,6 +159,16 @@ export class CompilerInternal {
   removeNodes(nodeIds: string[]): GraphDiff {
     const diffs: GraphDiff[] = nodeIds.map((nodeId) => this.removeNode(nodeId));
     return mergeGraphDiffs(diffs);
+  }
+
+  getInfo(nodeIds: string[]): AddedNodeInfo[] {
+    return nodeIds.map((nodeId) => {
+      const node = this.getNodeById(nodeId);
+      if (!node) {
+        throw new Error(`Node with id ${nodeId} not found in graph`);
+      }
+      return this.getNodeInfo(node);
+    });
   }
 
   translateNode(nodeId: string, x: number, y: number) {
@@ -226,7 +239,6 @@ export class CompilerInternal {
     const invalidatedNodeIds = this.invalidateNodes([nodeId]);
 
     return {
-      updatedNodes: [node],
       invalidatedNodeIds,
     };
   }
@@ -245,7 +257,7 @@ export class CompilerInternal {
 
   getGraphAsDiff(): GraphDiff {
     return {
-      addedNodes: this.graph.nodes.map((node) => this.getAddedNodeInfo(node)),
+      addedNodes: this.graph.nodes.map((node) => this.getNodeInfo(node)),
       addedConnections: this.graph.connections,
       invalidatedNodeIds: new Set(
         this.graph.nodes.map((node) => node.identifier)
@@ -311,12 +323,15 @@ export class CompilerInternal {
     });
   }
 
-  protected getAddedNodeInfo(node: Node): AddedNodeInfo {
+  protected getNodeInfo(node: Node): AddedNodeInfo {
     const nodeClass = getNode(node.nodeType as NodeType);
     const compiledContext = this.compile(node.identifier);
     return {
       node,
-      instanceInfo: nodeClass.getInfo(this.createNodeContextFor(node), compiledContext),
+      instanceInfo: nodeClass.getInfo(
+        this.createNodeContextFor(node),
+        compiledContext
+      ),
     };
   }
 

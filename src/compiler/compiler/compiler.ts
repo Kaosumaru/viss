@@ -1,7 +1,7 @@
 import type { Node } from "@graph/node";
 import type { Context } from "./context";
 import { CompilerInternal } from "./logic/compilerInternal";
-import type { Graph, GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
@@ -58,6 +58,10 @@ export class Compiler {
 
   public removeConnection(connection: Connection): GraphDiff {
     return this.graph.removeConnection(connection);
+  }
+
+  public getInfo(nodeIds: string[]): AddedNodeInfo[] {
+    return this.graph.getInfo(nodeIds);
   }
 
   updateParameter(

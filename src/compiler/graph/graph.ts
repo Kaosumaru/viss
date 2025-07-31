@@ -23,7 +23,6 @@ export interface AddedNodeInfo {
 export interface GraphDiff {
   addedNodes?: AddedNodeInfo[];
   removedNodes?: Node[];
-  updatedNodes?: Node[];
   addedConnections?: Connection[];
   removedConnections?: Connection[];
   invalidatedNodeIds?: Set<string>;
@@ -35,10 +34,6 @@ export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
     acc.removedNodes = [
       ...(acc.removedNodes || []),
       ...(diff.removedNodes || []),
-    ];
-    acc.updatedNodes = [
-      ...(acc.updatedNodes || []),
-      ...(diff.updatedNodes || []),
     ];
     acc.addedConnections = [
       ...(acc.addedConnections || []),
