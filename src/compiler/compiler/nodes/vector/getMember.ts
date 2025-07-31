@@ -7,12 +7,13 @@ export class GetMember extends CompilerNode {
     super();
     this.member = member;
     this.addInput("in", inputType);
-    this.addOutput("out", outputType);
+    this.outputType = outputType;
   }
 
   override compile(node: NodeContext): Context {
     const in_ = this.getInput(node, "in");
     return this.createOutput(node, {
+      type: this.outputType,
       data: `${in_.data}.${this.member}`,
       trivial: true, // Uniforms are typically trivial
     });
@@ -26,5 +27,6 @@ export class GetMember extends CompilerNode {
     return `Get the ${this.member} member from the input`;
   }
 
+  outputType: Type;
   member: string;
 }

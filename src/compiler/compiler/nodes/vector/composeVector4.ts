@@ -10,7 +10,6 @@ class ComposeVector4 extends CompilerNode {
     this.addFloat("y");
     this.addFloat("z");
     this.addFloat("w");
-    this.addOutput("out", vector("float", 4));
   }
 
   override compile(node: NodeContext): Context {
@@ -19,7 +18,10 @@ class ComposeVector4 extends CompilerNode {
     const z = this.getFloat(node, "z");
     const w = this.getFloat(node, "w");
 
-    return this.createOutput(node, `vec4(${x}, ${y}, ${z}, ${w})`);
+    return this.createOutput(node, {
+      type: vector("float", 4),
+      data: `vec4(${x}, ${y}, ${z}, ${w})`
+    });
   }
 
   override getLabel(): string {

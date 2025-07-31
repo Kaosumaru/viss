@@ -60,8 +60,9 @@ export interface Parameter {
 }
 
 export interface OutputExpression {
+  name?: string;
   data: string;
-  type?: Type;
+  type: Type;
   trivial?: boolean;
 }
 
@@ -78,7 +79,6 @@ export type Parameters = Parameter[];
 export abstract class CompilerNode {
   private inputs_: InputPins = [];
   private parameters_: Parameters = [];
-  private outputs_: Pins = [];
   abstract compile(node: NodeContext): Context;
   abstract getLabel(): string;
   abstract getDescription(): string;
@@ -87,13 +87,17 @@ export abstract class CompilerNode {
     return false;
   }
 
-  public getInfo(_node: NodeContext): NodeInfo {
+  public getInfo(_node: NodeContext, compiledContext: Context): NodeInfo {
+
     return {
       name: this.getLabel(),
       description: this.getDescription(),
       showPreview: this.showPreview(),
       inputs: this.inputs_,
-      outputs: this.outputs_,
+      outputs: Object.entries(compiledContext.outputs).map(([key, output]) => ({
+        name: key,
+        type: output.type,
+      })),
       parameters: this.parameters_,
     };
   }
@@ -106,44 +110,28 @@ export abstract class CompilerNode {
     this.inputs_.push({ name, type, defaultValue });
   }
 
-  protected addOutput(name: string, type: Type): void {
-    this.outputs_.push({ name, type });
-  }
-
   protected getInputType(name: string): Type | undefined {
     const pin = this.inputs_.find((pin) => pin.name === name);
     return pin?.type;
   }
 
-  protected getOutputType(name: string): Type | undefined {
-    const pin = this.outputs_.find((pin) => pin.name === name);
-    return pin?.type;
-  }
-
   protected createOutput(
     node: NodeContext,
-    expression: string | OutputExpression
+    expression: OutputExpression
   ): Context {
-    if (this.outputs_.length !== 1) {
-      throw new Error("Single output expected but multiple outputs found.");
-    }
-    const outputName = this.outputs_[0].name;
-    if (typeof expression === "object") {
-      return this.createOutputs(node, [expression]);
-    }
-    const type = this.getOutputType(this.outputs_[0].name);
 
     let outExpression: Expression = {
-      data: expression,
-      type: type!,
-      trivial: false,
+      data: expression.data,
+      type: expression.type,
+      trivial: expression.trivial ?? false,
     };
     outExpression = this.toVariable(node, outExpression);
+    const name = expression.name ?? "out"; // Default output name
 
     return {
       variables: node.getVariables(),
       outputs: {
-        [outputName]: outExpression,
+        [name]: outExpression,
       },
     };
   }
@@ -156,22 +144,21 @@ export abstract class CompilerNode {
       variables: node.getVariables(),
       outputs: {},
     };
-    if (this.outputs_.length !== outputs.length) {
-      throw new Error("Mismatch between outputs and expected outputs.");
-    }
-    let i = 0;
-    for (const { data, type, trivial } of outputs) {
-      const output = this.outputs_[i];
-      i++;
 
+    for (const expression of outputs) {
       let outExpression: Expression = {
-        type: type ?? output.type,
-        data,
-        trivial: trivial ?? false,
+        data: expression.data,
+        type: expression.type,
+        trivial: expression.trivial ?? false,
       };
       outExpression = this.toVariable(node, outExpression);
+      const name = expression.name ?? "out"; // Default output name
 
-      result.outputs[output.name] = outExpression;
+      if (name in result.outputs) {
+        throw new Error(`Output '${name}' already exists`);
+      }
+
+      result.outputs[name] = outExpression;
     }
     return result;
   }

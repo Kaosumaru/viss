@@ -7,7 +7,6 @@ export abstract class BinaryOperator extends CompilerNode {
     super();
     this.addInput("a", Any);
     this.addInput("b", Any);
-    this.addOutput("out", Any);
   }
 
   override compile(node: NodeContext): Context {

@@ -4,7 +4,6 @@ import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
-import { Padding } from "@mui/icons-material";
 
 type NodeExtraData = { width?: number; height?: number };
 

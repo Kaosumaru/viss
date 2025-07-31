@@ -10,8 +10,6 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
 
     // Add parameter for value (so it can be manually entered)
     this.addParameter("value", "number", { type: "number", value: 0 });
-
-    this.addOutput("out", type);
   }
 
   override compile(node: NodeContext): Context {

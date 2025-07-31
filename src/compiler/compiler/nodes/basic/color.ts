@@ -11,7 +11,6 @@ class ColorNode extends CompilerNode {
       type: "color",
       value: [1, 1, 1, 1],
     });
-    this.addOutput("out", vector("float", 4));
   }
 
   override compile(node: NodeContext): Context {

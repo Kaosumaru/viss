@@ -1,6 +1,6 @@
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
-import { variant, vector } from "@glsl/types/types";
+import { scalar, variant, vector } from "@glsl/types/types";
 
 class DecomposeVector extends CompilerNode {
   constructor() {
@@ -15,11 +15,12 @@ class DecomposeVector extends CompilerNode {
   override compile(node: NodeContext): Context {
     const inVec = this.getInput(node, "in");
 
+    const type = scalar("float");
     return this.createOutputs(node, [
-      { data: inVec.data + ".x", trivial: true },
-      { data: inVec.data + ".y", trivial: true },
-      { data: inVec.data + ".z", trivial: true },
-      { data: inVec.data + ".w", trivial: true },
+      { type, data: inVec.data + ".x", trivial: true },
+      { type, data: inVec.data + ".y", trivial: true },
+      { type, data: inVec.data + ".z", trivial: true },
+      { type, data: inVec.data + ".w", trivial: true },
     ]);
   }
 

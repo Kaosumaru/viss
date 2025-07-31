@@ -89,7 +89,9 @@ export class CompilerInternal {
     if (!nodeClass) {
       return false;
     }
-    const info = nodeClass.getInfo(this.createNodeContextFor(node));
+
+    const compiledContext = this.compile(output.nodeId);
+    const info = nodeClass.getInfo(this.createNodeContextFor(node), compiledContext);
     const inputPin = info.inputs.find((pin) => pin.name === input.socketId);
     if (!inputPin) {
       return false;
@@ -311,9 +313,10 @@ export class CompilerInternal {
 
   protected getAddedNodeInfo(node: Node): AddedNodeInfo {
     const nodeClass = getNode(node.nodeType as NodeType);
+    const compiledContext = this.compile(node.identifier);
     return {
       node,
-      instanceInfo: nodeClass.getInfo(this.createNodeContextFor(node)),
+      instanceInfo: nodeClass.getInfo(this.createNodeContextFor(node), compiledContext),
     };
   }
 

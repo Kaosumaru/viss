@@ -75,12 +75,6 @@ export class FunctionNode extends CompilerNode {
       }
       this.addInput(name, type);
     }
-
-    if (signature.outType.id === "template" || signature.outType.id === "templateComponent") {
-      this.addOutput("out", Any);
-    } else {
-      this.addOutput("out", signature.outType);
-    }
   }
 
   override compile(node: NodeContext): Context {
@@ -113,7 +107,10 @@ export class FunctionNode extends CompilerNode {
       });
     }
 
-    return this.createOutput(node, callExpression);
+    return this.createOutput(node, {
+      type: this.outType,
+      data: callExpression,
+    });
   }
 
   override getLabel(): string {

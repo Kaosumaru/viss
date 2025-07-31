@@ -6,7 +6,6 @@ class OutputNode extends CompilerNode {
   constructor() {
     super();
     this.addInput("in", Any);
-    this.addOutput("_preview", Any);
   }
 
   override compile(node: NodeContext): Context {

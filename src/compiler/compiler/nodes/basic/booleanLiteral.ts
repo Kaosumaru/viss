@@ -8,8 +8,6 @@ export class BooleanLiteralNode extends CompilerNode {
 
     // Add parameter for boolean value
     this.addParameter("value", "boolean", { type: "boolean", value: false });
-
-    this.addOutput("out", scalar("bool"));
   }
 
   override compile(node: NodeContext): Context {

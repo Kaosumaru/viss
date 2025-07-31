@@ -7,8 +7,6 @@ class PreviewNode extends CompilerNode {
   constructor() {
     super();
     this.addInput("in", Any);
-    this.addOutput("out", Any);
-    this.addOutput("_preview", Any);
   }
 
   override compile(node: NodeContext): Context {

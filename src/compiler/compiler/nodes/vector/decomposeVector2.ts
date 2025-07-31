@@ -7,16 +7,14 @@ class DecomposeVector2 extends CompilerNode {
     super();
 
     this.addInput("in", vector("float", 2));
-    this.addOutput("x", scalar("float"));
-    this.addOutput("y", scalar("float"));
   }
 
   override compile(node: NodeContext): Context {
     const inVec = this.getInput(node, "in");
 
     return this.createOutputs(node, [
-      { data: inVec.data + ".x", trivial: true },
-      { data: inVec.data + ".y", trivial: true },
+      { type: scalar("float"), data: inVec.data + ".x", trivial: true },
+      { type: scalar("float"), data: inVec.data + ".y", trivial: true },
     ]);
   }
 

@@ -17,10 +17,10 @@ class CoordsNode extends CompilerNode {
       { type: "boolean", value: false },
       "Correct Ratio"
     );
-    this.addOutput("out", vector("float", 2));
   }
   override compile(node: NodeContext): Context {
     return this.createOutput(node, {
+      type: vector("float", 2),
       data: this.buildExpression(node),
     });
   }
