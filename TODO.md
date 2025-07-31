@@ -23,6 +23,7 @@ bugs
 1. Fix color picker wheel
 2. mix function should return x or y
 3. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
+4. WHen changing number of outputs to fewer, you can orphan some conenctions
 
 Global uniforms variables
 - TODO

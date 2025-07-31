@@ -197,7 +197,7 @@ export class EditorAPIImp implements EditorAPI {
     return nodes.filter((node) => node.selected).map((node) => node.id);
   }
 
-  protected recompilePreviewNodes(nodes: string[]) {
+  protected recompilePreviewNodes(nodes: Set<string>) {
     for (const nodeId of nodes) {
       const control = this.nodeToPreviewControl.get(nodeId);
       if (control) {
@@ -259,12 +259,23 @@ export class EditorAPIImp implements EditorAPI {
       }
 
       if (diff.invalidatedNodeIds) {
-        this.recompilePreviewNodes(Array.from(diff.invalidatedNodeIds));
+        this.recompilePreviewNodes(diff.invalidatedNodeIds);
+        this.updateInputsOutputs(diff.invalidatedNodeIds);
         // TODO this should be only fired on output change
         this.reportChange();
       }
     } finally {
       this.deserializing = false;
+    }
+  }
+
+  updateInputsOutputs(invalidatedNodeIds: Set<string>) {
+    const infos = this.compiler().getInfo(Array.from(invalidatedNodeIds));
+    for (const info of infos) {
+      const node = this.getNode(info.node.identifier);
+      if (!node) continue;
+      node.updateNode(info.instanceInfo);
+      this.area.update("node", node.id);
     }
   }
 

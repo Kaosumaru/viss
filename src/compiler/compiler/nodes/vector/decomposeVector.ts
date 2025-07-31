@@ -27,6 +27,7 @@ class DecomposeVector extends CompilerNode {
       for (let i = 0; i < inVec.type.size; i++) {
         outputs.push({
           type,
+          name: members[i],
           data: `${inVec.data}.${members[i]}`,
           trivial: true,
         });

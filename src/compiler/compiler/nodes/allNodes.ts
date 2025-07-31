@@ -19,7 +19,6 @@ import {
   signature,
 } from "./functions/functionNode";
 import { decomposeVector } from "./vector/decomposeVector";
-import { decomposeVector2 } from "./vector/decomposeVector2";
 import { coords } from "./utils/coords";
 import { multiply } from "./operators/multiply";
 import { glslFunction } from "./functions/glslFunction";
@@ -232,8 +231,7 @@ const vectors = createCategory({
     getY: new GetMember("y", vector("float", 2), scalar("float")),
 
     composeVector4,
-    decomposeVector2,
-    decomposeVector4: decomposeVector,
+    decomposeVector,
   },
 });
 

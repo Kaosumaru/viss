@@ -54,6 +54,12 @@ export class UICompilerNode extends ClassicPreset.Node {
   public updateNode(description: NodeInfo) {
     this.label = description.name;
 
+    for (const [key] of Object.entries(this.inputs)) {
+      if (description.inputs.find((i) => i.name !== key)) {
+        this.removeInput(key);
+      }
+    }
+
     this.addInputs(description.inputs, description.parameters);
     this.addParams(description.inputs, description.parameters);
     this.addOutputs(description.outputs);
@@ -67,8 +73,23 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addOutputs(outputs: Pins) {
+    for (const [key] of Object.entries(this.outputs)) {
+      if (!outputs.some((i) => i.name === key)) {
+        this.removeOutput(key);
+      }
+    }
+
+    for (const [name, socket] of Object.entries(this.outputs)) {
+      const output = outputs.find(({ name: n }) => n === name);
+      if (!output) continue;
+      if (socket instanceof SocketWithType) {
+        socket.glslType = output.type;
+      }
+    }
+
     outputs
       .filter(({ name }) => name[0] != "_")
+      .filter(({ name }) => this.outputs[name] === undefined)
       .forEach(({ name, type }) => {
         const socket = new SocketWithType(name, type);
         this.addOutput(name, new ClassicPreset.Output(socket, name));
@@ -76,19 +97,35 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   protected addInputs(inputs: Pins, params: Parameters) {
-    inputs.forEach(({ name, type }) => {
-      const socket = new SocketWithType(name, type);
-      const input = new ClassicPreset.Input(socket, name);
-
-      // If there's a parameter with the same name, add control to the input
-      const param = params.find((p) => p.name === name);
-      if (param) {
-        const control = this.createControl(param);
-        input.addControl(control);
+    for (const [key] of Object.entries(this.inputs)) {
+      if (!inputs.some((i) => i.name === key)) {
+        this.removeInput(key);
       }
+    }
 
-      this.addInput(name, input);
-    });
+    for (const [name, socket] of Object.entries(this.inputs)) {
+      const input = inputs.find(({ name: n }) => n === name);
+      if (!input) continue;
+      if (socket instanceof SocketWithType) {
+        socket.glslType = input.type;
+      }
+    }
+
+    inputs
+      .filter(({ name }) => this.inputs[name] === undefined)
+      .forEach(({ name, type }) => {
+        const socket = new SocketWithType(name, type);
+        const input = new ClassicPreset.Input(socket, name);
+
+        // If there's a parameter with the same name, add control to the input
+        const param = params.find((p) => p.name === name);
+        if (param) {
+          const control = this.createControl(param);
+          input.addControl(control);
+        }
+
+        this.addInput(name, input);
+      });
   }
 
   protected addParams(inputs: Pins, params: Parameters) {
