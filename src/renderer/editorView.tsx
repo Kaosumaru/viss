@@ -80,7 +80,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onChanged?.(editor);
       return editor;
     },
-    [addEntry, onChanged, removeEntry, updateEntryPosition, updateEntryShader]
+    [addEntry, onChanged, removeEntry, updateEntryPosition, updateEntryShader, compiler]
   );
 
   const [ref] = useRete(create);
