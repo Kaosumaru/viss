@@ -69,7 +69,7 @@ export class FunctionNode extends CompilerNode {
     for (const [name, type] of signature.params) {
       if (type.id === "template") {
         this.addInput(name, type.constraint);
-        resolver.addTemplate(name, type);
+        resolver.addTemplate(type.name, type);
         continue;
       }
       if (type.id === "templateComponent") {

@@ -13,6 +13,7 @@ class OutputNode extends CompilerNode {
 
     if (in_.type.id === "scalar") {
       return this.createOutput(node, {
+        name: "_preview",
         data: `vec4(vec3(${in_.data}), 1.0)`,
         type: vector(in_.type.type, 4),
       });
@@ -22,12 +23,14 @@ class OutputNode extends CompilerNode {
       const type = vector(in_.type.type, 4);
       if (in_.type.size === 2) {
         return this.createOutput(node, {
+          name: "_preview",
           data: `vec4(${in_.data}.xy, 0.0, 1.0)`,
           type,
         });
       }
       if (in_.type.size === 3) {
         return this.createOutput(node, {
+          name: "_preview",
           data: `vec4(${in_.data}.xyz, 1.0)`,
           type,
         });
@@ -35,6 +38,7 @@ class OutputNode extends CompilerNode {
 
       if (in_.type.size === 4) {
         return this.createOutput(node, {
+          name: "_preview",
           ...in_,
         });
       }
