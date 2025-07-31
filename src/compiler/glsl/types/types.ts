@@ -4,9 +4,7 @@ export interface AnyType {
   id: "any";
 }
 
-export const Any: AnyType = {
-  id: "any",
-};
+export const genericFType = variantGeneric("float")
 
 export interface ScalarType {
   id: "scalar";

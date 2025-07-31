@@ -1,4 +1,4 @@
-import { Any } from "@glsl/types/types";
+import { genericFType } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { createPreviewExpression } from "./utils";
@@ -6,7 +6,7 @@ import { createPreviewExpression } from "./utils";
 class PreviewNode extends CompilerNode {
   constructor() {
     super();
-    this.addInput("in", Any);
+    this.addInput("in", genericFType);
   }
 
   override compile(node: NodeContext): Context {

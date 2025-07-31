@@ -1,11 +1,11 @@
-import { Any, vector } from "@glsl/types/types";
+import { genericFType, vector } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 class OutputNode extends CompilerNode {
   constructor() {
     super();
-    this.addInput("in", Any);
+    this.addInput("in", genericFType);
   }
 
   override compile(node: NodeContext): Context {

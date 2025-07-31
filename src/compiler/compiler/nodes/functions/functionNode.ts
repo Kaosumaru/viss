@@ -1,12 +1,13 @@
-import { Any, scalar, variant, variantGeneric, type Type } from "@glsl/types/types";
+import { scalar, variant, variantGeneric, type Type } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
+import type { ScalarTypeName } from "@glsl/types/typenames";
 
 export interface TemplateType {
   id: "template";
   name: string;
-  constraint?: Type;
+  constraint: Type;
 }
 
 export interface TemplateComponentType {
@@ -21,7 +22,7 @@ export function templateComponent(name: string): TemplateComponentType {
   };
 }
 
-export function template(constraint?: Type, name: string = "T"): TemplateType {
+export function template(constraint: Type, name: string = "T"): TemplateType {
   return {
     id: "template",
     name,
@@ -63,14 +64,16 @@ export class FunctionNode extends CompilerNode {
     this.outType = signature.outType;
     this.params = signature.params;
     this.description = description;
+
+    const resolver = new TemplatesResolver();
     for (const [name, type] of signature.params) {
       if (type.id === "template") {
-        this.addInput(name, type.constraint ?? Any);
+        this.addInput(name, type.constraint);
+        resolver.addTemplate(name, type);
         continue;
       }
       if (type.id === "templateComponent") {
-        // TODO we could add constraint here
-        this.addInput(name, Any);
+        this.addInput(name, resolver.resolveComponent(type.name));
         continue;
       }
       this.addInput(name, type);
@@ -90,19 +93,14 @@ export class FunctionNode extends CompilerNode {
     const callExpression = `${this.name}(${inputs.join(", ")})`;
 
     if (this.outType.id === "template") {
-      const resolvedType = resolver.getResolvedType(this.outType.name);
       return this.createOutput(node, {
-        type: resolvedType,
+        type: resolver.getResolvedType(this.outType.name),
         data: callExpression,
       });
     }
     if (this.outType.id === "templateComponent") {
-      let resolvedType = resolver.getResolvedType(this.outType.name);
-      if (resolvedType.id === "vector") {
-        resolvedType = scalar(resolvedType.type);
-      }
       return this.createOutput(node, {
-        type: resolvedType,
+        type: resolver.getResolvedComponentType(this.outType.name),
         data: callExpression,
       });
     }
@@ -129,6 +127,7 @@ export class FunctionNode extends CompilerNode {
 
 class TemplatesResolver {
   private resolved: Map<string, Type> = new Map();
+  private constraints: Map<string, Type> = new Map();
 
   resolve(template: TemplateType, inputType: Type): Type {
     // TODO resolver should find a common type for the template
@@ -146,10 +145,50 @@ class TemplatesResolver {
     );
   }
 
+  resolveComponent(name: string): Type {
+    const constraint = this.constraints.get(name);
+    if (!constraint) {
+      throw new Error(`Template component ${name} is not defined`);
+    }
+    return this.templateConstraintToComponentConstraint(constraint);
+  }
+
+  addTemplate(name: string, type: TemplateType) {
+    this.constraints.set(name, type.constraint);
+  }
+
   getResolvedType(name: string): Type {
     const type = this.resolved.get(name);
     if (!type) {
       throw new Error(`Template type ${name} is not resolved`);
+    }
+    return type;
+  }
+
+  getResolvedComponentType(name: string): Type {
+    const resolvedType = this.getResolvedType(name);
+    if (resolvedType.id === "vector") {
+      return scalar(resolvedType.type);
+    }
+    return resolvedType;  
+  } 
+
+  protected templateConstraintToComponentConstraint(type: Type) {
+    if (type.id === "variant") {
+      const scalars = new Set<ScalarTypeName>();
+      for (const subType of type.types) {
+
+        switch (subType.id) {
+          case "scalar":
+          case "vector":
+            scalars.add(subType.type);
+            break;
+          default:
+            throw new Error(`Unsupported type in variant: ${subType.id}`);
+        }
+      }
+
+      return variant(Array.from(scalars).map((scalarType) => scalar(scalarType)));
     }
     return type;
   }

@@ -1,12 +1,12 @@
-import { Any } from "@glsl/types/types";
+import { genericFType } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 
 export abstract class BinaryOperator extends CompilerNode {
   constructor() {
     super();
-    this.addInput("a", Any);
-    this.addInput("b", Any);
+    this.addInput("a", genericFType);
+    this.addInput("b", genericFType);
   }
 
   override compile(node: NodeContext): Context {
