@@ -39,8 +39,6 @@ export function setup<T extends Descriptors>(
           nodeType: value.type,
           position: { x: 0, y: 0 }, // Default position
           parameters: value.params || {},
-          inputs: {}, // No inputs for test nodes
-          outputs: {}, // No outputs for test nodes
         });
         return acc;
       }, [] as Node[]),

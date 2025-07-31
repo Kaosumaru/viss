@@ -25,8 +25,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
     const compiler = new Compiler();
     compiler.addNode({
       nodeType: "output",
-      inputs: {},
-      outputs: {},
       parameters: {},
       position: {
         x: 0,

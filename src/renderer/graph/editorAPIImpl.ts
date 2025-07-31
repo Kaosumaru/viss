@@ -97,8 +97,6 @@ export class EditorAPIImp implements EditorAPI {
       this.compiler().addNode({
         nodeType,
         position: { x: x ?? 0, y: y ?? 0 },
-        inputs: {},
-        outputs: {},
         parameters: params ?? {},
       })
     );
