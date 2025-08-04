@@ -36,6 +36,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   width = 200;
   nodeType: NodeType;
   previewControl?: PreviewControl;
+  errorMessage?: string;
   private controlChangeCallback?: ControlChangeCallback;
 
   constructor(
@@ -53,6 +54,7 @@ export class UICompilerNode extends ClassicPreset.Node {
 
   public updateNode(description: NodeInfo) {
     this.label = description.name;
+    this.errorMessage = description.errorMessage;
 
     for (const [key] of Object.entries(this.inputs)) {
       if (description.inputs.find((i) => i.name !== key)) {
@@ -191,6 +193,10 @@ export class UICompilerNode extends ClassicPreset.Node {
 
     if (description.showPreview) {
       this.height += 145; // Add height for preview control
+    }
+
+    if (description.errorMessage) {
+      this.height += 30; // Add height for error message display
     }
   }
 

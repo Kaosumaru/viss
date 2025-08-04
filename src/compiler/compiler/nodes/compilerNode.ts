@@ -73,6 +73,7 @@ export interface NodeInfo {
   inputs: Pins;
   outputs: Pins;
   parameters: Parameters;
+  errorMessage?: string;
 }
 
 export type Parameters = Parameter[];
