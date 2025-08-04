@@ -194,10 +194,6 @@ export class UICompilerNode extends ClassicPreset.Node {
     if (description.showPreview) {
       this.height += 145; // Add height for preview control
     }
-
-    if (description.errorMessage) {
-      this.height += 30; // Add height for error message display
-    }
   }
 
   protected compilationHelper: CompilationHelper;

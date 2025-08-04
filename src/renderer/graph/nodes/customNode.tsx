@@ -1,11 +1,12 @@
 /* eslint-disable no-constant-binary-expression */
 import { type RenderEmit, Presets } from "rete-react-plugin";
-import { Paper } from "@mui/material";
+import { Paper, Tooltip, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import ErrorIcon from "@mui/icons-material/Error";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
 
-type NodeExtraData = { width?: number; height?: number };
+type NodeExtraData = { width?: number; height?: number; errorMessage?: string };
 
 const { RefSocket, RefControl } = Presets.classic;
 
@@ -49,6 +50,19 @@ const StyledPaper = styled(Paper)<{ selected?: boolean }>(({ selected }) => ({
     textOverflow: "ellipsis",
     fontFamily: '"Montserrat", sans-serif !important',
     fontWeight: 300,
+    position: "relative",
+  },
+
+  "& .error-icon": {
+    position: "absolute",
+    top: "2px",
+    right: "2px",
+    color: "#f44336",
+    padding: "2px",
+    zIndex: 10,
+    "& .MuiSvgIcon-root": {
+      fontSize: "24px",
+    },
   },
 
   "& .input-title, & .output-title": {
@@ -105,6 +119,8 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
   const outputs = Object.entries(props.data.outputs);
   const controls = Object.entries(props.data.controls);
   const selected = props.data.selected || false;
+  const nodeData = props.data as Scheme["Node"] & NodeExtraData;
+  const errorMessage = nodeData.errorMessage;
 
   sortByIndex(inputs);
   sortByIndex(outputs);
@@ -119,7 +135,16 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
     >
       {/* <div style={{ position: 'absolute', top: '-1em', right: '1em' }}>{props.data.id}</div> */}
       <div className="glossy rete-node"></div>
-      <div className="title">{props.data.label}</div>
+      <div className="title">
+        {props.data.label}
+        {errorMessage && (
+          <Tooltip title={errorMessage} placement="top">
+            <IconButton className="error-icon">
+              <ErrorIcon fontSize="medium" color="error" />
+            </IconButton>
+          </Tooltip>
+        )}
+      </div>
       <div className="columns">
         <div className="column">
           {/* Inputs */}

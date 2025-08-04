@@ -7,6 +7,7 @@ import {
 import type { Context, Expression } from "@compiler/context";
 import type { FunctionDefinition } from "@glsl/function";
 import { createPreviewExpression } from "../out/utils";
+import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 
 class GlslFunction extends CompilerNode {
   constructor() {
@@ -68,7 +69,10 @@ class GlslFunction extends CompilerNode {
             `Output parameters are not supported in function "${func.name}"`
           );
         }
-        const value = this.getInput(node, param.name);
+        let value = node.tryGetInput(param.name);
+        if (value === undefined) {
+          value = defaultExpressionForType(param.type);
+        }
         // TODO check type
         // TODO handle out, and inout params
         return value.data;
@@ -80,15 +84,17 @@ class GlslFunction extends CompilerNode {
     const funcName = node.tryGetParamValue("_identifier", "string");
     const funcDef = node.tryGetFunctionDefinition(funcName || "");
     if (!funcName || !funcDef) {
+      const errorMessage = !funcName
+        ? "Function name is not set"
+        : `Function "${funcName}" not found`;
       return {
         name: "INVALID",
-        description: !funcName
-          ? "Function name is not set"
-          : `Function "${funcName}" not found`,
+        description: errorMessage,
         showPreview: false,
         inputs: [],
         outputs: [],
         parameters: [],
+        errorMessage,
       };
     }
 
