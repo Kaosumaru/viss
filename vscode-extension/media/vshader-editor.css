@@ -1,0 +1,106 @@
+/* VS Code Webview Styles for VShader Graph Editor */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+#vshader-editor-root {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Graph editor container */
+.vshader-graph-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: var(--vscode-editor-background);
+}
+
+/* Loading indicator */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--vscode-foreground);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--vscode-progressBar-background);
+    border-top: 3px solid var(--vscode-progressBar-foreground);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error message */
+.error-message {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--vscode-errorBackground);
+    color: var(--vscode-errorForeground);
+    padding: 12px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--vscode-errorBorder);
+    z-index: 1000;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+}
+
+/* Toolbar */
+.vshader-toolbar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 999;
+}
+
+.vshader-button {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: 1px solid var(--vscode-button-border);
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: var(--vscode-font-family);
+    font-size: 12px;
+    transition: background-color 0.1s;
+}
+
+.vshader-button:hover {
+    background: var(--vscode-button-hoverBackground);
+}
+
+.vshader-button:active {
+    background: var(--vscode-button-activeBackground);
+}
+
+/* Ensure the rete editor takes full space */
+.rete-area {
+    width: 100% !important;
+    height: 100% !important;
+}

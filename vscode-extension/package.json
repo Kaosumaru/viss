@@ -1,0 +1,45 @@
+{
+  "name": "vshader-graph-editor",
+  "displayName": "VShader Graph Editor",
+  "description": "Visual shader graph editor for .vgraph files",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "vshader.graphEditor",
+        "displayName": "VShader Graph Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.vgraph"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "vshader.openGraphEditor",
+        "title": "Open in VShader Graph Editor"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "node build.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "18.x",
+    "typescript": "^5.4.5"
+  }
+}

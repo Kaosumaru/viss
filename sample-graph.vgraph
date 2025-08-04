@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "includes": [],
+  "nodes": [
+    {
+      "identifier": "output_node",
+      "nodeType": "output",
+      "position": {
+        "x": 400,
+        "y": 200
+      },
+      "parameters": {}
+    },
+    {
+      "identifier": "color_node",
+      "nodeType": "color",
+      "position": {
+        "x": 100,
+        "y": 200
+      },
+      "parameters": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5,
+          "b": 0.0,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "from": {
+        "nodeId": "color_node",
+        "pinName": "output"
+      },
+      "to": {
+        "nodeId": "output_node",
+        "pinName": "color"
+      },
+      "type": {
+        "primitive": "float",
+        "dimensions": 4
+      }
+    }
+  ]
+}
