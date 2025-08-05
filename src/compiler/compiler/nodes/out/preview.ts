@@ -17,7 +17,10 @@ class PreviewNode extends CompilerNode {
       {
         ...in_,
       },
-      outputExpression,
+      {
+        name: "_preview",
+        ...outputExpression,
+      },
     ]);
   }
 
