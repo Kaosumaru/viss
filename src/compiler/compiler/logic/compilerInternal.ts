@@ -325,14 +325,29 @@ export class CompilerInternal {
 
   protected getNodeInfo(node: Node): AddedNodeInfo {
     const nodeClass = getNode(node.nodeType as NodeType);
-    const compiledContext = this.compile(node.identifier);
-    return {
-      node,
-      instanceInfo: nodeClass.getInfo(
-        this.createNodeContextFor(node),
-        compiledContext
-      ),
-    };
+    try {
+      const compiledContext = this.compile(node.identifier);
+      return {
+        node,
+        instanceInfo: nodeClass.getInfo(
+          this.createNodeContextFor(node),
+          compiledContext
+        ),
+      };
+    } catch (error) {
+      return {
+        node,
+        instanceInfo: {
+          name: nodeClass.getLabel(),
+          showPreview: false,
+          inputs: [],
+          outputs: [],
+          parameters: [],
+          description: "Error compiling node",
+          errorMessage: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
   }
 
   protected invalidateNodes(nodeIds: string[]): Set<string> {
