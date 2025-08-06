@@ -22,7 +22,6 @@ bugs
 2. mix function should return x or y
 3. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
 4. WHen changing number of outputs to fewer, you can orphan some conenctions
-5. Custom functions no longer work since they don't compile without inputs
 
 Global uniforms variables
 - TODO
