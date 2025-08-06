@@ -23,14 +23,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   const editorRef = useRef<EditorAPI | null>(null);
   const compiler = useMemo(() => {
     const compiler = new Compiler();
-    compiler.addNode({
-      nodeType: "output",
-      parameters: {},
-      position: {
-        x: 0,
-        y: 0,
-      },
-    });
+
     return compiler;
   }, []);
 
@@ -80,7 +73,14 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onChanged?.(editor);
       return editor;
     },
-    [addEntry, onChanged, removeEntry, updateEntryPosition, updateEntryShader, compiler]
+    [
+      addEntry,
+      onChanged,
+      removeEntry,
+      updateEntryPosition,
+      updateEntryShader,
+      compiler,
+    ]
   );
 
   const [ref] = useRete(create);

@@ -65,7 +65,7 @@ export async function createEditor(
   });
 
   // await editorData.createNode("output", "screen");
-  AreaExtensions.zoomAt(area, editor.getNodes());
+  // AreaExtensions.zoomAt(area, editor.getNodes());
 
   return editorData;
 }

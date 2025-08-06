@@ -1,17 +1,8 @@
 import * as vscode from "vscode";
-import { VShaderEditorPanel } from "./vshaderEditorPanel";
+import { VShaderEditorProvider } from "./vshaderEditorProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("VShader Editor extension is now active!");
-
-  const disposable = vscode.commands.registerCommand(
-    "vshader.openEditor",
-    () => {
-      VShaderEditorPanel.createOrShow(context.extensionUri);
-    }
-  );
-
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(VShaderEditorProvider.register(context));
 }
 
 export function deactivate() {}

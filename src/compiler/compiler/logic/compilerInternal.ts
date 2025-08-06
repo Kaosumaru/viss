@@ -20,6 +20,7 @@ import { pasteNodes } from "./pasteNodes";
 import type { Type } from "@glsl/types/types";
 import type { SocketReference } from "@graph/socket";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
+import deepEqual from "deep-equal";
 
 export interface InputConnection {
   node: Node;
@@ -240,10 +241,12 @@ export class CompilerInternal {
 
     return {
       invalidatedNodeIds,
+      nodesWithModifiedProperties: [node],
     };
   }
 
   loadGraph(graph: Graph): GraphDiff {
+    if (deepEqual(this.graph, graph)) return {};
     this.clearGraph();
     this.graph = graph;
     this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));

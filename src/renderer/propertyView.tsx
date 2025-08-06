@@ -48,7 +48,7 @@ export function PropertyView({
     try {
       // Read from clipboard
       const graphJson = await navigator.clipboard.readText();
-      await editorData.loadGraph(graphJson);
+      await editorData.loadGraphJSON(graphJson);
 
       console.log("Graph loaded successfully from clipboard");
     } catch (error) {

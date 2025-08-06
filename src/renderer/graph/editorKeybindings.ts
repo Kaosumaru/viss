@@ -2,6 +2,7 @@ import type { EditorAPI } from "./interface";
 import { AreaPlugin } from "rete-area-plugin";
 import type { AreaExtra, Schemes } from "./node";
 import type { Position } from "@graph/position";
+import { DisposeHelper } from "./utils/disposeHelper";
 
 export class EditorKeybindings {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
@@ -9,13 +10,25 @@ export class EditorKeybindings {
     this.area = area;
 
     area.container.tabIndex = 0;
-    // Bind the keydown event to handle keybindings
-    this.area.container.addEventListener("keydown", (event) => {
-      this.handleKeyDown(event);
+
+    this.helper.add(() => {
+      const cbkeydown = (event: KeyboardEvent) => {
+        this.handleKeyDown(event);
+      };
+      window.addEventListener("keydown", cbkeydown);
+      return () => {
+        window.removeEventListener("keydown", cbkeydown);
+      };
     });
 
-    this.area.container.addEventListener("mousemove", (event) => {
-      this.handleMouseMove(event);
+    this.helper.add(() => {
+      const cbmousemove = (event: MouseEvent) => {
+        this.handleMouseMove(event);
+      };
+      window.addEventListener("mousemove", cbmousemove);
+      return () => {
+        window.removeEventListener("mousemove", cbmousemove);
+      };
     });
   }
   handleMouseMove(event: MouseEvent) {
@@ -63,10 +76,11 @@ export class EditorKeybindings {
   }
 
   public destroy() {
-    this.area.container.removeEventListener("keydown", this.handleKeyDown);
+    this.helper.dispose();
   }
 
   private mousePosition: Position = { x: 0, y: 0 };
   private editor: EditorAPI;
   private area: AreaPlugin<Schemes, AreaExtra>;
+  private helper = new DisposeHelper();
 }

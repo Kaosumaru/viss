@@ -133,6 +133,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   protected addParams(inputs: Pins, params: Parameters) {
     params
       .filter((p) => p.name[0] !== "_")
+      .filter(({ name }) => this.controls[name] === undefined)
       .forEach((param) => {
         // Only add as standalone control if there's no input with the same name
         const hasInput = inputs.some((input) => input.name === param.name);

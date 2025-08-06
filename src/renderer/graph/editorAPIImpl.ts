@@ -8,12 +8,13 @@ import { UICompilerNode } from "./nodes/compilerNode";
 import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
-import type { AddedNodeInfo, GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
 import type { Parameters } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
+import { EditorVSExtension } from "./editorVSExtension";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -25,6 +26,7 @@ export class EditorAPIImp implements EditorAPI {
   ) {
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
+    this.extension = new EditorVSExtension(this, area);
     this.editor = editor;
     this.area = area;
     this.selectable = selectable;
@@ -145,9 +147,14 @@ export class EditorAPIImp implements EditorAPI {
     this.deserializing = false;
   }
 
-  async loadGraph(graphJson: string): Promise<void> {
+  async loadGraphJSON(graphJson: string): Promise<void> {
     await this.clear();
     return this.applyDiff(this.compiler().loadGraph(JSON.parse(graphJson)));
+  }
+
+  async loadGraph(graph: Graph): Promise<void> {
+    await this.clear();
+    return this.applyDiff(this.compiler().loadGraph(graph));
   }
 
   saveGraph() {
@@ -183,6 +190,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   destroy() {
+    this.extension.destroy();
     this.keybindings.destroy();
     this.area.destroy();
   }
@@ -264,6 +272,17 @@ export class EditorAPIImp implements EditorAPI {
         // TODO this should be only fired on output change
         this.reportChange();
       }
+
+      const updatedJson =
+        (diff.addedNodes?.length ?? 0) +
+        (diff.removedNodes?.length ?? 0) +
+        (diff.addedConnections?.length ?? 0) +
+        (diff.removedConnections?.length ?? 0) +
+        (diff.nodesWithModifiedProperties?.length ?? 0);
+
+      if (updatedJson > 0) {
+        this.extension.saveGraph(this.compiler().getGraph(), diff);
+      }
     } finally {
       this.deserializing = false;
     }
@@ -320,6 +339,7 @@ export class EditorAPIImp implements EditorAPI {
   private onOutputChanged?: OnGraphChanged;
   private compilationHelper: CompilationHelper;
   private deserializing = false;
+  private extension: EditorVSExtension;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;
 }

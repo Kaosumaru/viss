@@ -29,7 +29,8 @@ export interface EditorAPI {
     offsetY: number
   ) => Promise<void>;
 
-  loadGraph: (graphJson: string) => Promise<void>;
+  loadGraphJSON: (graphJson: string) => Promise<void>;
+  loadGraph: (graph: Graph) => Promise<void>;
   saveGraph: () => Graph;
 
   compileNode: (nodeId?: string) => string | undefined;
