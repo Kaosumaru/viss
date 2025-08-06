@@ -9,9 +9,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:vshader.openEditor"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -27,7 +24,19 @@
           "title": "VShader: Open Editor"
         }
       ]
-    }
+    },
+    "customEditors": [
+      {
+        "viewType": "vshader.graphEditor",
+        "displayName": "Shader Graph Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.vshader"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
