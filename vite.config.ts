@@ -1,19 +1,10 @@
-import { defineConfig } from "vite";
+import { defineConfig, type BuildEnvironmentOptions } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vite.dev/config/
-export default defineConfig({
-    build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/index.js', // ✅ your custom name
-        // If needed:
-        // chunkFileNames: 'chunks/[name].js',
-        // assetFileNames: 'assets/[name][extname]',
-      }
-    }
-  },
+export default defineConfig(({ mode }) => ({
+  build: buildOptions(mode),
   resolve: {
     alias: {
       "@compiler": path.resolve(__dirname, "src/compiler/compiler"),
@@ -23,4 +14,20 @@ export default defineConfig({
     },
   },
   plugins: [react()],
-});
+}));
+
+function buildOptions(mode: string): BuildEnvironmentOptions | undefined {
+  if (mode === "vscode-extension") {
+    return {
+      rollupOptions: {
+        output: {
+          entryFileNames: 'assets/index.js', // ✅ your custom name
+          // If needed:
+          // chunkFileNames: 'chunks/[name].js',
+          // assetFileNames: 'assets/[name][extname]',
+        }
+      }
+    };
+  }
+  return undefined;
+}

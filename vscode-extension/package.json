@@ -33,7 +33,7 @@
     "vscode:prepublish": "npm run build",
     "build": "npm run build:extension && npm run build:webapp",
     "build:extension": "tsc -p ./",
-    "build:webapp": "cd .. && npm run build && npm run copy:dist",
+    "build:webapp": "cd .. && npm run build:vscode && npm run copy:dist",
     "copy:dist": "npx copyfiles -u 1 \"dist/**/*\" \"vscode-extension/media/\"",
     "watch": "tsc -watch -p ./"
   },
