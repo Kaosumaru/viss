@@ -19,7 +19,6 @@
     "@mui/material": "^7.2.0",
     "@shaderfrog/glsl-parser": "^6.0.2",
     "@types/styled-components": "^5.1.34",
-    "elkjs": "^0.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "rete": "^2.0.6",
