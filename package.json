@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "vscode:build": "tsc -b && vite build --mode vscode-extension",
+    "build:vscode": "tsc -b && vite build --mode vscode-extension",
     "check-types": "tsc -b --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
