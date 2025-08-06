@@ -1,7 +1,6 @@
 1. Look at params getParamValue
 2. Loops validation
 3. templated functions (add, etc)
-4. Error messages on nodes
 5. Fuinctions should only accept EXACT type (implicit conversion is for rare cases, like constructors)
 6. Portals
 7. Undo/redo
