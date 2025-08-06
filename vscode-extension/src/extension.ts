@@ -143,7 +143,7 @@ class VShaderEditorPanel {
             </head>
             <body>
                 <div id="root"></div>
-                <script type="module" nonce="${nonce}" src="${assetsUri}/index-BVnhlanB.js"></script>
+                <script type="module" nonce="${nonce}" src="${assetsUri}/index-Dp3sSOoO.js"></script>
             </body>
             </html>`;
   }
