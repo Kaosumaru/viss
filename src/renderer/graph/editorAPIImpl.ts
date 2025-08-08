@@ -148,11 +148,11 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async loadGraphJSON(graphJson: string): Promise<void> {
-    return this.applyDiff(this.compiler().loadGraph(JSON.parse(graphJson)));
+    return this.loadGraph(JSON.parse(graphJson));
   }
 
   async loadGraph(graph: Graph): Promise<void> {
-    return this.applyDiff(this.compiler().loadGraph(graph));
+    return this.applyDiff(this.compiler().loadGraph(graph), true);
   }
 
   saveGraph() {
@@ -217,7 +217,7 @@ export class EditorAPIImp implements EditorAPI {
     return this.compilationHelper.compiler();
   }
 
-  protected async applyDiff(diff: GraphDiff) {
+  protected async applyDiff(diff: GraphDiff, updateProperties = false) {
     if (this.deserializing) {
       throw new Error("Cannot apply diff during deserialization");
     }
@@ -269,6 +269,19 @@ export class EditorAPIImp implements EditorAPI {
         this.updateInputsOutputs(diff.invalidatedNodeIds);
         // TODO this should be only fired on output change
         this.reportChange();
+      }
+
+      if (updateProperties && diff.nodesWithModifiedProperties) {
+        for (const node of diff.nodesWithModifiedProperties) {
+          const uiNode = this.getNode(node.identifier);
+          if (uiNode) {
+            // update position
+            uiNode.updateControls(node.parameters);
+            this.area.update("node", uiNode.id);
+          } else {
+            console.warn(`Node ${node.identifier} not found in editor`);
+          }
+        }
       }
 
       const updatedJson =

@@ -313,26 +313,57 @@ export class CompilerInternal {
     const removedNodes = this.graph.nodes
       .filter((node) => {
         const otherNode = otherNodes.get(node.identifier);
-
-        // TODO instead as deep comparing nodes, we could mark modified nodes
-        return !otherNode || !deepEqual(node, otherNode);
+        return !otherNode || node.nodeType !== otherNode.nodeType;
       })
       .map((node) => node.identifier);
 
-    const addedConnections = otherGraph.connections.filter(
-      (conn) => !this.connectionsCache.has(connectionToID(conn))
-    );
+    const modifiedNodes = this.graph.nodes.filter((node) => {
+      const otherNode = otherNodes.get(node.identifier);
+      if (!otherNode) return false;
+
+      return !deepEqual(node, otherNode);
+    });
 
     let diff: GraphDiff = {};
 
     diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
     diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes)]);
 
+    const addedConnections = otherGraph.connections.filter(
+      (conn) => !this.connectionsCache.has(connectionToID(conn))
+    );
+
     const addedNodes = otherGraph.nodes.filter(
       (otherNode) => !this.nodes.has(otherNode.identifier)
     );
     diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
     diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);
+
+    diff.nodesWithModifiedProperties = diff.nodesWithModifiedProperties
+      ? [...diff.nodesWithModifiedProperties, ...modifiedNodes]
+      : modifiedNodes;
+    const invalidatedNodeIds = this.invalidateNodes(
+      modifiedNodes.map((node) => node.identifier)
+    );
+
+    if (invalidatedNodeIds.size > 0 && !diff.invalidatedNodeIds) {
+      diff.invalidatedNodeIds = new Set();
+    }
+    for (const node of invalidatedNodeIds) {
+      diff.invalidatedNodeIds!.add(node);
+    }
+
+    for (const node of modifiedNodes) {
+      const otherNode = otherNodes.get(node.identifier);
+      if (otherNode) {
+        node.position = {
+          ...otherNode.position,
+        };
+        node.parameters = {
+          ...otherNode.parameters,
+        };
+      }
+    }
 
     return diff;
   }
