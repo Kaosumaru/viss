@@ -54,7 +54,7 @@ export class EditorVSExtension {
     this.handleMessage(message);
   }
 
-  private handleMessage(message: ExtensionToEditorMessage) {
+  private async handleMessage(message: ExtensionToEditorMessage) {
     switch (message.type) {
       case "loadGraph":
         if (this.deserializing) {
@@ -62,7 +62,7 @@ export class EditorVSExtension {
           return;
         }
         this.deserializing = true;
-        this.editor.loadGraph(message.json as Graph);
+        await this.editor.loadGraph(message.json as Graph);
         this.deserializing = false;
         break;
       default:

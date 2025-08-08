@@ -5,6 +5,12 @@
 6. Portals
 7. Undo/redo
 
+Global uniforms variables
+- TODO
+
+Textures
+- TODO
+
 Optimization
 1. splitting things to variables
  - when output is connected to multiple things
@@ -15,6 +21,7 @@ Optimization
 5. Memoize types
 6. Optimize communication between webview and extension
 7. Webview state
+8. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
 
 Check
 1. If we don't need to inherit from rete socket
@@ -22,12 +29,6 @@ Check
 bugs
 1. Fix color picker wheel
 2. mix function should return x or y
-3. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
-4. WHen changing number of outputs to fewer, you can orphan some conenctions
-5. Translation doesn't trigger save in connection
+3. WHen changing number of outputs to fewer, you can orphan some connections
+4. Translation doesn't trigger save in connection
 
-Global uniforms variables
-- TODO
-
-Textures
-- TODO
