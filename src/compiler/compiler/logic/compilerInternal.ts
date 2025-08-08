@@ -158,38 +158,44 @@ export class CompilerInternal {
   }
 
   removeNode(nodeId: string): GraphDiff {
-    const node = this.getNodeById(nodeId);
-    if (!node) throw new Error("Node not found");
-
-    this.graph.nodes = this.graph.nodes.filter((n) => n.identifier !== nodeId);
-    this.nodes.delete(nodeId);
-
-    const removedConnections: Connection[] = [];
-
-    this.graph.connections = this.graph.connections.filter((c) => {
-      if (c.from.nodeId !== nodeId && c.to.nodeId !== nodeId) {
-        return true;
-      }
-      removedConnections.push(c);
-      return false;
-    });
-
-    const nodesToInvalidate = removedConnections
-      .filter((c) => c.from.nodeId === nodeId)
-      .map((c) => c.to.nodeId);
-
-    const invalidatedNodeIds = this.invalidateNodes(nodesToInvalidate);
-
-    return {
-      removedNodes: [node],
-      removedConnections,
-      invalidatedNodeIds,
-    };
+    return this.removeNodes([nodeId]);
   }
 
-  removeNodes(nodeIds: string[]): GraphDiff {
-    const diffs: GraphDiff[] = nodeIds.map((nodeId) => this.removeNode(nodeId));
-    return mergeGraphDiffs(diffs);
+  removeNodes(nodeIds: string[], removeOrphanedConnections = true): GraphDiff {
+    const removedNodes: Node[] = [];
+    const removedConnections: Connection[] = [];
+    const invalidatedNodeIds: string[] = [];
+
+    for(const nodeId of nodeIds){
+      const node = this.getNodeById(nodeId);
+      if (!node) continue;
+
+      this.graph.nodes = this.graph.nodes.filter((n) => n.identifier !== nodeId);
+      this.nodes.delete(nodeId);
+
+      if (removeOrphanedConnections) {
+        this.graph.connections = this.graph.connections.filter((c) => {
+          if (c.from.nodeId !== nodeId && c.to.nodeId !== nodeId) {
+            return true;
+          }
+          removedConnections.push(c);
+          return false;
+        });
+      }
+
+      const nodesToInvalidate = removedConnections
+        .filter((c) => c.from.nodeId === nodeId)
+        .map((c) => c.to.nodeId);
+
+      invalidatedNodeIds.push(...nodesToInvalidate);
+      removedNodes.push(node);
+    }
+
+    return {
+      removedNodes,
+      removedConnections,
+      invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds),
+    };
   }
 
   getInfo(nodeIds: string[]): AddedNodeInfo[] {
@@ -327,7 +333,7 @@ export class CompilerInternal {
     let diff: GraphDiff = {};
 
     diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
-    diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes)]);
+    diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes, false)]);
 
     const addedConnections = otherGraph.connections.filter(
       (conn) => !this.connectionsCache.has(connectionToID(conn))
