@@ -312,15 +312,20 @@ export class CompilerInternal {
       otherGraph.connections.map((conn) => [connectionToID(conn), conn])
     );
 
+    const addedConnections = otherGraph.connections.filter(
+      (conn) => !this.connectionsCache.has(connectionToID(conn))
+    );
+
+    const addedNodes = otherGraph.nodes.filter(
+      (otherNode) => !this.nodes.has(otherNode.identifier)
+    );
+
     const removedConnections: Connection[] = this.graph.connections.filter(
       (conn) => !otherConnections.has(connectionToID(conn))
     );
 
     const removedNodes = this.graph.nodes
-      .filter((node) => {
-        const otherNode = otherNodes.get(node.identifier);
-        return !otherNode || node.nodeType !== otherNode.nodeType;
-      })
+      .filter((node) => !otherNodes.get(node.identifier))
       .map((node) => node.identifier);
 
     const modifiedNodes = this.graph.nodes.filter((node) => {
@@ -334,14 +339,6 @@ export class CompilerInternal {
 
     diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
     diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes, false)]);
-
-    const addedConnections = otherGraph.connections.filter(
-      (conn) => !this.connectionsCache.has(connectionToID(conn))
-    );
-
-    const addedNodes = otherGraph.nodes.filter(
-      (otherNode) => !this.nodes.has(otherNode.identifier)
-    );
     diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
     diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);
 
