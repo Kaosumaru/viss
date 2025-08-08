@@ -12,8 +12,6 @@ const Layout = styled.div`
   grid-template-areas:
     "canvas result"
     "canvas result";
-  gap: 0.6em;
-  padding: 0.6em;
   box-sizing: border-box;
   height: 100vh;
 `;
