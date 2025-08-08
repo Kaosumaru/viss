@@ -127,6 +127,36 @@ export class CompilerInternal {
     };
   }
 
+  insertNodes(nodes: Node[]): GraphDiff {
+    const addedNodes: AddedNodeInfo[] = [];
+    for (const node of nodes) {
+      const newNode: Node = {
+        ...node,
+      };
+
+      if (this.nodes.has(newNode.identifier)) {
+        throw new Error(
+          `Node with identifier ${newNode.identifier} already exists`
+        );
+      }
+      const nodeClass = getNode(newNode.nodeType as NodeType);
+      if (!nodeClass) {
+        throw new Error(`Node type "${newNode.nodeType}" not found`);
+      }
+
+      newNode.parameters = {
+        ...nodeClass.getDefaultParameters(),
+        ...newNode.parameters,
+      };
+
+      this.nodes.set(newNode.identifier, newNode);
+      this.graph.nodes.push(newNode);
+
+      addedNodes.push(this.getNodeInfo(newNode));
+    }
+    return { addedNodes };
+  }
+
   removeNode(nodeId: string): GraphDiff {
     const node = this.getNodeById(nodeId);
     if (!node) throw new Error("Node not found");
@@ -183,51 +213,73 @@ export class CompilerInternal {
   }
 
   addConnection(connection: Connection): GraphDiff {
-    const fromNode = this.getNodeById(connection.from.nodeId);
-    if (!fromNode) {
-      throw new Error(
-        `From node with id ${connection.from.nodeId} not found in graph`
+    return this.addConnections([connection]);
+  }
+
+  addConnections(connections: Connection[]): GraphDiff {
+    const addedConnections: Connection[] = [];
+    const invalidatedNodeIds: string[] = [];
+
+    for (const connection of connections) {
+      const fromNode = this.getNodeById(connection.from.nodeId);
+      if (!fromNode) {
+        throw new Error(
+          `From node with id ${connection.from.nodeId} not found in graph`
+        );
+      }
+
+      // TODO throw error if connection is invalid (would cause loop or is of invalid type)
+      const foundConnection = this.connectionsCache.get(
+        connectionToID(connection)
       );
-    }
+      if (foundConnection) {
+        throw new Error("Connection already exists in graph");
+      }
 
-    // TODO throw error if connection is invalid (would cause loop or is of invalid type)
-    const index = this.graph.connections.findIndex((conn) =>
-      areConnectionsSame(conn, connection)
-    );
-    if (index !== -1) {
-      throw new Error("Connection already exists in graph");
+      connection.type = this.getOutputType(connection.from);
+      this.graph.connections.push(connection);
+      this.cacheConnection(connection);
+      addedConnections.push(connection);
+      invalidatedNodeIds.push(connection.to.nodeId);
     }
-    const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
-
-    connection.type = this.getOutputType(connection.from);
-    this.graph.connections.push(connection);
-    this.cacheConnection(connection);
 
     return {
-      addedConnections: [connection],
-      invalidatedNodeIds,
+      addedConnections,
+      invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds),
     };
   }
 
   removeConnection(connection: Connection): GraphDiff {
-    const index = this.graph.connections.findIndex((conn) =>
-      areConnectionsSame(conn, connection)
-    );
-    if (index === -1) {
-      return {};
-      // TODO this happen when playing with reapplied connections
-      //throw new Error("Connection not found in graph");
+    return this.removeConnections([connection]);
+  }
+
+  removeConnections(connections: Connection[]): GraphDiff {
+    const removedConnections: Connection[] = [];
+    const invalidatedNodeIds: string[] = [];
+
+    for (const connection of connections) {
+      const id = connectionToID(connection);
+      const foundConnection = this.connectionsCache.get(id);
+      if (!foundConnection) {
+        continue;
+        // TODO this happen when playing with reapplied connections
+        //throw new Error("Connection not found in graph");
+      }
+
+      this.graph.connections = this.graph.connections.filter(
+        (conn) => conn !== foundConnection
+      );
+      const ref = globalToSocketRef(connection.to);
+      this.getConnectedNode.delete(ref);
+      this.connectionsCache.delete(id);
+
+      removedConnections.push(connection);
+      invalidatedNodeIds.push(connection.to.nodeId);
     }
 
-    this.graph.connections.splice(index, 1);
-    const ref = globalToSocketRef(connection);
-    this.getConnectedNode.delete(ref);
-
-    const invalidatedNodeIds = this.invalidateNodes([connection.to.nodeId]);
-
     return {
-      removedConnections: [connection],
-      invalidatedNodeIds,
+      removedConnections: removedConnections,
+      invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds),
     };
   }
 
@@ -245,17 +297,44 @@ export class CompilerInternal {
     };
   }
 
-  loadGraph(graph: Graph): GraphDiff {
-    if (deepEqual(this.graph, graph)) return {};
-    this.clearGraph();
-    this.graph = graph;
-    this.graph.nodes.forEach((node) => this.nodes.set(node.identifier, node));
+  loadGraph(otherGraph: Graph): GraphDiff {
+    const otherNodes = new Map(
+      otherGraph.nodes.map((node) => [node.identifier, node])
+    );
 
-    this.graph.connections.forEach((connection) => {
-      this.cacheConnection(connection);
-    });
+    const otherConnections = new Map(
+      otherGraph.connections.map((conn) => [connectionToID(conn), conn])
+    );
 
-    return this.getGraphAsDiff();
+    const removedConnections: Connection[] = this.graph.connections.filter(
+      (conn) => !otherConnections.has(connectionToID(conn))
+    );
+
+    const removedNodes = this.graph.nodes
+      .filter((node) => {
+        const otherNode = otherNodes.get(node.identifier);
+
+        // TODO instead as deep comparing nodes, we could mark modified nodes
+        return !otherNode || !deepEqual(node, otherNode);
+      })
+      .map((node) => node.identifier);
+
+    const addedConnections = otherGraph.connections.filter(
+      (conn) => !this.connectionsCache.has(connectionToID(conn))
+    );
+
+    let diff: GraphDiff = {};
+
+    diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
+    diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes)]);
+
+    const addedNodes = otherGraph.nodes.filter(
+      (otherNode) => !this.nodes.has(otherNode.identifier)
+    );
+    diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
+    diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);
+
+    return diff;
   }
 
   getGraphAsDiff(): GraphDiff {
@@ -319,7 +398,9 @@ export class CompilerInternal {
   }
 
   protected cacheConnection(connection: Connection) {
-    const key = globalToSocketRef(connection);
+    const id = connectionToID(connection);
+    this.connectionsCache.set(id, connection);
+    const key = globalToSocketRef(connection.to);
     this.getConnectedNode.set(key, {
       node: this.getNodeById(connection.from.nodeId)!,
       socketId: connection.from.socketId,
@@ -397,19 +478,15 @@ export class CompilerInternal {
 
   protected cachedContexts: Map<string, Context> = new Map();
   protected getConnectedNode: Map<string, InputConnection> = new Map();
+  protected connectionsCache: Map<string, Connection> = new Map();
   protected nodes: Map<string, Node> = new Map();
   protected nameToFunction: Record<string, FunctionDefinition> = {};
 }
 
-function areConnectionsSame(conn1: Connection, conn2: Connection): boolean {
-  return (
-    conn1.from.nodeId === conn2.from.nodeId &&
-    conn1.from.socketId === conn2.from.socketId &&
-    conn1.to.nodeId === conn2.to.nodeId &&
-    conn1.to.socketId === conn2.to.socketId
-  );
+function globalToSocketRef(ref: SocketReference): string {
+  return `${ref.nodeId}///${ref.socketId}`;
 }
 
-function globalToSocketRef(connection: Connection): string {
-  return `${connection.to.nodeId}///${connection.to.socketId}`;
+function connectionToID(ref: Connection): string {
+  return `${globalToSocketRef(ref.from)}->${globalToSocketRef(ref.to)}`;
 }

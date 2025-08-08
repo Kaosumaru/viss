@@ -148,12 +148,10 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async loadGraphJSON(graphJson: string): Promise<void> {
-    await this.clear();
     return this.applyDiff(this.compiler().loadGraph(JSON.parse(graphJson)));
   }
 
   async loadGraph(graph: Graph): Promise<void> {
-    await this.clear();
     return this.applyDiff(this.compiler().loadGraph(graph));
   }
 
@@ -238,16 +236,16 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
 
-      if (diff.addedNodes) {
-        for (const node of diff.addedNodes) {
-          await this.addNode(node);
-        }
-      }
-
       if (diff.removedNodes) {
         for (const node of diff.removedNodes) {
           this.nodeToPreviewControl.delete(node.identifier);
           await this.editor.removeNode(node.identifier);
+        }
+      }
+
+      if (diff.addedNodes) {
+        for (const node of diff.addedNodes) {
+          await this.addNode(node);
         }
       }
 
