@@ -275,7 +275,11 @@ export class EditorAPIImp implements EditorAPI {
         for (const node of diff.nodesWithModifiedProperties) {
           const uiNode = this.getNode(node.identifier);
           if (uiNode) {
-            // update position
+            await this.area.translate(node.identifier, {
+              x: node.position.x,
+              y: node.position.y,
+            });
+
             uiNode.updateControls(node.parameters);
             this.area.update("node", uiNode.id);
           } else {
