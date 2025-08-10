@@ -19,15 +19,29 @@ export function ColorWheel({
   const [alpha, setAlpha] = useState(color[3]);
   const [isDraggingHue, setIsDraggingHue] = useState(false);
   const [isDraggingSV, setIsDraggingSV] = useState(false);
+  const [lastValidHue, setLastValidHue] = useState(() => {
+    // Initialize with a valid hue from the color or default to 0 (red)
+    const [initialHue, initialSaturation] = rgbToHsv(color[0], color[1], color[2]);
+    return initialSaturation > 0 ? initialHue : 0;
+  });
 
   // Convert current color to HSV
   useEffect(() => {
     const [h, s, v] = rgbToHsv(color[0], color[1], color[2]);
-    setHue(h);
+    
+    // Only update hue if saturation > 0 (to preserve hue for white/gray colors)
+    if (s > 0) {
+      setHue(h);
+      setLastValidHue(h);
+    } else {
+      // For white/gray colors, keep the current hue but use lastValidHue for display
+      setHue(lastValidHue);
+    }
+    
     setSaturation(s);
     setValue(v);
     setAlpha(color[3]);
-  }, [color]);
+  }, [color, lastValidHue]);
 
   const drawHueWheel = useCallback(() => {
     const canvas = canvasRef.current;
@@ -149,6 +163,7 @@ export function ColorWheel({
 
         const newHue = angle;
         setHue(newHue);
+        setLastValidHue(newHue); // Always update lastValidHue when hue is changed
 
         const [r, g, b] = hsvToRgb(newHue, saturation, value);
         onChange([r, g, b, alpha]);
@@ -193,6 +208,7 @@ export function ColorWheel({
       setSaturation(newSaturation);
       setValue(newValue);
 
+      // Use current hue (which preserves last valid hue for white colors)
       const [r, g, b] = hsvToRgb(hue, newSaturation, newValue);
       onChange([r, g, b, alpha]);
     },
@@ -240,6 +256,7 @@ export function ColorWheel({
 
           const newHue = angle;
           setHue(newHue);
+          setLastValidHue(newHue); // Update lastValidHue during dragging
 
           const [r, g, b] = hsvToRgb(newHue, saturation, value);
           onChange([r, g, b, alpha]);
