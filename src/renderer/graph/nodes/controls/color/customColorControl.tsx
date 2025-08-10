@@ -1,27 +1,9 @@
 import { useState, useEffect } from "react";
 import { Box, Popover } from "@mui/material";
-import { CustomParamControl } from "../customParamControl";
-import type { Color, ParameterValue } from "@graph/parameter";
-import type { Parameter } from "@compiler/nodes/compilerNode";
+import type { Color } from "@graph/parameter";
 import { colorToCSS, rgbaToHex } from "./utils";
 import { ColorPicker } from "./ColorPicker";
-
-export class ColorControl extends CustomParamControl {
-  constructor(
-    value: ParameterValue | undefined,
-    parameter: Parameter,
-    onChange?: (value: ParameterValue) => void
-  ) {
-    super(
-      value ?? {
-        type: "color",
-        value: [1, 1, 1, 1],
-      },
-      parameter,
-      onChange
-    );
-  }
-}
+import type { ColorControl } from "../customParamControl";
 
 export function CustomColorControl(props: { data: ColorControl }) {
   const control = props.data;

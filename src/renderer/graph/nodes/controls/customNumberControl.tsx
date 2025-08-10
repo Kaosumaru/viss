@@ -1,18 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Box, TextField } from "@mui/material";
-import { CustomParamControl } from "./customParamControl";
-import type { ParameterValue } from "@graph/parameter";
-import type { Parameter } from "@compiler/nodes/compilerNode";
-
-export class NumberControl extends CustomParamControl {
-  constructor(
-    value: ParameterValue | undefined,
-    parameter: Parameter,
-    onChange?: (value: ParameterValue) => void
-  ) {
-    super(value ?? { type: "number", value: 0 }, parameter, onChange);
-  }
-}
+import { NumberControl } from "./customParamControl";
+import { Drag } from "rete-react-plugin";
 
 export function CustomNumberControl(props: { data: NumberControl }) {
   const control = props.data;
@@ -21,6 +10,10 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     const numberValue = value.type === "number" ? value.value : 0;
     return numberValue.toString();
   });
+
+  const ref = useRef(null);
+
+  Drag.useNoDrag(ref);
 
   useEffect(() => {
     setValue(control.value);
@@ -118,9 +111,10 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     }
   };
 
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const preventKeyboardEventPropagation = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     event.stopPropagation();
-    event.preventDefault();
   };
 
   const handleBlur = () => {
@@ -141,7 +135,7 @@ export function CustomNumberControl(props: { data: NumberControl }) {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box ref={ref} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {control.parameter.description && (
         <Box sx={{ fontSize: "0.8rem", color: "#ccc" }}>
           {control.parameter.description}
@@ -152,7 +146,7 @@ export function CustomNumberControl(props: { data: NumberControl }) {
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
+        onKeyUp={preventKeyboardEventPropagation}
         onBlur={handleBlur}
         size="small"
         variant="outlined"

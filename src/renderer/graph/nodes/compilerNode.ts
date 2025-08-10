@@ -7,14 +7,16 @@ import type {
 } from "@compiler/nodes/compilerNode";
 import type { Type } from "@glsl/types/types";
 import { ClassicPreset } from "rete";
-import { BooleanControl } from "./controls/customBooleanControl";
-import { ColorControl } from "./controls/color/customColorControl";
-import { NumberControl } from "./controls/customNumberControl";
-import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
 import type { Parameters as GraphParameters } from "@graph/parameter";
-import { CustomParamControl } from "./controls/customParamControl";
+import {
+  BooleanControl,
+  ColorControl,
+  CustomParamControl,
+  NumberControl,
+  PreviewControl,
+} from "./controls/customParamControl";
 
 // Extend Socket to include GLSL type information
 class SocketWithType extends ClassicPreset.Socket {

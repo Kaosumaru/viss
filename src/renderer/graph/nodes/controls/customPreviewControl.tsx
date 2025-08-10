@@ -1,17 +1,7 @@
 import { useEffect, useRef } from "react";
-import { ClassicPreset } from "rete";
 import { ShaderEntry } from "../../../components/shaderOverlay/shaderEntry";
 import { useShaderEntry } from "../../../components/shaderOverlay/ShaderEntryContext";
-
-export class PreviewControl extends ClassicPreset.Control {
-  nodeId: string;
-  shader?: string;
-
-  constructor(nodeId: string) {
-    super();
-    this.nodeId = nodeId;
-  }
-}
+import type { PreviewControl } from "./customParamControl";
 
 export function CustomPreviewControl(props: { data: PreviewControl }) {
   const divRef = useRef<HTMLDivElement>(null);
