@@ -30,5 +30,5 @@ bugs
 1. Fix color picker wheel
 2. mix function should return x or y
 3. WHen changing number of outputs to fewer, you can orphan some connections
-4. Translation doesn't trigger save in connection
+4. Translation doesn't trigger save in extension
 
