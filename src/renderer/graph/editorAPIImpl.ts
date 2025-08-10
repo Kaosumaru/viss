@@ -36,9 +36,17 @@ export class EditorAPIImp implements EditorAPI {
       if (this.deserializing) {
         return context;
       }
-      if (context.type === "nodetranslated") {
-        const { x, y } = context.data.position;
-        this.compiler().translateNode(context.data.id, x, y);
+      if (context.type === "nodedragged") {
+        const nodeView = this.area.nodeViews.get(context.data.id);
+        if (!nodeView) return context;
+
+        this.applyDiff(
+          this.compiler().translateNode(
+            context.data.id,
+            nodeView.position.x,
+            nodeView.position.y
+          )
+        );
       }
       return context;
     });
@@ -293,7 +301,8 @@ export class EditorAPIImp implements EditorAPI {
         (diff.removedNodes?.length ?? 0) +
         (diff.addedConnections?.length ?? 0) +
         (diff.removedConnections?.length ?? 0) +
-        (diff.nodesWithModifiedProperties?.length ?? 0);
+        (diff.nodesWithModifiedProperties?.length ?? 0) +
+        (diff.translatedNodes?.size ?? 0);
 
       if (updatedJson > 0) {
         this.extension.saveGraph(this.compiler().getGraph(), diff);

@@ -25,6 +25,7 @@ export interface GraphDiff {
   removedNodes?: Node[];
   addedConnections?: Connection[];
   removedConnections?: Connection[];
+  translatedNodes?: Set<string>;
   nodesWithModifiedProperties?: Node[];
   invalidatedNodeIds?: Set<string>;
 }
@@ -44,14 +45,24 @@ export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
       ...(acc.removedConnections || []),
       ...(diff.removedConnections || []),
     ];
-    acc.invalidatedNodeIds = new Set([
-      ...(acc.invalidatedNodeIds || []),
-      ...(diff.invalidatedNodeIds || []),
-    ]);
+    acc.invalidatedNodeIds =
+      acc.invalidatedNodeIds || diff.invalidatedNodeIds
+        ? new Set([
+            ...(acc.invalidatedNodeIds || []),
+            ...(diff.invalidatedNodeIds || []),
+          ])
+        : undefined;
     acc.nodesWithModifiedProperties = [
       ...(acc.nodesWithModifiedProperties || []),
       ...(diff.nodesWithModifiedProperties || []),
     ];
+    acc.translatedNodes =
+      acc.translatedNodes || diff.translatedNodes
+        ? new Set([
+            ...(acc.translatedNodes || []),
+            ...(diff.translatedNodes || []),
+          ])
+        : undefined;
     return acc;
   }, {} as GraphDiff);
 }

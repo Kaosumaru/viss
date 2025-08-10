@@ -213,14 +213,21 @@ export class CompilerInternal {
     });
   }
 
-  translateNode(nodeId: string, x: number, y: number) {
+  translateNode(nodeId: string, x: number, y: number): GraphDiff {
     const node = this.getNodeById(nodeId);
     if (!node) {
       throw new Error(`Node with id ${nodeId} not found in graph`);
     }
 
+    if (node.position.x === x && node.position.y === y) {
+      return {};
+    }
+
     node.position.x = x;
     node.position.y = y;
+    return {
+      translatedNodes: new Set([nodeId]),
+    };
   }
 
   addConnection(connection: Connection): GraphDiff {

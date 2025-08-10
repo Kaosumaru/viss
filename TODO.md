@@ -3,7 +3,7 @@
 3. templated functions (add, etc)
 5. Fuinctions should only accept EXACT type (implicit conversion is for rare cases, like constructors)
 6. Portals
-7. Undo/redo
+7. Preview for all nodes
 
 Global uniforms variables
 - TODO
@@ -29,5 +29,5 @@ Check
 bugs
 1. mix function should return x or y
 2. WHen changing number of outputs to fewer, you can orphan some connections
-3. Translation doesn't trigger save in extension
+3. In extension, file is mark as modified upon initial open
 

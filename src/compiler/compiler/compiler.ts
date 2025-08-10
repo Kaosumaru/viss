@@ -40,8 +40,8 @@ export class Compiler {
     return this.graph.removeNodes(nodeIds);
   }
 
-  public translateNode(nodeId: string, x: number, y: number): void {
-    this.graph.translateNode(nodeId, x, y);
+  public translateNode(nodeId: string, x: number, y: number): GraphDiff {
+    return this.graph.translateNode(nodeId, x, y);
   }
 
   public copyNodes(nodeIds: string[]): Graph {
