@@ -28,5 +28,5 @@ Check
 1. If we don't need to inherit from rete socket
 
 bugs
-1. When changing number of outputs to fewer, you can orphan some connections
+1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
 
