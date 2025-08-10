@@ -33,6 +33,9 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     // Allow empty string (will default to 0)
     if (input === "" || input === "-") return true;
 
+    // Allow numbers ending with a dot (like "5." for intermediate input)
+    if (/^-?\d+\.$/.test(input)) return true;
+
     // Check if it's a valid number (including decimals, negative numbers, scientific notation)
     const numberRegex = /^-?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/;
     return numberRegex.test(input);
@@ -44,8 +47,19 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     // Always update the input value for immediate visual feedback
     setInputValue(inputVal);
 
-    // Only update the actual value if it's valid or empty
+    // Only update the actual control value if it's valid and can be parsed
     if (isValidNumberInput(inputVal)) {
+      // For inputs ending with just a dot (like "5."), don't update the control value yet
+      if (
+        inputVal.endsWith(".") &&
+        !inputVal.includes("e") &&
+        !inputVal.includes("E")
+      ) {
+        // Keep the display updated but don't change the control value
+        event.stopPropagation();
+        return;
+      }
+
       const newValue =
         inputVal === "" || inputVal === "-" ? 0 : parseFloat(inputVal);
 
@@ -61,40 +75,45 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     }
 
     event.stopPropagation();
-    event.preventDefault();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // Allow: backspace, delete, tab, escape, enter
-    if (
-      [8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
-      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
-      (event.keyCode === 65 && event.ctrlKey === true) ||
-      (event.keyCode === 67 && event.ctrlKey === true) ||
-      (event.keyCode === 86 && event.ctrlKey === true) ||
-      (event.keyCode === 88 && event.ctrlKey === true) ||
-      (event.keyCode === 90 && event.ctrlKey === true) ||
-      // Allow: home, end, left, right, down, up
-      (event.keyCode >= 35 && event.keyCode <= 40)
-    ) {
-      return; // Let it happen, don't do anything
-    }
-
-    const char = String.fromCharCode(event.keyCode);
+    const key = event.key;
     const input = (event.target as HTMLInputElement).value;
     const selectionStart =
       (event.target as HTMLInputElement).selectionStart || 0;
-    const newInput =
-      input.slice(0, selectionStart) + char + input.slice(selectionStart);
+    const selectionEnd = (event.target as HTMLInputElement).selectionEnd || 0;
 
-    // Allow numbers, decimal point, minus sign, and scientific notation
-    if (!/[.\d\-eE]/.test(char)) {
-      event.preventDefault();
-      return;
+    // Allow navigation and editing keys
+    if (
+      [
+        "Backspace",
+        "Delete",
+        "Tab",
+        "Escape",
+        "Enter",
+        "Home",
+        "End",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+      ].includes(key)
+    ) {
+      return; // Let these keys work normally
     }
 
-    // Prevent invalid number combinations
-    if (!isValidNumberInput(newInput)) {
+    // Allow Ctrl/Cmd combinations (copy, paste, select all, etc.)
+    if (event.ctrlKey || event.metaKey) {
+      return; // Let these combinations work normally
+    }
+
+    // For regular character input, check if it would create a valid number
+    const newInput =
+      input.slice(0, selectionStart) + key + input.slice(selectionEnd);
+
+    // Allow only valid number characters and check if the resulting input would be valid
+    if (!/[.\d\-eE]/.test(key) || !isValidNumberInput(newInput)) {
       event.preventDefault();
     }
   };
