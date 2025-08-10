@@ -5,6 +5,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   build: buildOptions(mode),
+  define: defineOptions(mode),
   resolve: {
     alias: {
       "@compiler": path.resolve(__dirname, "src/compiler/compiler"),
@@ -30,4 +31,16 @@ function buildOptions(mode: string): BuildEnvironmentOptions | undefined {
     };
   }
   return undefined;
+}
+
+function defineOptions(mode: string): Record<string, unknown> {
+  const defines: Record<string, unknown> = {};
+  
+  if (mode === "vscode-extension") {
+    defines.__VSCODE_EXTENSION__ = true;
+  } else {
+    defines.__VSCODE_EXTENSION__ = false;
+  }
+  
+  return defines;
 }

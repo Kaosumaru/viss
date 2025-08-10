@@ -58,24 +58,26 @@ export function PropertyView({
 
   return (
     <Paper elevation={3} style={{ padding: "1em", height: "100%" }}>
-      <div style={{ marginBottom: "1em", display: "flex", gap: "0.5em" }}>
-        <Button
-          variant="contained"
-          onClick={handleSaveGraph}
-          disabled={!editorData}
-          size="small"
-        >
-          Save Graph to Clipboard
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleLoadGraph}
-          disabled={!editorData}
-          size="small"
-        >
-          Load Graph from Clipboard
-        </Button>
-      </div>
+      {!__VSCODE_EXTENSION__ && (
+        <div style={{ marginBottom: "1em", display: "flex", gap: "0.5em" }}>
+          <Button
+            variant="contained"
+            onClick={handleSaveGraph}
+            disabled={!editorData}
+            size="small"
+          >
+            Save Graph to Clipboard
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleLoadGraph}
+            disabled={!editorData}
+            size="small"
+          >
+            Load Graph from Clipboard
+          </Button>
+        </div>
+      )}
       <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />
     </Paper>
   );
