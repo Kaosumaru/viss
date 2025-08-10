@@ -40,7 +40,7 @@ export function CustomNumberControl(props: { data: NumberControl }) {
           {control.parameter.description}
         </Box>
       )}
-      
+
       <TextField
         type="number"
         value={numberValue}

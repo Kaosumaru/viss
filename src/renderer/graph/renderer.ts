@@ -31,7 +31,7 @@ import { ShaderEntryProvider } from "../components/shaderOverlay/ShaderEntryProv
 // Create a dark theme for Material-UI
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
   },
 });
 
@@ -49,9 +49,9 @@ export function createRenderer(
             React.createElement(ThemeProvider, {
               theme: darkTheme,
               children: [
-                React.createElement(CssBaseline, { key: 'css-baseline' }),
+                React.createElement(CssBaseline, { key: "css-baseline" }),
                 React.createElement(ShaderEntryProvider, {
-                  key: 'shader-provider',
+                  key: "shader-provider",
                   context: overlayContext,
                   children: element,
                 }),
