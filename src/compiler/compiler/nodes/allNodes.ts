@@ -9,7 +9,7 @@ import { output as outputNode } from "./out/output";
 import { UniformNode } from "./uniforms/uniform";
 import { divide } from "./operators/divide";
 import { GetMember } from "./vector/getMember";
-import { composeVector4 } from "./vector/composeVector4";
+import { ComposeVector } from "./vector/composeVector";
 import {
   FunctionNode,
   genFDComponent,
@@ -54,9 +54,9 @@ const literals = createCategory({
     bool: new BooleanLiteralNode(),
     color,
 
-    // vector2: new LiteralNode(vector("float", 2)),
-    // vector3: new LiteralNode(vector("float", 3)),
-    // vector4: new LiteralNode(vector("float", 4)),
+    composeVec2: new ComposeVector("float", 2),
+    composeVec3: new ComposeVector("float", 3),
+    composeVec4: new ComposeVector("float", 4),
   },
 });
 
@@ -230,7 +230,6 @@ const vectors = createCategory({
     getX: new GetMember("x", vector("float", 2), scalar("float")),
     getY: new GetMember("y", vector("float", 2), scalar("float")),
 
-    composeVector4,
     decomposeVector,
   },
 });

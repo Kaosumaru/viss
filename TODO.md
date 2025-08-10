@@ -4,6 +4,7 @@
 5. Fuinctions should only accept EXACT type (implicit conversion is for rare cases, like constructors)
 6. Portals
 7. Preview for all nodes
+8. all overloads for mix function
 
 Global uniforms variables
 - TODO
@@ -27,6 +28,6 @@ Check
 1. If we don't need to inherit from rete socket
 
 bugs
-1. mix function should return x or y
-2. WHen changing number of outputs to fewer, you can orphan some connections
+1. When changing number of outputs to fewer, you can orphan some connections
+2. Backspace or delete in input property will delete a node
 
