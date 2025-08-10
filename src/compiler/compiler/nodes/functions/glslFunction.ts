@@ -6,7 +6,6 @@ import {
 } from "../compilerNode";
 import type { Context, Expression } from "@compiler/context";
 import type { FunctionDefinition } from "@glsl/function";
-import { createPreviewExpression } from "../out/utils";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 
 class GlslFunction extends CompilerNode {
@@ -44,10 +43,7 @@ class GlslFunction extends CompilerNode {
       trivial: false,
     };
 
-    return this.createDynamicOutputs(node, [
-      ["out", outExpression],
-      ["_preview", createPreviewExpression(outExpression)],
-    ]);
+    return this.createDynamicOutputs(node, [["out", outExpression]]);
   }
 
   override getLabel(): string {

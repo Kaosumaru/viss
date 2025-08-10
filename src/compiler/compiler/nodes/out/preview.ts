@@ -1,7 +1,6 @@
 import { genericFType } from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
-import { createPreviewExpression } from "./utils";
 
 class PreviewNode extends CompilerNode {
   constructor() {
@@ -12,14 +11,9 @@ class PreviewNode extends CompilerNode {
   override compile(node: NodeContext): Context {
     const in_ = this.getInput(node, "in");
 
-    const outputExpression = createPreviewExpression(in_);
     return this.createOutputs(node, [
       {
         ...in_,
-      },
-      {
-        name: "_preview",
-        ...outputExpression,
       },
     ]);
   }

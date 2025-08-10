@@ -84,7 +84,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; font-src ${webview.cspSource};">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>VShader Editor</title>
-                <link rel="stylesheet" crossorigin href="${assetsUri}/index-B_N7Vb0j.css">
+                <link rel="stylesheet" crossorigin href="${assetsUri}/index-Gpo72nnT.css">
             </head>
             <body>
                 <div id="root"></div>

@@ -2,6 +2,7 @@ import { Compiler } from "@compiler/compiler";
 import type { Context, Variable } from "@compiler/context";
 import { typeToGlsl } from "@glsl/types/typeToString";
 import type { FunctionDefinition } from "@glsl/function";
+import { convertToVector4 } from "@compiler/nodes/out/utils";
 
 export class CompilationHelper {
   constructor(compiler?: Compiler) {
@@ -15,7 +16,7 @@ export class CompilationHelper {
     return this.compiler_.getCustomFunctions();
   }
 
-  compileNode(nodeId?: string, outputPin = "_preview"): string | undefined {
+  compileNode(nodeId?: string, outputPin?: string): string | undefined {
     if (!this.compiler_) {
       return undefined;
     }
@@ -42,8 +43,12 @@ export class CompilationHelper {
     }
   }
 
-  private outputToGLSL(output: Context, outputPin: string): string {
-    const outExpression = output.outputs[outputPin];
+  private outputToGLSL(output: Context, outputPin?: string): string {
+    const outExpression = outputPin
+      ? output.outputs[outputPin]
+      : Object.values(output.outputs)[0];
+
+    const vec4 = convertToVector4(outExpression);
 
     const graph = this.compiler_.getGraph();
     const variables = output.variables
@@ -59,7 +64,7 @@ ${graph.includes.map((include) => include.content).join("\n")}
 
 void main() {
 ${variables}
-  gl_FragColor = ${outExpression.data}; 
+  gl_FragColor = ${vec4.data}; 
 }`;
 
     return fragmentShader;
