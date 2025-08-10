@@ -5,7 +5,6 @@ import { AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
 import type { Schemes, AreaExtra } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
-import type { PreviewControl } from "./nodes/controls/customPreviewControl";
 import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
 import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
@@ -15,6 +14,7 @@ import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
+import type { PreviewControl } from "./nodes/controls/customParamControl";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -272,13 +272,6 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
 
-      if (diff.invalidatedNodeIds) {
-        this.recompilePreviewNodes(diff.invalidatedNodeIds);
-        this.updateInputsOutputs(diff.invalidatedNodeIds);
-        // TODO this should be only fired on output change
-        this.reportChange();
-      }
-
       if (updateProperties && diff.nodesWithModifiedProperties) {
         for (const node of diff.nodesWithModifiedProperties) {
           const uiNode = this.getNode(node.identifier);
@@ -294,6 +287,13 @@ export class EditorAPIImp implements EditorAPI {
             console.warn(`Node ${node.identifier} not found in editor`);
           }
         }
+      }
+
+      if (diff.invalidatedNodeIds) {
+        this.recompilePreviewNodes(diff.invalidatedNodeIds);
+        this.updateInputsOutputs(diff.invalidatedNodeIds);
+        // TODO this should be only fired on output change
+        this.reportChange();
       }
 
       const updatedJson =
