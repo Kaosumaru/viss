@@ -45,6 +45,7 @@ export class EditorVSExtension {
     this.postMessage({
       type: "saveGraph",
       json: graph,
+      requestId: this.loadRequestId,
     });
   }
 
@@ -62,8 +63,13 @@ export class EditorVSExtension {
           return;
         }
         this.deserializing = true;
-        await this.editor.loadGraph(message.json as Graph);
-        this.deserializing = false;
+        this.loadRequestId = message.requestId;
+        try {
+          await this.editor.loadGraph(message.json as Graph);
+        } finally {
+          this.loadRequestId = undefined;
+          this.deserializing = false;
+        }
         break;
       default:
         console.warn("Unknown message type:", message.type);
@@ -75,6 +81,7 @@ export class EditorVSExtension {
   }
 
   private deserializing = false;
+  private loadRequestId?: number;
   private helper = new DisposeHelper();
   private editor: EditorAPI;
   private vscode: VSCode | undefined;

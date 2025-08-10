@@ -29,5 +29,4 @@ Check
 bugs
 1. mix function should return x or y
 2. WHen changing number of outputs to fewer, you can orphan some connections
-3. In extension, file is mark as modified upon initial open
 

@@ -42,7 +42,8 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
             this.ignoreNextUpdate = false;
             return;
           }
-          updateWebview(document, webviewPanel);
+          this.requestIdCounter ++;
+          updateWebview(document, webviewPanel, this.requestIdCounter);
         }
       }
     );
@@ -57,7 +58,8 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       this.handleMessage(document, webviewPanel, e)
     );
 
-    updateWebview(document, webviewPanel);
+    this.requestIdCounter ++;
+    updateWebview(document, webviewPanel, this.requestIdCounter);
   }
 
   /**
@@ -120,25 +122,31 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
         vscode.window.showErrorMessage(event.text);
         break;
       case "refreshContent":
-        updateWebview(document, webviewPanel);
+        this.requestIdCounter ++;
+        updateWebview(document, webviewPanel, this.requestIdCounter);
         break;
       case "saveGraph":
-        this.ignoreNextUpdate = true;
-        this.updateTextDocument(document, event.json);
+        if (event.requestId !== this.requestIdCounter) {
+          this.ignoreNextUpdate = true;
+          this.updateTextDocument(document, event.json);
+        }
         break;
     }
   }
 
   ignoreNextUpdate = false;
+  private requestIdCounter = 0;
 }
 
 function updateWebview(
   document: vscode.TextDocument,
-  webviewPanel: vscode.WebviewPanel
+  webviewPanel: vscode.WebviewPanel,
+  id: number,
 ) {
   postMessage(webviewPanel, {
     type: "loadGraph",
     json: getDocumentAsJson(document),
+    requestId: id,
   });
 }
 

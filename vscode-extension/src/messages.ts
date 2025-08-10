@@ -10,6 +10,7 @@ export interface RefreshContentMessage {
 export interface SaveGraphMessage {
   type: "saveGraph";
   json: unknown;
+  requestId?: number;
 }
 
 export type EditorToExtensionMessage =
@@ -20,6 +21,7 @@ export type EditorToExtensionMessage =
 export interface LoadGraphMessage {
   type: "loadGraph";
   json: unknown;
+  requestId?: number;
 }
 
 export type ExtensionToEditorMessage = LoadGraphMessage;
