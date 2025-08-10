@@ -19,14 +19,9 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
   const { addEntry, removeEntry, updateEntryPosition } = useShaderEntry();
 
   useEffect(() => {
-    shaderEntryRef.current?.setShader(props.data.shader);
-  }, [props.data.shader]);
-
-  useEffect(() => {
     // Create shader entry
     const shaderEntry = new ShaderEntry();
     shaderEntryRef.current = shaderEntry;
-    shaderEntryRef.current?.setShader(props.data.shader);
     addEntry(shaderEntry);
 
     return () => {
@@ -35,7 +30,11 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
         removeEntry(shaderEntryRef.current);
       }
     };
-  });
+  }, [addEntry, removeEntry]);
+
+  useEffect(() => {
+    shaderEntryRef.current?.setShader(props.data.shader);
+  }, [props.data.shader]);
 
   useEffect(() => {
     const updatePosition = () => {
