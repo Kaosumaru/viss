@@ -23,6 +23,7 @@ Optimization
 6. Optimize communication between webview and extension
 7. Webview state
 8. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
+9. Editor is remorting glsl on translation to editor, we could only refresh it when it gets dirty
 
 Check
 1. If we don't need to inherit from rete socket

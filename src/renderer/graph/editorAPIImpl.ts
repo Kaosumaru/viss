@@ -219,7 +219,7 @@ export class EditorAPIImp implements EditorAPI {
     for (const nodeId of nodes) {
       const control = this.nodeToPreviewControl.get(nodeId);
       if (control) {
-        control.shader = this.compilationHelper.compileNode(nodeId);
+        control.shader = this.compileNode(nodeId);
         this.area.update("control", control.id);
       }
     }

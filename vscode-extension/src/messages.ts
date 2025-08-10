@@ -10,6 +10,7 @@ export interface RefreshContentMessage {
 export interface SaveGraphMessage {
   type: "saveGraph";
   json: unknown;
+  exportedGlsl?: string;
   requestId?: number;
 }
 

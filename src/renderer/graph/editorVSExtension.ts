@@ -45,6 +45,7 @@ export class EditorVSExtension {
     this.postMessage({
       type: "saveGraph",
       json: graph,
+      exportedGlsl: this.editor.compileNode(),
       requestId: this.loadRequestId,
     });
   }
