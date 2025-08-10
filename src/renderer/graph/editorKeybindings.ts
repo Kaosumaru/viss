@@ -15,9 +15,9 @@ export class EditorKeybindings {
       const cbkeydown = (event: KeyboardEvent) => {
         this.handleKeyDown(event);
       };
-      window.addEventListener("keydown", cbkeydown);
+      window.addEventListener("keyup", cbkeydown);
       return () => {
-        window.removeEventListener("keydown", cbkeydown);
+        window.removeEventListener("keyup", cbkeydown);
       };
     });
 

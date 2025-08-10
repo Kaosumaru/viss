@@ -31,6 +31,13 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     };
     setValue(control.value);
     control.onChange?.(control.value);
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
   };
 
   return (
@@ -45,6 +52,7 @@ export function CustomNumberControl(props: { data: NumberControl }) {
         type="number"
         value={numberValue}
         onChange={handleChange}
+        onKeyUp={handleKeyUp}
         size="small"
         variant="outlined"
         sx={{

@@ -29,5 +29,5 @@ Check
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections
-2. Backspace or delete in input property will delete a node
+2. We are using , on polish locale instead of . in numbercontrol
 
