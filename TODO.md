@@ -29,4 +29,5 @@ Check
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
+2. Preview is in front of the right panel
 
