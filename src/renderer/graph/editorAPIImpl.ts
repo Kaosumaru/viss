@@ -153,9 +153,13 @@ export class EditorAPIImp implements EditorAPI {
     this.deserializing = true;
     await this.editor.clear();
     this.deserializing = false;
+    this.extension.saveGraph(this.compiler().getGraph());
   }
 
   async loadGraphJSON(graphJson: string): Promise<void> {
+    if (graphJson.trim() === "") {
+      return this.clear();
+    }
     return this.loadGraph(JSON.parse(graphJson));
   }
 
