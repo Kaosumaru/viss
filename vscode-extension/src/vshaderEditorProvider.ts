@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "./utils";
-import { EditorToExtensionMessage, ExtensionToEditorMessage } from "./messages";
+import { EditorToExtensionMessage, ExtensionToEditorMessage, SaveGraphMessage } from "./messages";
 
 export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -98,7 +98,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   /**
    * Write out the json to a given document.
    */
-  private updateTextDocument(document: vscode.TextDocument, json: unknown) {
+  private async updateTextDocument(document: vscode.TextDocument, event: SaveGraphMessage) {
     const edit = new vscode.WorkspaceEdit();
 
     // Just replace the entire document every time for this example extension.
@@ -106,13 +106,26 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     edit.replace(
       document.uri,
       new vscode.Range(0, 0, document.lineCount, 0),
-      JSON.stringify(json, null, 2)
+      JSON.stringify(event.json, null, 2)
     );
+
+    // Save the exported GLSL if available
+    if (event.exportedGlsl) {
+      const glslUri = vscode.Uri.file(document.uri.fsPath + '.glsl');
+      const glslEdit = new vscode.WorkspaceEdit();
+      
+      // Create or overwrite the GLSL file
+      glslEdit.createFile(glslUri, { overwrite: true });
+      glslEdit.insert(glslUri, new vscode.Position(0, 0), event.exportedGlsl);
+      
+      // Apply the GLSL file edit
+      await vscode.workspace.applyEdit(glslEdit);
+    }
 
     return vscode.workspace.applyEdit(edit);
   }
 
-  private handleMessage(
+  private async handleMessage(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
     event: EditorToExtensionMessage
@@ -128,7 +141,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       case "saveGraph":
         if (event.requestId !== this.requestIdCounter) {
           this.ignoreNextUpdate = true;
-          this.updateTextDocument(document, event.json);
+          await this.updateTextDocument(document, event);
         }
         break;
     }
