@@ -22,12 +22,12 @@ function buildOptions(mode: string): BuildEnvironmentOptions | undefined {
     return {
       rollupOptions: {
         output: {
-          entryFileNames: 'assets/index.js', // ✅ your custom name
+          entryFileNames: "assets/index.js", // ✅ your custom name
           // If needed:
           // chunkFileNames: 'chunks/[name].js',
           // assetFileNames: 'assets/[name][extname]',
-        }
-      }
+        },
+      },
     };
   }
   return undefined;
@@ -35,12 +35,12 @@ function buildOptions(mode: string): BuildEnvironmentOptions | undefined {
 
 function defineOptions(mode: string): Record<string, unknown> {
   const defines: Record<string, unknown> = {};
-  
+
   if (mode === "vscode-extension") {
     defines.__VSCODE_EXTENSION__ = true;
   } else {
     defines.__VSCODE_EXTENSION__ = false;
   }
-  
+
   return defines;
 }
