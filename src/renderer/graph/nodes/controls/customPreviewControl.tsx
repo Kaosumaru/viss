@@ -26,9 +26,7 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
 
     return () => {
       // Cleanup shader entry
-      if (shaderEntryRef.current) {
-        removeEntry(shaderEntryRef.current);
-      }
+      removeEntry(shaderEntry);
     };
   }, [addEntry, removeEntry]);
 

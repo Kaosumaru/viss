@@ -166,11 +166,13 @@ export class CompilerInternal {
     const removedConnections: Connection[] = [];
     const invalidatedNodeIds: string[] = [];
 
-    for(const nodeId of nodeIds){
+    for (const nodeId of nodeIds) {
       const node = this.getNodeById(nodeId);
       if (!node) continue;
 
-      this.graph.nodes = this.graph.nodes.filter((n) => n.identifier !== nodeId);
+      this.graph.nodes = this.graph.nodes.filter(
+        (n) => n.identifier !== nodeId
+      );
       this.nodes.delete(nodeId);
 
       if (removeOrphanedConnections) {
@@ -179,6 +181,9 @@ export class CompilerInternal {
             return true;
           }
           removedConnections.push(c);
+          const ref = globalToSocketRef(c.to);
+          this.getConnectedNode.delete(ref);
+          this.connectionsCache.delete(connectionToID(c));
           return false;
         });
       }

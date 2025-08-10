@@ -66,7 +66,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.addParams(description.inputs, description.parameters);
     this.addOutputs(description.outputs);
 
-    if (description.showPreview) {
+    if (description.showPreview && !this.previewControl) {
       this.previewControl = new PreviewControl(this.id);
       this.addControl("preview", this.previewControl);
     }
