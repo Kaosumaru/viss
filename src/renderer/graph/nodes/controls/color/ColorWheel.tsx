@@ -21,14 +21,18 @@ export function ColorWheel({
   const [isDraggingSV, setIsDraggingSV] = useState(false);
   const [lastValidHue, setLastValidHue] = useState(() => {
     // Initialize with a valid hue from the color or default to 0 (red)
-    const [initialHue, initialSaturation] = rgbToHsv(color[0], color[1], color[2]);
+    const [initialHue, initialSaturation] = rgbToHsv(
+      color[0],
+      color[1],
+      color[2]
+    );
     return initialSaturation > 0 ? initialHue : 0;
   });
 
   // Convert current color to HSV
   useEffect(() => {
     const [h, s, v] = rgbToHsv(color[0], color[1], color[2]);
-    
+
     // Only update hue if saturation > 0 (to preserve hue for white/gray colors)
     if (s > 0) {
       setHue(h);
@@ -37,7 +41,7 @@ export function ColorWheel({
       // For white/gray colors, keep the current hue but use lastValidHue for display
       setHue(lastValidHue);
     }
-    
+
     setSaturation(s);
     setValue(v);
     setAlpha(color[3]);
