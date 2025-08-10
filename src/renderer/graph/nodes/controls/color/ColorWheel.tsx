@@ -79,7 +79,7 @@ export function ColorWheel({
     }
 
     // Draw hue indicator
-    const hueAngle = ((hue - 90) * Math.PI) / 180;
+    const hueAngle = (hue * Math.PI) / 180;
     const indicatorRadius = (outerRadius + innerRadius) / 2;
     const indicatorX = centerX + Math.cos(hueAngle) * indicatorRadius;
     const indicatorY = centerY + Math.sin(hueAngle) * indicatorRadius;
@@ -162,7 +162,7 @@ export function ColorWheel({
       const innerRadius = outerRadius - 20;
 
       if (distance >= innerRadius && distance <= outerRadius) {
-        let angle = (Math.atan2(y, x) * 180) / Math.PI + 90;
+        let angle = (Math.atan2(y, x) * 180) / Math.PI;
         if (angle < 0) angle += 360;
 
         const newHue = angle;
@@ -255,7 +255,7 @@ export function ColorWheel({
         const innerRadius = outerRadius - 20;
 
         if (distance >= innerRadius && distance <= outerRadius) {
-          let angle = (Math.atan2(y, x) * 180) / Math.PI + 90;
+          let angle = (Math.atan2(y, x) * 180) / Math.PI;
           if (angle < 0) angle += 360;
 
           const newHue = angle;

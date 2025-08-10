@@ -27,8 +27,7 @@ Check
 1. If we don't need to inherit from rete socket
 
 bugs
-1. Fix color picker wheel
-2. mix function should return x or y
-3. WHen changing number of outputs to fewer, you can orphan some connections
-4. Translation doesn't trigger save in extension
+1. mix function should return x or y
+2. WHen changing number of outputs to fewer, you can orphan some connections
+3. Translation doesn't trigger save in extension
 
