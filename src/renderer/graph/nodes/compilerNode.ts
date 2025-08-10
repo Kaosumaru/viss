@@ -9,6 +9,7 @@ import type { Type } from "@glsl/types/types";
 import { ClassicPreset } from "rete";
 import { BooleanControl } from "./controls/customBooleanControl";
 import { ColorControl } from "./controls/color/customColorControl";
+import { NumberControl } from "./controls/customNumberControl";
 import { PreviewControl } from "./controls/customPreviewControl";
 import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
@@ -168,10 +169,7 @@ export class UICompilerNode extends ClassicPreset.Node {
       case "color":
         return new ColorControl(param.defaultValue, param, callback);
       case "number":
-        return new ClassicPreset.InputControl("number", {
-          initial: param.defaultValue?.value || 0,
-          change: (v) => callback({ type: "number", value: v as number }),
-        });
+        return new NumberControl(param.defaultValue, param, callback);
       case "string":
         return new ClassicPreset.InputControl("text", {
           initial: param.defaultValue?.value || "",
