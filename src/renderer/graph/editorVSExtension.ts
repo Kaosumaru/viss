@@ -45,7 +45,6 @@ export class EditorVSExtension {
     this.postMessage({
       type: "saveGraph",
       json: graph,
-      exportedGlsl: this.editor.compileNode(),
       requestId: this.loadRequestId,
     });
   }
@@ -72,9 +71,15 @@ export class EditorVSExtension {
           this.deserializing = false;
         }
         break;
-      default:
-        console.warn("Unknown message type:", message.type);
+      case "exportGraphRequest":
+        this.postMessage({
+          type: "exportGraphResponse",
+          path: message.path,
+          content: this.editor.compileNode(),
+        });
+        break;
     }
+    console.warn("Unknown message type:", message.type);
   }
 
   private postMessage(message: EditorToExtensionMessage) {

@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { getNonce } from "./utils";
-import { EditorToExtensionMessage, ExtensionToEditorMessage, SaveGraphMessage } from "./messages";
+import {
+  EditorToExtensionMessage,
+  ExtensionToEditorMessage,
+  SaveGraphMessage,
+} from "./messages";
 
 export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -16,9 +20,6 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   private static readonly viewType = "vshader.graphEditor";
 
   constructor(private readonly context: vscode.ExtensionContext) {}
-
-  // Store the latest exported GLSL per document
-  private documentGlslMap = new Map<string, string>();
 
   public async resolveCustomTextEditor(
     document: vscode.TextDocument,
@@ -46,7 +47,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
             this.ignoreNextUpdate = false;
             return;
           }
-          this.requestIdCounter ++;
+          this.requestIdCounter++;
           updateWebview(document, webviewPanel, this.requestIdCounter);
         }
       }
@@ -56,15 +57,10 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     const saveDocumentSubscription = vscode.workspace.onDidSaveTextDocument(
       async (savedDocument) => {
         if (savedDocument.uri.toString() === document.uri.toString()) {
-          const exportedGlsl = this.documentGlslMap.get(document.uri.toString());
-          if (exportedGlsl) {
-            const glslPath = document.uri.fsPath + '.glsl';
-            try {
-              await fs.promises.writeFile(glslPath, exportedGlsl, 'utf8');
-            } catch (error) {
-              vscode.window.showErrorMessage(`Failed to save GLSL file: ${error}`);
-            }
-          }
+          postMessage(webviewPanel, {
+            type: "exportGraphRequest",
+            path: document.uri.fsPath + ".glsl",
+          });
         }
       }
     );
@@ -73,8 +69,6 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     webviewPanel.onDidDispose(() => {
       changeDocumentSubscription.dispose();
       saveDocumentSubscription.dispose();
-      // Clean up stored GLSL data
-      this.documentGlslMap.delete(document.uri.toString());
     });
 
     // Receive message from the webview.
@@ -82,7 +76,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       this.handleMessage(document, webviewPanel, e)
     );
 
-    this.requestIdCounter ++;
+    this.requestIdCounter++;
     updateWebview(document, webviewPanel, this.requestIdCounter);
   }
 
@@ -122,7 +116,10 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   /**
    * Write out the json to a given document.
    */
-  private updateTextDocument(document: vscode.TextDocument, event: SaveGraphMessage) {
+  private updateTextDocument(
+    document: vscode.TextDocument,
+    event: SaveGraphMessage
+  ) {
     const edit = new vscode.WorkspaceEdit();
 
     // Just replace the entire document every time for this example extension.
@@ -132,11 +129,6 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       new vscode.Range(0, 0, document.lineCount, 0),
       JSON.stringify(event.json, null, 2)
     );
-
-    // Store the exported GLSL for writing when the document is saved
-    if (event.exportedGlsl) {
-      this.documentGlslMap.set(document.uri.toString(), event.exportedGlsl);
-    }
 
     return vscode.workspace.applyEdit(edit);
   }
@@ -151,8 +143,17 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
         vscode.window.showErrorMessage(event.text);
         break;
       case "refreshContent":
-        this.requestIdCounter ++;
+        this.requestIdCounter++;
         updateWebview(document, webviewPanel, this.requestIdCounter);
+        break;
+      case "exportGraphResponse":
+        try {
+          if (event.content) {
+            fs.promises.writeFile(event.path, event.content, "utf8");
+          }
+        } catch (error) {
+          vscode.window.showErrorMessage(`Failed to save GLSL file: ${error}`);
+        }
         break;
       case "saveGraph":
         if (event.requestId !== this.requestIdCounter) {
@@ -170,7 +171,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
 function updateWebview(
   document: vscode.TextDocument,
   webviewPanel: vscode.WebviewPanel,
-  id: number,
+  id: number
 ) {
   postMessage(webviewPanel, {
     type: "loadGraph",
@@ -187,9 +188,9 @@ function postMessage(
   webviewPanel.webview.postMessage(message);
 }
 
-  /**
-   * Try to get a current document as json text.
-   */
+/**
+ * Try to get a current document as json text.
+ */
 function getDocumentAsJson(document: vscode.TextDocument): unknown {
   const text = document.getText();
   if (text.trim().length === 0) {

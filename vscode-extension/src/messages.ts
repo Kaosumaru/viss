@@ -10,14 +10,20 @@ export interface RefreshContentMessage {
 export interface SaveGraphMessage {
   type: "saveGraph";
   json: unknown;
-  exportedGlsl?: string;
   requestId?: number;
+}
+
+export interface ExportGraphResponseMessage {
+  type: "exportGraphResponse";
+  path: string;
+  content?: string;
 }
 
 export type EditorToExtensionMessage =
   | AlertMessage
   | RefreshContentMessage
-  | SaveGraphMessage;
+  | SaveGraphMessage
+  | ExportGraphResponseMessage;
 
 export interface LoadGraphMessage {
   type: "loadGraph";
@@ -25,4 +31,11 @@ export interface LoadGraphMessage {
   requestId?: number;
 }
 
-export type ExtensionToEditorMessage = LoadGraphMessage;
+export interface ExportGraphRequestMessage {
+  type: "exportGraphRequest";
+  path: string;
+}
+
+export type ExtensionToEditorMessage =
+  | LoadGraphMessage
+  | ExportGraphRequestMessage;
