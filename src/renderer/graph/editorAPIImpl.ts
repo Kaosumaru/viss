@@ -222,11 +222,15 @@ export class EditorAPIImp implements EditorAPI {
 
   protected recompilePreviewNodes(nodes: Set<string>) {
     for (const nodeId of nodes) {
-      const node = this.getNode(nodeId);
-      if (node?.previewControl) {
-        node.previewControl.shader = this.compileNode(nodeId);
-        this.area.update("control", node.previewControl.id);
-      }
+      this.refreshShader(nodeId);
+    }
+  }
+
+  protected refreshShader(nodeId: string) {
+    const node = this.getNode(nodeId);
+    if (node?.previewControl) {
+      node.previewControl.shader = this.compileNode(nodeId);
+      this.area.update("control", node.previewControl.id);
     }
   }
 
@@ -325,7 +329,7 @@ export class EditorAPIImp implements EditorAPI {
     for (const info of infos) {
       const node = this.getNode(info.node.identifier);
       if (!node) continue;
-      node.updateNode(info.instanceInfo);
+      node.updateNode(info.instanceInfo, () => this.compileNode(node.id));
       this.area.update("node", node.id);
     }
   }
@@ -349,7 +353,7 @@ export class EditorAPIImp implements EditorAPI {
       },
       this.compilationHelper
     );
-    node.updateNode(item.instanceInfo);
+    node.updateNode(item.instanceInfo, () => this.compileNode(node.id));
     node.updateControls(graphNode.parameters);
 
     node.id = graphNode.identifier;

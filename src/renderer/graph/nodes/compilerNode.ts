@@ -34,6 +34,8 @@ export type ControlChangeCallback = (
   value: ParameterValue
 ) => void;
 
+export type CompileCallback = () => string | undefined;
+
 export class UICompilerNode extends ClassicPreset.Node {
   height = 140;
   width = 200;
@@ -41,7 +43,7 @@ export class UICompilerNode extends ClassicPreset.Node {
   nodeType: NodeType;
   previewControl?: PreviewControl;
   errorMessage?: string;
-  private controlChangeCallback?: ControlChangeCallback;
+  private controlChangeCallback: ControlChangeCallback;
 
   constructor(
     nodeType: NodeType,
@@ -59,13 +61,13 @@ export class UICompilerNode extends ClassicPreset.Node {
   public togglePreview() {
     this.showPreview = !this.showPreview;
     // Trigger parameter update to persist the state
-    this.controlChangeCallback?.(this.id, "_showPreview", {
+    this.controlChangeCallback(this.id, "_showPreview", {
       type: "boolean",
       value: this.showPreview,
     });
   }
 
-  public updateNode(description: NodeInfo) {
+  public updateNode(description: NodeInfo, compile: CompileCallback) {
     this.label = description.name;
     this.errorMessage = description.errorMessage;
 
@@ -84,6 +86,7 @@ export class UICompilerNode extends ClassicPreset.Node {
 
     if (shouldShowPreview && !this.previewControl) {
       this.previewControl = new PreviewControl(this.id);
+      this.previewControl.shader = compile();
       this.addControl("preview", this.previewControl);
     } else if (!shouldShowPreview && this.previewControl) {
       this.removeControl("preview");
@@ -184,7 +187,7 @@ export class UICompilerNode extends ClassicPreset.Node {
 
   protected createControl(param: Parameter): ClassicPreset.Control {
     const callback = (value: ParameterValue) => {
-      this.controlChangeCallback?.(this.id, param.name, value);
+      this.controlChangeCallback(this.id, param.name, value);
     };
     switch (param.type) {
       case "boolean":
