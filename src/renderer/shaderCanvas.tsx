@@ -151,8 +151,8 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      width={500}
-      height={500}
+      width={256}
+      height={256}
       style={{ display: "block" }}
     />
   );
