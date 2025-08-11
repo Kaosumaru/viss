@@ -7,7 +7,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { UICompilerNode } from "../../graph/nodes/compilerNode";
 
@@ -41,7 +41,13 @@ const MenuIcon = styled(Box)(() => ({
   display: "flex",
   alignItems: "center",
   marginRight: "12px",
-  color: "#ff6b6b", // Red color for delete action
+  color: "#cccccc", // Default color
+  "&.delete-icon": {
+    color: "#ff6b6b", // Red color for delete action
+  },
+  "&.preview-icon": {
+    color: "#007acc", // Blue color for preview action
+  },
 }));
 
 interface NodeContextMenuProps {
@@ -49,6 +55,7 @@ interface NodeContextMenuProps {
   node: UICompilerNode;
   onClose: () => void;
   onDeleteNode: (node: UICompilerNode) => void;
+  onTogglePreview: (node: UICompilerNode) => void;
 }
 
 export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
@@ -56,6 +63,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
   node,
   onClose,
   onDeleteNode,
+  onTogglePreview,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -88,6 +96,11 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     onClose();
   };
 
+  const handleTogglePreviewClick = () => {
+    onTogglePreview(node);
+    onClose();
+  };
+
   return (
     <ContextMenuContainer
       ref={menuRef}
@@ -99,8 +112,29 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
       }}
     >
       <MenuList>
+        <MenuItem onClick={handleTogglePreviewClick}>
+          <MenuIcon className="preview-icon">
+            {node.showPreview ? (
+              <VisibilityOffIcon fontSize="small" />
+            ) : (
+              <VisibilityIcon fontSize="small" />
+            )}
+          </MenuIcon>
+          <ListItemText
+            primary={
+              <Typography variant="body2" color="#ffffff">
+                {node.showPreview ? "Hide Preview" : "Show Preview"}
+              </Typography>
+            }
+            secondary={
+              <Typography variant="caption" color="#cccccc">
+                {node.showPreview ? "Hide node preview" : "Show node preview"}
+              </Typography>
+            }
+          />
+        </MenuItem>
         <MenuItem onClick={handleDeleteClick}>
-          <MenuIcon>
+          <MenuIcon className="delete-icon">
             <DeleteIcon fontSize="small" />
           </MenuIcon>
           <ListItemText

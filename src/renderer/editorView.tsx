@@ -141,6 +141,13 @@ export function EditorView({ onChanged }: EditorViewProps) {
     editorRef.current?.deleteNode(nodeId);
   }, []);
 
+  const handleNodeTogglePreview = useCallback((nodeId: string) => {
+    const node = editorRef.current?.getNode(nodeId);
+    if (node) {
+      node.togglePreview();
+    }
+  }, []);
+
   const getCustomFunctions = useCallback(() => {
     return editorRef.current?.getCustomFunctions() || [];
   }, []);
@@ -170,6 +177,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
     <MaterialContextMenuProvider
       onNodeCreate={handleNodeCreate}
       onNodeDelete={handleNodeDelete}
+      onNodeTogglePreview={handleNodeTogglePreview}
       onContextMenuOpen={setLastContextMenuPosition}
       getNodeById={getNodeById}
       customFunctions={getCustomFunctions()}

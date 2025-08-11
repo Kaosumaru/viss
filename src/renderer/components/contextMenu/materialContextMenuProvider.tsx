@@ -16,6 +16,7 @@ interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
   onNodeCreate?: (node: MenuItem) => void;
   onNodeDelete?: (nodeId: string) => void;
+  onNodeTogglePreview?: (nodeId: string) => void;
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
   customFunctions: FunctionDefinition[];
@@ -27,6 +28,7 @@ export const MaterialContextMenuProvider: React.FC<
   children,
   onNodeCreate,
   onNodeDelete,
+  onNodeTogglePreview,
   onContextMenuOpen,
   getNodeById,
   customFunctions,
@@ -107,6 +109,16 @@ export const MaterialContextMenuProvider: React.FC<
     [onNodeDelete, hideContextMenu]
   );
 
+  const handleNodeTogglePreview = useCallback(
+    (node: UICompilerNode) => {
+      if (onNodeTogglePreview) {
+        onNodeTogglePreview(node.id);
+      }
+      hideContextMenu();
+    },
+    [onNodeTogglePreview, hideContextMenu]
+  );
+
   // Get the actual node for the context menu
   const selectedNode =
     contextMenuState.nodeId && getNodeById
@@ -135,6 +147,7 @@ export const MaterialContextMenuProvider: React.FC<
             node={selectedNode}
             onClose={hideContextMenu}
             onDeleteNode={handleNodeDelete}
+            onTogglePreview={handleNodeTogglePreview}
           />
         )}
     </div>
