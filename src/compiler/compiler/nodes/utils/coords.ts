@@ -27,9 +27,9 @@ class CoordsNode extends CompilerNode {
 
   protected buildExpression(node: NodeContext): string {
     const center = this.getParamValue(node, "center", "boolean");
-    let expression = center ? "(v_uv * 2.0 - 1.0)" : "v_uv";
+    let expression = center ? "(vUv * 2.0 - 1.0)" : "vUv";
     if (this.getParamValue(node, "aspectRatio", "boolean")) {
-      expression = `(${expression} * vec2(1.0, u_resolution.x / u_resolution.y))`;
+      expression = `(${expression} * vec2(1.0, vResolution.x / vResolution.y))`;
     }
     return expression;
   }

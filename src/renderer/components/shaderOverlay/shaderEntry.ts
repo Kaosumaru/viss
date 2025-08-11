@@ -3,24 +3,24 @@ const g_vertexShaderSrc = `
   attribute vec2 a_position;
   attribute vec2 a_uv;
   uniform vec2 u_canvasResolution;
-  uniform vec2 u_resolution;
+  uniform vec2 vResolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
-  varying vec2 v_uv;
+  varying vec2 vUv;
 
   void main() {
     // Transform from pixel coordinates to NDC
     vec2 pixelPos = a_position * u_rect.zw + u_rect.xy;
     vec2 clipSpace = ((pixelPos / u_canvasResolution) * 2.0) - 1.0;
     gl_Position = vec4(clipSpace * vec2(1, -1), 0.0, 1.0);
-    v_uv = a_uv;
+    vUv = a_uv;
   }
 `;
 
 const g_fragmentShaderSrc = `
   precision mediump float;
-  uniform vec2 u_resolution;
+  uniform vec2 vResolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
-  varying vec2 v_uv;
+  varying vec2 vUv;
   void main() {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Dark green with 10% alpha
   }
@@ -75,10 +75,10 @@ export class ShaderEntry {
     }
 
     // Set uniforms
-    const timeUniform = gl.getUniformLocation(this.program, "u_time");
+    const timeUniform = gl.getUniformLocation(this.program, "iTime");
     const resolutionUniform = gl.getUniformLocation(
       this.program,
-      "u_resolution"
+      "vResolution"
     );
     const canvasResolutionUniform = gl.getUniformLocation(
       this.program,

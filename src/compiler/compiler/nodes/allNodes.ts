@@ -241,13 +241,13 @@ const uniforms = createCategory({
     time: new UniformNode(
       "time",
       "Elapsed time in seconds",
-      "u_time",
+      "iTime",
       scalar("float")
     ),
     resolution: new UniformNode(
       "resolution",
       "Screen resolution",
-      "u_resolution",
+      "vResolution",
       vector("float", 2)
     ),
     fragCoord: new UniformNode(
@@ -256,7 +256,7 @@ const uniforms = createCategory({
       "gl_FragCoord",
       vector("float", 4)
     ),
-    uv: new UniformNode("uv", "UV coordinates", "v_uv", vector("float", 2)),
+    uv: new UniformNode("uv", "UV coordinates", "vUv", vector("float", 2)),
   },
 });
 
