@@ -106,7 +106,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
                 <title>VShader Editor</title>
                 <link rel="stylesheet" crossorigin href="${assetsUri}/index-Gpo72nnT.css">
             </head>
-            <body>
+            <body style="padding:0px">
                 <div id="root"></div>
                 <script type="module" nonce="${nonce}" src="${assetsUri}/index.js"></script>
             </body>
