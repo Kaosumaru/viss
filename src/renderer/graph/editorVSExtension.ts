@@ -43,14 +43,19 @@ export class EditorVSExtension {
         type: "refreshContent",
       });
     }
+
+    if (this.vscode) {
+      this.area.addPipe((context) => {
+        if (context.type === "zoomed" || context.type === "translated") {
+          this.saveState();
+        }
+        return context;
+      });
+    }
   }
 
   public destroy() {
-    const state: State = {
-      graph: this.editor.saveGraph(),
-      areaTransform: this.area.area.transform,
-    };
-    this.vscode?.setState(state);
+    this.saveState();
     this.helper.dispose();
   }
 
@@ -58,11 +63,20 @@ export class EditorVSExtension {
     if (this.vscode === undefined || this.deserializing) {
       return;
     }
+
     this.postMessage({
       type: "saveGraph",
       json: graph,
       requestId: this.loadRequestId,
     });
+  }
+
+  private saveState() {
+    const state: State = {
+      graph: this.editor.saveGraph(),
+      areaTransform: this.area.area.transform,
+    };
+    this.vscode?.setState(state);
   }
 
   private handleWindowMessage(event: MessageEvent) {

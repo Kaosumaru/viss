@@ -1,6 +1,6 @@
 import { useRete } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./graph/editor";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
@@ -84,6 +84,16 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   const [ref] = useRete(create);
+
+  // Cleanup EditorAPI when component unmounts
+  useEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
+    };
+  }, []);
 
   const handleNodeCreate = useCallback(
     async (item: MenuItem) => {
