@@ -29,7 +29,7 @@ class CoordsNode extends CompilerNode {
     const center = this.getParamValue(node, "center", "boolean");
     let expression = center ? "(vUv * 2.0 - 1.0)" : "vUv";
     if (this.getParamValue(node, "aspectRatio", "boolean")) {
-      expression = `(${expression} * vec2(1.0, vResolution.x / vResolution.y))`;
+      expression = `(${expression} * vec2(1.0, uResolution.x / uResolution.y))`;
     }
     return expression;
   }

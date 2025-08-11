@@ -3,7 +3,7 @@ const g_vertexShaderSrc = `
   attribute vec2 a_position;
   attribute vec2 a_uv;
   uniform vec2 u_canvasResolution;
-  uniform vec2 vResolution;
+  uniform vec2 uResolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
   varying vec2 vUv;
 
@@ -18,7 +18,7 @@ const g_vertexShaderSrc = `
 
 const g_fragmentShaderSrc = `
   precision mediump float;
-  uniform vec2 vResolution;
+  uniform vec2 uResolution;
   uniform vec4 u_rect; // x, y, width, height in pixels
   varying vec2 vUv;
   void main() {
@@ -75,10 +75,10 @@ export class ShaderEntry {
     }
 
     // Set uniforms
-    const timeUniform = gl.getUniformLocation(this.program, "iTime");
+    const timeUniform = gl.getUniformLocation(this.program, "uTime");
     const resolutionUniform = gl.getUniformLocation(
       this.program,
-      "vResolution"
+      "uResolution"
     );
     const canvasResolutionUniform = gl.getUniformLocation(
       this.program,

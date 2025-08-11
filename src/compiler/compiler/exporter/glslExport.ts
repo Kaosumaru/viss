@@ -16,8 +16,8 @@ export function exportGlsl(
     .join("\n");
   const fragmentShader = `
 precision mediump float;
-uniform float iTime;
-uniform vec2 vResolution;
+uniform float uTime;
+uniform vec2 uResolution;
 varying vec2 vUv;
 
 ${graph.includes.map((include) => include.content).join("\n")}

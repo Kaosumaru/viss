@@ -109,8 +109,8 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
       gl.vertexAttribPointer(uvLocation, 2, gl.FLOAT, false, stride, 2 * 4); // offset by 2 floats
     }
 
-    const uTimeLocation = gl.getUniformLocation(program, "iTime");
-    const uResolutionLocation = gl.getUniformLocation(program, "vResolution");
+    const uTimeLocation = gl.getUniformLocation(program, "uTime");
+    const uResolutionLocation = gl.getUniformLocation(program, "uResolution");
 
     const startTime = performance.now();
 
