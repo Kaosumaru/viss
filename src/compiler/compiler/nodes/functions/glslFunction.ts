@@ -54,6 +54,10 @@ class GlslFunction extends CompilerNode {
     return `Custom Function`;
   }
 
+  public override canImplicitlyCastInput() {
+    return false;
+  }
+
   protected buildParameterList(
     node: NodeContext,
     func: FunctionDefinition

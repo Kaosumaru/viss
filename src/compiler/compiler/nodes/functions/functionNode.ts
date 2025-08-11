@@ -32,15 +32,25 @@ export function template(constraint: Type, name: string = "T"): TemplateType {
 
 export const genFType = template(variantGeneric("float"), "F");
 export const genDType = template(variantGeneric("double"), "D");
-export const genFDType = template(variant([variantGeneric("float"), variantGeneric("double")]), "FD");
-export const genFIDType = template(variant([variantGeneric("float"), variantGeneric("int"), variantGeneric("double")]), "FID");
+export const genFDType = template(
+  variant([variantGeneric("float"), variantGeneric("double")]),
+  "FD"
+);
+export const genFIDType = template(
+  variant([
+    variantGeneric("float"),
+    variantGeneric("int"),
+    variantGeneric("double"),
+  ]),
+  "FID"
+);
 export const genFDComponent = templateComponent("FD");
 
 type Param = [string, Type | TemplateType | TemplateComponentType];
 
 export interface Signature {
-    outType: Type | TemplateType | TemplateComponentType;
-    params: Param[];
+  outType: Type | TemplateType | TemplateComponentType;
+  params: Param[];
 }
 
 export function signature(
@@ -54,11 +64,7 @@ export function signature(
 }
 
 export class FunctionNode extends CompilerNode {
-  constructor(
-    name: string,
-    description: string,
-    signature: Signature
-  ) {
+  constructor(name: string, description: string, signature: Signature) {
     super();
     this.name = name;
     this.outType = signature.outType;
@@ -119,6 +125,10 @@ export class FunctionNode extends CompilerNode {
     return this.description;
   }
 
+  public override canImplicitlyCastInput() {
+    return false;
+  }
+
   outType: Type | TemplateType | TemplateComponentType;
   params: Param[];
   name: string;
@@ -170,14 +180,13 @@ class TemplatesResolver {
     if (resolvedType.id === "vector") {
       return scalar(resolvedType.type);
     }
-    return resolvedType;  
-  } 
+    return resolvedType;
+  }
 
   protected templateConstraintToComponentConstraint(type: Type) {
     if (type.id === "variant") {
       const scalars = new Set<ScalarTypeName>();
       for (const subType of type.types) {
-
         switch (subType.id) {
           case "scalar":
           case "vector":
@@ -188,7 +197,9 @@ class TemplatesResolver {
         }
       }
 
-      return variant(Array.from(scalars).map((scalarType) => scalar(scalarType)));
+      return variant(
+        Array.from(scalars).map((scalarType) => scalar(scalarType))
+      );
     }
     return type;
   }

@@ -21,6 +21,7 @@ import type { Type } from "@glsl/types/types";
 import type { SocketReference } from "@graph/socket";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 import deepEqual from "deep-equal";
+import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
 
 export interface InputConnection {
   node: Node;
@@ -91,6 +92,8 @@ export class CompilerInternal {
       return false;
     }
 
+    const canCast = nodeClass.canImplicitlyCastInput();
+
     const compiledContext = this.compile(output.nodeId);
     const info = nodeClass.getInfo(
       this.createNodeContextFor(node),
@@ -100,7 +103,9 @@ export class CompilerInternal {
     if (!inputPin) {
       return false;
     }
-    return canBeImplicitlyConverted(outputType, inputPin.type);
+    return canCast
+      ? canBeImplicitlyConverted(outputType, inputPin.type)
+      : canBeStrictlyConverted(outputType, inputPin.type);
   }
 
   addNode(node: Omit<Node, "identifier">): GraphDiff {

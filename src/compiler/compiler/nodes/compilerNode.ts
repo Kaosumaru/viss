@@ -89,7 +89,6 @@ export abstract class CompilerNode {
   }
 
   public getInfo(_node: NodeContext, compiledContext: Context): NodeInfo {
-
     return {
       name: this.getLabel(),
       description: this.getDescription(),
@@ -101,6 +100,10 @@ export abstract class CompilerNode {
       })),
       parameters: this.parameters_,
     };
+  }
+
+  public canImplicitlyCastInput() {
+    return true;
   }
 
   protected addInput(
@@ -120,7 +123,6 @@ export abstract class CompilerNode {
     node: NodeContext,
     expression: OutputExpression
   ): Context {
-
     let outExpression: Expression = {
       data: expression.data,
       type: expression.type,
