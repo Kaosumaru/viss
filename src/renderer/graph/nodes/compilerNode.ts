@@ -37,6 +37,7 @@ export type ControlChangeCallback = (
 export class UICompilerNode extends ClassicPreset.Node {
   height = 140;
   width = 200;
+  showPreview = false;
   nodeType: NodeType;
   previewControl?: PreviewControl;
   errorMessage?: string;
@@ -55,6 +56,15 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.controlChangeCallback = controlChangeCallback;
   }
 
+  public togglePreview() {
+    this.showPreview = !this.showPreview;
+    // Trigger parameter update to persist the state
+    this.controlChangeCallback?.(this.id, "_showPreview", {
+      type: "boolean",
+      value: this.showPreview,
+    });
+  }
+
   public updateNode(description: NodeInfo) {
     this.label = description.name;
     this.errorMessage = description.errorMessage;
@@ -69,12 +79,18 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.addParams(description.inputs, description.parameters);
     this.addOutputs(description.outputs);
 
-    if (description.showPreview && !this.previewControl) {
+    // Check if we should show preview (either from compiler node or from UI parameter)
+    const shouldShowPreview = description.showPreview || this.showPreview;
+    
+    if (shouldShowPreview && !this.previewControl) {
       this.previewControl = new PreviewControl(this.id);
       this.addControl("preview", this.previewControl);
+    } else if (!shouldShowPreview && this.previewControl) {
+      this.removeControl("preview");
+      this.previewControl = undefined;
     }
 
-    this.updateSize(description);
+    this.updateSize({ ...description, showPreview: shouldShowPreview });
   }
 
   protected addOutputs(outputs: Pins) {
@@ -158,6 +174,11 @@ export class UICompilerNode extends ClassicPreset.Node {
       } else if (control instanceof ClassicPreset.InputControl) {
         control.value = param.value;
       }
+    }
+
+    // Handle the special _showPreview parameter
+    if (parameters._showPreview?.type === "boolean") {
+      this.showPreview = parameters._showPreview.value;
     }
   }
 

@@ -3,8 +3,11 @@ import { type RenderEmit, Presets } from "rete-react-plugin";
 import { Paper, Tooltip, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ErrorIcon from "@mui/icons-material/Error";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
+import type { UICompilerNode } from "./compilerNode";
 
 type NodeExtraData = { width?: number; height?: number; errorMessage?: string };
 
@@ -65,6 +68,21 @@ const StyledPaper = styled(Paper)<{ selected?: boolean }>(({ selected }) => ({
     },
   },
 
+  "& .preview-toggle-icon": {
+    position: "absolute",
+    top: "2px",
+    right: "30px", // Position to the left of the error icon
+    color: "#c9b144",
+    padding: "2px",
+    zIndex: 10,
+    "& .MuiSvgIcon-root": {
+      fontSize: "18px",
+    },
+    "&:hover": {
+      color: "#e6c855",
+    },
+  },
+
   "& .input-title, & .output-title": {
     fontFamily: '"Montserrat", sans-serif !important',
     fontWeight: 300,
@@ -122,6 +140,14 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
   const nodeData = props.data as Scheme["Node"] & NodeExtraData;
   const errorMessage = nodeData.errorMessage;
 
+  // Cast to UICompilerNode to access the togglePreview method
+  const compilerNode = props.data;
+  const hasPreviewControl = !!compilerNode?.previewControl;
+
+  const handleTogglePreview = () => {
+    compilerNode.togglePreview();
+  };
+
   sortByIndex(inputs);
   sortByIndex(outputs);
   sortByIndex(controls);
@@ -137,6 +163,24 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
       <div className="glossy rete-node"></div>
       <div className="title">
         {props.data.label}
+        {
+          <Tooltip
+            title={hasPreviewControl ? "Hide Preview" : "Show Preview"}
+            placement="top"
+          >
+            <IconButton
+              className="preview-toggle-icon"
+              onClick={handleTogglePreview}
+              size="small"
+            >
+              {hasPreviewControl ? (
+                <VisibilityIcon fontSize="small" />
+              ) : (
+                <VisibilityOffIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+        }
         {errorMessage && (
           <Tooltip title={errorMessage} placement="top">
             <IconButton className="error-icon">
