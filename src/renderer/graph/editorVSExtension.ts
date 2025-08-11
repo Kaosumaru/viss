@@ -28,10 +28,18 @@ export class EditorVSExtension {
     } else {
       this.vscode = undefined;
     }
+  }
 
-    this.postMessage({
-      type: "refreshContent",
-    });
+  public initialize() {
+    const state = this.vscode?.getState();
+
+    if (state) {
+      this.loadGraph(state as Graph);
+    } else {
+      this.postMessage({
+        type: "refreshContent",
+      });
+    }
   }
 
   public destroy() {
@@ -58,17 +66,11 @@ export class EditorVSExtension {
   private async handleMessage(message: ExtensionToEditorMessage) {
     switch (message.type) {
       case "loadGraph":
-        if (this.deserializing) {
-          console.warn("Already deserializing, ignoring loadGraph message");
-          return;
-        }
-        this.deserializing = true;
         this.loadRequestId = message.requestId;
         try {
-          await this.editor.loadGraph(message.json as Graph);
+          await this.loadGraph(message.json as Graph);
         } finally {
           this.loadRequestId = undefined;
-          this.deserializing = false;
         }
         break;
       case "exportGraphRequest":
@@ -80,6 +82,20 @@ export class EditorVSExtension {
         break;
     }
     console.warn("Unknown message type:", message.type);
+  }
+
+  private async loadGraph(json: Graph) {
+    if (this.deserializing) {
+      console.warn("Already deserializing, ignoring loadGraph message");
+      return;
+    }
+    this.deserializing = true;
+    try {
+      await this.editor.loadGraph(json as Graph);
+      this.vscode?.setState(json);
+    } finally {
+      this.deserializing = false;
+    }
   }
 
   private postMessage(message: EditorToExtensionMessage) {

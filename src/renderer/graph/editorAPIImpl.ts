@@ -1,7 +1,7 @@
 import type { NodeEditor } from "rete";
 import type { EditorAPI } from "./interface";
 import type { NodeType } from "@compiler/nodes/allNodes";
-import { AreaPlugin } from "rete-area-plugin";
+import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
 import type { Schemes, AreaExtra } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
@@ -84,6 +84,8 @@ export class EditorAPIImp implements EditorAPI {
 
     // TODO it's async
     this.applyDiff(this.compiler().getGraphAsDiff());
+
+    this.extension.initialize();
   }
 
   async createNode(
@@ -164,7 +166,11 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async loadGraph(graph: Graph): Promise<void> {
-    return this.applyDiff(this.compiler().loadGraph(graph), true);
+    const noNodes = this.editor.getNodes().length === 0;
+    await this.applyDiff(this.compiler().loadGraph(graph), true);
+    if (noNodes) {
+      AreaExtensions.zoomAt(this.area, this.editor.getNodes());
+    }
   }
 
   saveGraph() {
