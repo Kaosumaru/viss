@@ -6,28 +6,27 @@ import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
 
-const Layout = styled.div<{ $isPropertyViewVisible: boolean }>`
+const Layout = styled.div`
   display: grid;
-  grid-template-columns: ${(props) =>
-    props.$isPropertyViewVisible ? "1fr 0.3fr" : "1fr"};
-  grid-template-rows: 2fr 3fr;
-  grid-template-areas: ${(props) =>
-    props.$isPropertyViewVisible
-      ? '"canvas result" "canvas result"'
-      : '"canvas canvas" "canvas canvas"'};
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "canvas";
   box-sizing: border-box;
   height: 100vh;
-`;
-
-const Result = styled.div<{ $isVisible: boolean }>`
-  grid-area: result;
-  position: relative;
-  display: ${(props) => (props.$isVisible ? "block" : "none")};
 `;
 
 const Canvas = styled.div`
   grid-area: canvas;
   position: relative;
+`;
+
+const FloatingPropertyView = styled.div<{ $isVisible: boolean }>`
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 998;
+  display: ${(props) => (props.$isVisible ? "block" : "none")};
+  pointer-events: ${(props) => (props.$isVisible ? "auto" : "none")};
 `;
 
 const defaultColor = "vec4(0.0, 0.0, 0.0, 1.0)";
@@ -60,18 +59,17 @@ export function MainView() {
   }, []);
 
   return (
-    <Layout $isPropertyViewVisible={isPropertyViewVisible}>
+    <Layout>
       <Canvas>
         <EditorView onChanged={onChanged} />
         <FloatingToolbar
           isPropertyViewVisible={isPropertyViewVisible}
           onTogglePropertyView={handleTogglePropertyView}
         />
+        <FloatingPropertyView $isVisible={isPropertyViewVisible}>
+          <PropertyView fragmentShader={shader} editorData={editorData} />
+        </FloatingPropertyView>
       </Canvas>
-
-      <Result $isVisible={isPropertyViewVisible}>
-        <PropertyView fragmentShader={shader} editorData={editorData} />
-      </Result>
     </Layout>
   );
 }

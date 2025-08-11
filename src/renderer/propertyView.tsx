@@ -1,6 +1,16 @@
 import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
 import type { EditorAPI } from "./graph/interface";
+import styled from "styled-components";
+
+const FloatingPaper = styled(Paper)`
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+`;
 
 const vertexShader = `
 attribute vec2 a_position;
@@ -57,16 +67,24 @@ export function PropertyView({
   };
 
   return (
-    <Paper elevation={3} style={{ padding: "1em", height: "100%" }}>
+    <FloatingPaper elevation={6}>
       {!__VSCODE_EXTENSION__ && (
-        <div style={{ marginBottom: "1em", display: "flex", gap: "0.5em" }}>
+        <div
+          style={{
+            padding: "12px",
+            paddingBottom: "8px",
+            display: "flex",
+            gap: "0.5em",
+            flexShrink: 0,
+          }}
+        >
           <Button
             variant="contained"
             onClick={handleSaveGraph}
             disabled={!editorData}
             size="small"
           >
-            Save Graph to Clipboard
+            Save Graph
           </Button>
           <Button
             variant="outlined"
@@ -74,11 +92,19 @@ export function PropertyView({
             disabled={!editorData}
             size="small"
           >
-            Load Graph from Clipboard
+            Load Graph
           </Button>
         </div>
       )}
-      <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />
-    </Paper>
+      <div
+        style={{
+          flex: 1,
+          padding: "12px",
+          paddingTop: __VSCODE_EXTENSION__ ? "12px" : "0px",
+        }}
+      >
+        <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />
+      </div>
+    </FloatingPaper>
   );
 }

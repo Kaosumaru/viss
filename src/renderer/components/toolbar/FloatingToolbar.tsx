@@ -41,7 +41,7 @@ export function FloatingToolbar({
         }
       >
         <ToolbarIconButton onClick={onTogglePropertyView}>
-          {isPropertyViewVisible ? <VisibilityOff /> : <Visibility />}
+          {isPropertyViewVisible ? <Visibility /> : <VisibilityOff />}
         </ToolbarIconButton>
       </Tooltip>
     </ToolbarContainer>
