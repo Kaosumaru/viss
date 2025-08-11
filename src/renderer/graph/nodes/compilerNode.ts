@@ -81,7 +81,7 @@ export class UICompilerNode extends ClassicPreset.Node {
 
     // Check if we should show preview (either from compiler node or from UI parameter)
     const shouldShowPreview = description.showPreview || this.showPreview;
-    
+
     if (shouldShowPreview && !this.previewControl) {
       this.previewControl = new PreviewControl(this.id);
       this.addControl("preview", this.previewControl);
