@@ -10,17 +10,6 @@ type NodeExtraData = { width?: number; height?: number; errorMessage?: string };
 
 const { RefSocket, RefControl } = Presets.classic;
 
-function sortByIndex<T extends [string, undefined | { index?: number }][]>(
-  entries: T
-) {
-  entries.sort((a, b) => {
-    const ai = a[1]?.index || 0;
-    const bi = b[1]?.index || 0;
-
-    return ai - bi;
-  });
-}
-
 export const selectedShadow = "0px 2px 6px 2px #985700, 0 0 0px 5px #c9b144;";
 
 const StyledPaper = styled(Paper)<{ selected?: boolean }>(({ selected }) => ({
@@ -121,10 +110,6 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
   const selected = props.data.selected || false;
   const nodeData = props.data as Scheme["Node"] & NodeExtraData;
   const errorMessage = nodeData.errorMessage;
-
-  sortByIndex(inputs);
-  sortByIndex(outputs);
-  sortByIndex(controls);
 
   return (
     <StyledPaper
