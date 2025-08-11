@@ -7,7 +7,11 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from "@mui/icons-material";
+import {
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+} from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { UICompilerNode } from "../../graph/nodes/compilerNode";
 
