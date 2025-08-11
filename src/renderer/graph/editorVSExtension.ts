@@ -7,9 +7,10 @@ import type {
 } from "../../../vscode-extension/src/messages";
 import { DisposeHelper } from "./utils/disposeHelper";
 import type { Graph, GraphDiff } from "@graph/graph";
+import type { Transform } from "rete-area-plugin/_types/area";
 
 export class EditorVSExtension {
-  constructor(editor: EditorAPI, _area: AreaPlugin<Schemes, AreaExtra>) {
+  constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
     this.helper.add(() => {
       const cb = (event: MessageEvent) => {
         this.handleWindowMessage(event);
@@ -21,6 +22,7 @@ export class EditorVSExtension {
     });
 
     this.editor = editor;
+    this.area = area;
 
     if (typeof acquireVsCodeApi === "function") {
       this.vscode = acquireVsCodeApi();
@@ -30,11 +32,12 @@ export class EditorVSExtension {
     }
   }
 
-  public initialize() {
-    const state = this.vscode?.getState();
+  public async initialize() {
+    const state = this.vscode?.getState() as State;
 
     if (state) {
-      this.loadGraph(state as Graph);
+      await this.loadGraph(state.graph);
+      this.area.area.transform = state.areaTransform;
     } else {
       this.postMessage({
         type: "refreshContent",
@@ -43,6 +46,11 @@ export class EditorVSExtension {
   }
 
   public destroy() {
+    const state: State = {
+      graph: this.editor.saveGraph(),
+      areaTransform: this.area.area.transform,
+    };
+    this.vscode?.setState(state);
     this.helper.dispose();
   }
 
@@ -92,7 +100,6 @@ export class EditorVSExtension {
     this.deserializing = true;
     try {
       await this.editor.loadGraph(json as Graph);
-      this.vscode?.setState(json);
     } finally {
       this.deserializing = false;
     }
@@ -106,6 +113,7 @@ export class EditorVSExtension {
   private loadRequestId?: number;
   private helper = new DisposeHelper();
   private editor: EditorAPI;
+  private area: AreaPlugin<Schemes, AreaExtra>;
   private vscode: VSCode | undefined;
 }
 
@@ -117,3 +125,8 @@ type VSCode = {
   getState(): unknown;
   setState(state: unknown): void;
 };
+
+interface State {
+  graph: Graph;
+  areaTransform: Transform;
+}
