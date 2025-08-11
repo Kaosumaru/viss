@@ -14,7 +14,6 @@ import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
-import type { PreviewControl } from "./nodes/controls/customParamControl";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -223,10 +222,10 @@ export class EditorAPIImp implements EditorAPI {
 
   protected recompilePreviewNodes(nodes: Set<string>) {
     for (const nodeId of nodes) {
-      const control = this.nodeToPreviewControl.get(nodeId);
-      if (control) {
-        control.shader = this.compileNode(nodeId);
-        this.area.update("control", control.id);
+      const node = this.getNode(nodeId);
+      if (node?.previewControl) {
+        node.previewControl.shader = this.compileNode(nodeId);
+        this.area.update("control", node.previewControl.id);
       }
     }
   }
@@ -256,7 +255,6 @@ export class EditorAPIImp implements EditorAPI {
 
       if (diff.removedNodes) {
         for (const node of diff.removedNodes) {
-          this.nodeToPreviewControl.delete(node.identifier);
           await this.editor.removeNode(node.identifier);
         }
       }
@@ -356,18 +354,12 @@ export class EditorAPIImp implements EditorAPI {
 
     node.id = graphNode.identifier;
 
-    if (node.previewControl) {
-      this.nodeToPreviewControl.set(node.id, node.previewControl);
-    }
-
     await this.editor.addNode(node);
     await this.area.translate(node.id, {
       x: graphNode.position.x,
       y: graphNode.position.y,
     });
   }
-
-  private nodeToPreviewControl = new Map<string, PreviewControl>();
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;

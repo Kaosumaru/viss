@@ -7,7 +7,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import type { Schemes } from "../node";
 import type { JSX } from "react";
-import type { UICompilerNode } from "./compilerNode";
 
 type NodeExtraData = { width?: number; height?: number; errorMessage?: string };
 
