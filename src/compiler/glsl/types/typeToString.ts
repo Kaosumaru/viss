@@ -18,6 +18,11 @@ export function typeToGlsl(type: Type): string {
       return `${scalarToVectorPrefix(type.type)}${type.size}`;
     case "variant":
       return type.types.map(typeToGlsl).join(" | ");
+    case "matrix":
+      if (type.rows == type.columns) {
+        return `${type.double ? "d" : ""}mat${type.rows}`;
+      }
+      return `${type.double ? "d" : ""}mat${type.rows}x${type.columns}`;
   }
 }
 

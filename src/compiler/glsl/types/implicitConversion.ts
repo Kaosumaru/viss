@@ -23,6 +23,13 @@ export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
     case "vector":
       assertSameTypes(from, to);
       return canVectorBeImplicitlyConverted(from, to);
+    case "matrix":
+      assertSameTypes(from, to);
+      return (
+        from.rows === to.rows &&
+        from.columns === to.columns &&
+        (from.double === to.double || (!from.double && to.double))
+      );
   }
 }
 

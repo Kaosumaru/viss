@@ -1,6 +1,7 @@
 import type { Expression } from "@compiler/context";
 import {
   scalar,
+  type MatrixType,
   type ScalarType,
   type Type,
   type VariantType,
@@ -16,6 +17,8 @@ export function defaultExpressionForType(type: Type): Expression {
       return defaultExpressionForVector(type);
     case "variant":
       return defaultExpressionForVariant(type);
+    case "matrix":
+      return defaultExpressionForMatrix(type);
     case "any":
       throw new Error("Cannot create default expression for 'any' type");
   }
@@ -55,4 +58,19 @@ function defaultExpressionForVariant(variant: VariantType): Expression {
   // Use the first type in the variant as the default
   const firstType = variant.types[0];
   return defaultExpressionForType(firstType);
+}
+
+function defaultExpressionForMatrix(matrix: MatrixType) {
+  const value = defaultExpressionForScalar(
+    scalar(matrix.double ? "double" : "float")
+  );
+  const defaultValue = Array(matrix.rows * matrix.columns).map(
+    () => value.data
+  );
+  const matrixName = typeToGlsl(matrix);
+  return {
+    data: `${matrixName}(${defaultValue.join(", ")})`,
+    type: matrix,
+    trivial: true,
+  };
 }

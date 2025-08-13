@@ -20,6 +20,13 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
     case "variant":
       assertSameTypes(type1, type2);
       return areVariantsEqual(type1.types, type2.types);
+    case "matrix":
+      assertSameTypes(type1, type2);
+      return (
+        type1.rows === type2.rows &&
+        type1.columns === type2.columns &&
+        type1.double === type2.double
+      );
   }
 }
 

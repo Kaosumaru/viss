@@ -4,7 +4,7 @@ export interface AnyType {
   id: "any";
 }
 
-export const genericFType = variantGeneric("float")
+export const genericFType = variantScalarVector("float");
 
 export interface ScalarType {
   id: "scalar";
@@ -17,12 +17,19 @@ export interface VectorType {
   size: number;
 }
 
+export interface MatrixType {
+  id: "matrix";
+  double: boolean;
+  rows: number;
+  columns: number;
+}
+
 export interface VariantType {
   id: "variant";
   types: Type[];
 }
 
-export type Type = AnyType | ScalarType | VectorType | VariantType;
+export type Type = AnyType | ScalarType | VectorType | MatrixType | VariantType;
 
 export function scalar(type: ScalarTypeName): ScalarType {
   return {
@@ -39,6 +46,19 @@ export function vector(type: ScalarTypeName, size: number): VectorType {
   };
 }
 
+export function matrix(
+  double: boolean,
+  rows: number,
+  columns: number
+): MatrixType {
+  return {
+    id: "matrix",
+    rows,
+    columns,
+    double,
+  };
+}
+
 export function variant(types: Type[]): VariantType {
   return {
     id: "variant",
@@ -46,12 +66,25 @@ export function variant(types: Type[]): VariantType {
   };
 }
 
-export function variantGeneric(type: ScalarTypeName): VariantType {
+export function variantScalarVector(type: ScalarTypeName): VariantType {
+  return variant([scalar(type), variantVector(type)]);
+}
+
+export function variantVector(type: ScalarTypeName): VariantType {
+  return variant([vector(type, 2), vector(type, 3), vector(type, 4)]);
+}
+
+export function variantMatrix(double: boolean): VariantType {
   return variant([
-    scalar(type),
-    vector(type, 2),
-    vector(type, 3),
-    vector(type, 4),
+    matrix(double, 2, 2),
+    matrix(double, 2, 3),
+    matrix(double, 2, 4),
+    matrix(double, 3, 2),
+    matrix(double, 3, 3),
+    matrix(double, 3, 4),
+    matrix(double, 4, 2),
+    matrix(double, 4, 3),
+    matrix(double, 4, 4),
   ]);
 }
 

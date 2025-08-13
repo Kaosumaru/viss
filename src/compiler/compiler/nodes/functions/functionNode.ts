@@ -1,4 +1,9 @@
-import { scalar, variant, variantGeneric, type Type } from "@glsl/types/types";
+import {
+  scalar,
+  variant,
+  variantScalarVector,
+  type Type,
+} from "@glsl/types/types";
 import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
@@ -30,17 +35,17 @@ export function template(constraint: Type, name: string = "T"): TemplateType {
   };
 }
 
-export const genFType = template(variantGeneric("float"), "F");
-export const genDType = template(variantGeneric("double"), "D");
+export const genFType = template(variantScalarVector("float"), "F");
+export const genDType = template(variantScalarVector("double"), "D");
 export const genFDType = template(
-  variant([variantGeneric("float"), variantGeneric("double")]),
+  variant([variantScalarVector("float"), variantScalarVector("double")]),
   "FD"
 );
 export const genFIDType = template(
   variant([
-    variantGeneric("float"),
-    variantGeneric("int"),
-    variantGeneric("double"),
+    variantScalarVector("float"),
+    variantScalarVector("int"),
+    variantScalarVector("double"),
   ]),
   "FID"
 );
