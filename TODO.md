@@ -1,15 +1,22 @@
 MVP
 
 1. loading glsl functions from file
-2. Look at params getParamValue
-3. all overloads for mix function
-4. Uniforms
-5. Textures
+2. all overloads for mix function
+3. Uniforms
+4. Textures
+5. Missing mod, min, max, clamp, step, smoothstep...
 
 Next
 
 1. Loops validation
-4. Portals
+2. Portals
+3. Matrices
+
+bugs
+1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
+2. Preview is in front of the right panel
+3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
+4. dvec has wrong color on output
 
 Global uniforms variables
 - TODO
@@ -28,12 +35,9 @@ Optimization
 6. Optimize communication between webview and extension
 7. When reapplying connections, rete is removing a conenction, this causes a recompile of out node, then rete adds connection - this causes another recompile. And we are actaully recompiling all out nodes.
 8. Editor is reimporting glsl on translation to editor, we could only refresh it when it gets dirty
+9. Look at params getParamValue - why specialization needed?
 
 Check
 1. If we don't need to inherit from rete socket
 
-bugs
-1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
-2. Preview is in front of the right panel
-3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
-4. dvec has wrong color on output
+
