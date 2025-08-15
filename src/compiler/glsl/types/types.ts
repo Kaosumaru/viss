@@ -70,6 +70,28 @@ export function variantVector(type: ScalarTypeName): VariantType {
   return variant([vector(type, 2), vector(type, 3), vector(type, 4)]);
 }
 
+export function variantAllScalarsVectors(): VariantType {
+  return variant([
+    variantScalarVector("float"),
+    variantScalarVector("int"),
+    variantScalarVector("bool"),
+    variantScalarVector("uint"),
+    variantScalarVector("double"),
+  ]);
+}
+
+export function variantAllTypes(): VariantType {
+  return variant([
+    variantScalarVector("float"),
+    variantScalarVector("int"),
+    variantScalarVector("bool"),
+    variantScalarVector("uint"),
+    variantScalarVector("double"),
+    variantMatrix(false),
+    variantMatrix(true),
+  ]);
+}
+
 export function variantMatrix(double: boolean): VariantType {
   return variant([
     matrix(double, 2, 2),

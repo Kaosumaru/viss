@@ -69,7 +69,7 @@ export interface OutputExpression {
 export interface NodeInfo {
   name: string;
   description: string;
-  showPreview: boolean;
+  showPreview?: boolean;
   inputs: Pins;
   outputs: Pins;
   parameters: Parameters;
@@ -103,7 +103,7 @@ export abstract class CompilerNode {
   }
 
   public canImplicitlyCastInput() {
-    return true;
+    return false;
   }
 
   protected addInput(
@@ -263,8 +263,6 @@ export abstract class CompilerNode {
       }
       throw new Error(`Input ${name} is not of type number`);
     }
-
-    // TODO
 
     const value = node.tryGetParamValue(name, "number");
     if (value !== undefined) {

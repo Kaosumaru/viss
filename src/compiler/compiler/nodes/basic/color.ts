@@ -30,6 +30,10 @@ class ColorNode extends CompilerNode {
   override getDescription(): string {
     return `Color literal`;
   }
+
+  public canImplicitlyCastInput() {
+    return false;
+  }
 }
 
 export const color = new ColorNode();

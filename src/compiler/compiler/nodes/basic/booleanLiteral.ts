@@ -20,6 +20,10 @@ export class BooleanLiteralNode extends CompilerNode {
     });
   }
 
+  public canImplicitlyCastInput() {
+    return false;
+  }
+
   override getLabel(): string {
     return "bool";
   }

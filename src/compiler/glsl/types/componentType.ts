@@ -1,14 +1,14 @@
-import { scalar, type Type } from "./types";
+import type { ScalarTypeName } from "./typenames";
+import { type Type } from "./types";
 
-export function componentType(type: Type): Type {
+export function componentType(type: Type): ScalarTypeName {
   switch (type.id) {
     case "scalar":
-      return type;
     case "vector":
-      return scalar(type.type);
+      return type.type;
     case "variant":
       throw new Error("Cannot get component type of variant");
     case "matrix":
-      return type.double ? scalar("double") : scalar("float");
+      return type.double ? "double" : "float";
   }
 }

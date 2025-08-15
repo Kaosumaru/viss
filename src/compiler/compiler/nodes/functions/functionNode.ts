@@ -8,6 +8,7 @@ import { CompilerNode, type NodeContext } from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 import type { ScalarTypeName } from "@glsl/types/typenames";
+import { componentType } from "@glsl/types/componentType";
 
 export interface TemplateType {
   id: "template";
@@ -134,6 +135,8 @@ export class FunctionNode extends CompilerNode {
     return false;
   }
 
+  // TODO add getInfo here to change allowed types
+
   outType: Type | TemplateType | TemplateComponentType;
   params: Param[];
   name: string;
@@ -192,17 +195,7 @@ class TemplatesResolver {
     if (type.id === "variant") {
       const scalars = new Set<ScalarTypeName>();
       for (const subType of type.types) {
-        switch (subType.id) {
-          case "scalar":
-          case "vector":
-            scalars.add(subType.type);
-            break;
-          case "matrix":
-            scalars.add(subType.double ? "double" : "float");
-            break;
-          default:
-            throw new Error(`Unsupported type in variant: ${subType.id}`);
-        }
+        scalars.add(componentType(subType));
       }
 
       return variant(

@@ -3,6 +3,7 @@
 3. templated functions (add, etc)
 4. all overloads for mix function
 5. Portals
+6. add get info to glsl functions to change input types
 
 Global uniforms variables
 - TODO

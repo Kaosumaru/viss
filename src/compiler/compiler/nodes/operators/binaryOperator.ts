@@ -1,32 +1,39 @@
-import { genericFType } from "@glsl/types/types";
-import { CompilerNode, type NodeContext } from "../compilerNode";
-import type { Context } from "@compiler/context";
+import {
+  variantAllScalarsVectors,
+  variantScalarVector,
+  type Type,
+} from "@glsl/types/types";
+import { CompilerNode, type NodeContext, type NodeInfo } from "../compilerNode";
+import type { Context, Expression } from "@compiler/context";
+import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
+import { componentType } from "@glsl/types/componentType";
+
+export interface BinaryOperatorTypes {
+  a: Type;
+  b: Type;
+  out?: Type;
+}
 
 export abstract class BinaryOperator extends CompilerNode {
   constructor() {
     super();
-    this.addInput("a", genericFType);
-    this.addInput("b", genericFType);
+    this.addInput("a", variantAllScalarsVectors());
+    this.addInput("b", variantAllScalarsVectors());
   }
 
   override compile(node: NodeContext): Context {
-    const inA = this.getInput(node, "a");
-    const inB = this.getInput(node, "b");
-
-    // TODO this needs either a cache or a type check
-    /*
-    if (ctxA.type !== ctxB.type) {
-      throw new Error(
-        `Type mismatch: cannot add ${ctxA.type} and ${ctxB.type}`
-      );
-    }*/
+    const types = this.getTypes(node);
+    if (!types.out) {
+      return this.createOutputs(node, []);
+    }
+    const inA = this.getOperatorInput(node, types, "a");
+    const inB = this.getOperatorInput(node, types, "b");
 
     const out = `(${inA.data} ${this.operationSymbol()} ${inB.data})`;
 
-    // TODO better typing
     return this.createOutput(node, {
       data: out,
-      type: inA.type, // Assuming both inputs have the same type
+      type: types.out,
       trivial: false,
     });
   }
@@ -35,6 +42,81 @@ export abstract class BinaryOperator extends CompilerNode {
 
   override getLabel(): string {
     return this.operationSymbol();
+  }
+
+  protected getOperatorInput(
+    node: NodeContext,
+    type: BinaryOperatorTypes,
+    inputName: "a" | "b"
+  ): Expression {
+    const input = node.tryGetInput(inputName);
+    if (input) {
+      return input;
+    }
+    const expectedType = type[inputName];
+    return defaultExpressionForType(expectedType);
+  }
+
+  protected getTypes(node: NodeContext): BinaryOperatorTypes {
+    const inA = node.tryGetInput("a");
+    const inB = node.tryGetInput("b");
+
+    if (!inA && !inB) {
+      return {
+        a: variantAllScalarsVectors(),
+        b: variantAllScalarsVectors(),
+        out: undefined,
+      };
+    }
+
+    const inputType = (inA ?? inB)!.type;
+    const typeName = componentType(inputType);
+    const genericIInputType = variantScalarVector(typeName);
+
+    const outputType = this.getOutputType(inA, inB)!;
+
+    return {
+      a: genericIInputType,
+      b: genericIInputType,
+      out: outputType,
+    };
+  }
+
+  override getInfo(node: NodeContext): NodeInfo {
+    try {
+      const types = this.getTypes(node);
+
+      return {
+        name: this.getLabel(),
+        description: this.getDescription(),
+        inputs: [
+          { name: "a", type: types.a },
+          { name: "b", type: types.b },
+        ],
+        outputs: types.out ? [{ name: "out", type: types.out }] : [],
+        parameters: [],
+      };
+    } catch (error) {
+      return {
+        name: this.getLabel(),
+        description: this.getDescription(),
+        inputs: [],
+        outputs: [],
+        parameters: [],
+        errorMessage: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  protected getOutputType(
+    inA: Expression | undefined,
+    inB: Expression | undefined
+  ): Type | undefined {
+    if (!inA || !inB) {
+      return inA?.type ?? inB?.type;
+    }
+
+    return inA.type.id == "scalar" ? inB.type : inA.type;
   }
 }
 

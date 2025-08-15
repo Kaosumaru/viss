@@ -30,5 +30,10 @@ export class LiteralNode<T extends ScalarType> extends CompilerNode {
   override getDescription(): string {
     return `Literal value of type ${this.type.type}`;
   }
+
+  public canImplicitlyCastInput() {
+    return false;
+  }
+
   type: T;
 }
