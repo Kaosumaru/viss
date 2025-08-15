@@ -27,8 +27,6 @@ export function getTypeColor(type?: Type): string {
         default:
           return "#795548"; // Brown for other vectors
       }
-    case "any":
-      return "#607D8B"; // Blue-grey for any type
     default:
       return "#ffffff47"; // Default white/transparent
   }
@@ -60,8 +58,6 @@ export function getTypeBorderColor(type?: Type): string {
         default:
           return "#5D4037"; // Darker brown for other vectors
       }
-    case "any":
-      return "#455A64"; // Darker blue-grey for any type
     default:
       return "white";
   }

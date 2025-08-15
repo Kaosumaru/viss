@@ -9,8 +9,6 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
   assertSameTypes(type1, type2);
 
   switch (type1.id) {
-    case "any":
-      return true;
     case "scalar":
       assertSameTypes(type1, type2);
       return type1.type === type2.type;

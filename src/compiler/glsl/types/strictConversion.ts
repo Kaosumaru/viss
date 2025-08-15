@@ -6,10 +6,6 @@ export function canBeStrictlyConverted(from: Type, to: Type): boolean {
     return canBeStrictlyConvertedToVariant(from, to);
   }
 
-  if (to.id == "any" || from.id == "any") {
-    return true;
-  }
-
   if (from.id !== to.id) {
     return false;
   }

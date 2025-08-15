@@ -221,9 +221,7 @@ export abstract class CompilerNode {
       if (inputPin.defaultValue) {
         return inputPin.defaultValue;
       }
-      if (inputPin.type.id !== "any") {
-        return defaultExpressionForType(inputPin.type);
-      }
+      return defaultExpressionForType(inputPin.type);
     }
     throw new Error(`Input '${name}' not found in node ${node.info()}`);
   }

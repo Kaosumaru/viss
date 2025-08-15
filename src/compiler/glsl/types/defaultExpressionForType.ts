@@ -19,8 +19,6 @@ export function defaultExpressionForType(type: Type): Expression {
       return defaultExpressionForVariant(type);
     case "matrix":
       return defaultExpressionForMatrix(type);
-    case "any":
-      throw new Error("Cannot create default expression for 'any' type");
   }
 }
 

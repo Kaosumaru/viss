@@ -8,10 +8,6 @@ export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
     return canBeImplicitlyConvertedToVariant(from, to);
   }
 
-  if (to.id == "any" || from.id == "any") {
-    return true;
-  }
-
   if (from.id !== to.id) {
     return false;
   }

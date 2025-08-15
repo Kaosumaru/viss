@@ -197,6 +197,9 @@ class TemplatesResolver {
           case "vector":
             scalars.add(subType.type);
             break;
+          case "matrix":
+            scalars.add(subType.double ? "double" : "float");
+            break;
           default:
             throw new Error(`Unsupported type in variant: ${subType.id}`);
         }

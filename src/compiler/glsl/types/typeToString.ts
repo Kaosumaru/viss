@@ -2,16 +2,11 @@ import type { ScalarTypeName } from "./typenames";
 import type { Type } from "./types";
 
 export function typeToName(type: Type): string {
-  if (type.id === "any") {
-    return "any";
-  }
   return typeToGlsl(type);
 }
 
 export function typeToGlsl(type: Type): string {
   switch (type.id) {
-    case "any":
-      throw new Error("Cannot convert 'any' type to GLSL");
     case "scalar":
       return type.type;
     case "vector":

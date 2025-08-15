@@ -1,9 +1,5 @@
 import type { ScalarTypeName } from "./typenames";
 
-export interface AnyType {
-  id: "any";
-}
-
 export const genericFType = variantScalarVector("float");
 
 export interface ScalarType {
@@ -29,7 +25,7 @@ export interface VariantType {
   types: Type[];
 }
 
-export type Type = AnyType | ScalarType | VectorType | MatrixType | VariantType;
+export type Type = ScalarType | VectorType | MatrixType | VariantType;
 
 export function scalar(type: ScalarTypeName): ScalarType {
   return {
