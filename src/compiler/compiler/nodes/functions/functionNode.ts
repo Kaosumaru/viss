@@ -74,6 +74,10 @@ export function signature(
   };
 }
 
+// there is one issue here
+// we can connect to a templateComponent float component in mix, then we would be allowed to connect
+// dvec
+
 export class FunctionNode extends CompilerNode {
   constructor(name: string, description: string, signature: Signature) {
     super();
@@ -143,7 +147,7 @@ export class FunctionNode extends CompilerNode {
           name,
           type: resolver.notResolved(type.name)
             ? type.constraint
-            : resolver.getResolvedComponentType(type.name),
+            : resolver.getResolvedType(type.name),
         });
       } else if (type.id === "templateComponent") {
         inputPins.push({
