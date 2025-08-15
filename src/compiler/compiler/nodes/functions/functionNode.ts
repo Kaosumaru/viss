@@ -93,13 +93,7 @@ export class FunctionNode extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const resolver = new TemplatesResolver();
-    for (const [name, type] of this.params) {
-      if (type.id === "template") {
-        resolver.resolve(type, this.getInput(node, name).type);
-      }
-    }
-
+    const resolver = this.resolveTemplates(node);
     const inputs = this.params.map(([name]) => this.getInput(node, name).data);
 
     const callExpression = `${this.name}(${inputs.join(", ")})`;
@@ -135,6 +129,24 @@ export class FunctionNode extends CompilerNode {
     return false;
   }
 
+  protected resolveTemplates(node: NodeContext): TemplatesResolver {
+    const resolver = new TemplatesResolver();
+    for (const [name, type] of this.params) {
+      if (type.id === "template") {
+        const input = node.tryGetInput(name);
+        if (input) {
+          resolver.resolve(type, input.type);
+        }
+      }
+    }
+
+    for (const [name, type] of this.params) {
+      if (type.id === "template" && resolver.notResolved(type)) {
+        resolver.resolve(type, this.getInput(node, name).type);
+      }
+    }
+    return resolver;
+  }
   // TODO add getInfo here to change allowed types
 
   outType: Type | TemplateType | TemplateComponentType;
@@ -161,6 +173,10 @@ class TemplatesResolver {
     throw new Error(
       `Cannot resolve template type ${template.name} with input type ${inputType.id}`
     );
+  }
+
+  notResolved(template: TemplateType): boolean {
+    return !this.resolved.has(template.name);
   }
 
   resolveComponent(name: string): Type {
