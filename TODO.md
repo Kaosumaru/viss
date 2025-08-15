@@ -1,9 +1,15 @@
-1. Look at params getParamValue
-2. Loops validation
-3. templated functions (add, etc)
-4. all overloads for mix function
-5. Portals
-6. add get info to glsl functions to change input types
+MVP
+
+1. loading glsl functions from file
+2. Look at params getParamValue
+3. all overloads for mix function
+4. Uniforms
+5. Textures
+
+Next
+
+1. Loops validation
+4. Portals
 
 Global uniforms variables
 - TODO
@@ -29,4 +35,5 @@ Check
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
 2. Preview is in front of the right panel
-
+3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
+4. dvec has wrong color on output
