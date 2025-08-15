@@ -353,10 +353,10 @@ export class EditorAPIImp implements EditorAPI {
       },
       this.compilationHelper
     );
+    node.id = graphNode.identifier;
+
     node.updateNode(item.instanceInfo, () => this.compileNode(node.id));
     node.updateControls(graphNode.parameters);
-
-    node.id = graphNode.identifier;
 
     await this.editor.addNode(node);
     await this.area.translate(node.id, {
