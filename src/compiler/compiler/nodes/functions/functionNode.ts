@@ -4,7 +4,12 @@ import {
   variantScalarVector,
   type Type,
 } from "@glsl/types/types";
-import { CompilerNode, type NodeContext } from "../compilerNode";
+import {
+  CompilerNode,
+  type NodeContext,
+  type NodeInfo,
+  type Pins,
+} from "../compilerNode";
 import type { Context } from "@compiler/context";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 import type { ScalarTypeName } from "@glsl/types/typenames";
@@ -116,8 +121,10 @@ export class FunctionNode extends CompilerNode {
     return false;
   }
 
-  protected resolveTemplates(node: NodeContext): [Type, TemplatesResolver] {
+  protected resolveTemplates(node: NodeContext): [Type, Pins] {
     const resolver = new TemplatesResolver();
+
+    // try to resolve type based on connected inputs
     for (const [name, type] of this.functionParams) {
       if (type.id === "template") {
         const input = node.tryGetInput(name);
@@ -127,23 +134,62 @@ export class FunctionNode extends CompilerNode {
       }
     }
 
+    const inputPins: Pins = [];
+
+    // determine current types of inputs based on already connected ones
     for (const [name, type] of this.functionParams) {
-      if (type.id === "template" && resolver.notResolved(type)) {
+      if (type.id === "template") {
+        inputPins.push({
+          name,
+          type: resolver.notResolved(type.name)
+            ? type.constraint
+            : resolver.getResolvedComponentType(type.name),
+        });
+      } else if (type.id === "templateComponent") {
+        inputPins.push({
+          name,
+          type: resolver.notResolved(type.name)
+            ? resolver.resolveComponent(type.name)
+            : scalar(
+                componentType(resolver.getResolvedComponentType(type.name))
+              ),
+        });
+      } else {
+        inputPins.push({ name, type });
+      }
+    }
+
+    // fully resolve inputs with default data so would always get return type
+    for (const [name, type] of this.functionParams) {
+      if (type.id === "template" && resolver.notResolved(type.name)) {
         resolver.resolve(type, this.getInput(node, name).type);
       }
     }
 
+    // return output type and input pins
     if (this.outType.id === "template") {
-      return [resolver.getResolvedType(this.outType.name), resolver];
+      return [resolver.getResolvedType(this.outType.name), inputPins];
     }
 
     if (this.outType.id === "templateComponent") {
-      return [resolver.getResolvedComponentType(this.outType.name), resolver];
+      return [resolver.getResolvedComponentType(this.outType.name), inputPins];
     }
 
-    return [this.outType, resolver];
+    return [this.outType, inputPins];
   }
-  // TODO add getInfo here to change allowed types
+
+  override getInfo(node: NodeContext): NodeInfo {
+    const [resolvedOutType, inputs] = this.resolveTemplates(node);
+
+    return {
+      name: this.name,
+      description: this.description,
+      showPreview: true,
+      inputs,
+      outputs: [{ name: "out", type: resolvedOutType }],
+      parameters: [],
+    };
+  }
 
   outType: Type | TemplateType | TemplateComponentType;
   functionParams: Param[];
@@ -156,7 +202,6 @@ class TemplatesResolver {
   private constraints: Map<string, Type> = new Map();
 
   resolve(template: TemplateType, inputType: Type): Type {
-    // TODO resolver should find a common type for the template
     const result = this.resolved.get(template.name);
     if (!result) {
       this.resolved.set(template.name, inputType);
@@ -171,8 +216,8 @@ class TemplatesResolver {
     );
   }
 
-  notResolved(template: TemplateType): boolean {
-    return !this.resolved.has(template.name);
+  notResolved(name: string): boolean {
+    return !this.resolved.has(name);
   }
 
   resolveComponent(name: string): Type {
