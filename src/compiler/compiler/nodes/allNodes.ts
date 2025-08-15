@@ -54,9 +54,13 @@ const literals = createCategory({
     bool: new BooleanLiteralNode(),
     color,
 
-    composeVec2: new ComposeVector("float", 2),
-    composeVec3: new ComposeVector("float", 3),
-    composeVec4: new ComposeVector("float", 4),
+    vec2: new ComposeVector("float", 2),
+    vec3: new ComposeVector("float", 3),
+    vec4: new ComposeVector("float", 4),
+
+    dvec2: new ComposeVector("double", 2),
+    dvec3: new ComposeVector("double", 3),
+    dvec4: new ComposeVector("double", 4),
   },
 });
 

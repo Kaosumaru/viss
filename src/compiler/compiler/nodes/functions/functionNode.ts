@@ -74,7 +74,7 @@ export class FunctionNode extends CompilerNode {
     super();
     this.name = name;
     this.outType = signature.outType;
-    this.params = signature.params;
+    this.functionParams = signature.params;
     this.description = description;
 
     const resolver = new TemplatesResolver();
@@ -93,27 +93,14 @@ export class FunctionNode extends CompilerNode {
   }
 
   override compile(node: NodeContext): Context {
-    const resolver = this.resolveTemplates(node);
-    const inputs = this.params.map(([name]) => this.getInput(node, name).data);
-
-    const callExpression = `${this.name}(${inputs.join(", ")})`;
-
-    if (this.outType.id === "template") {
-      return this.createOutput(node, {
-        type: resolver.getResolvedType(this.outType.name),
-        data: callExpression,
-      });
-    }
-    if (this.outType.id === "templateComponent") {
-      return this.createOutput(node, {
-        type: resolver.getResolvedComponentType(this.outType.name),
-        data: callExpression,
-      });
-    }
+    const [resolvedOutType] = this.resolveTemplates(node);
+    const inputs = this.functionParams.map(
+      ([name]) => this.getInput(node, name).data
+    );
 
     return this.createOutput(node, {
-      type: this.outType,
-      data: callExpression,
+      type: resolvedOutType,
+      data: `${this.name}(${inputs.join(", ")})`,
     });
   }
 
@@ -129,9 +116,9 @@ export class FunctionNode extends CompilerNode {
     return false;
   }
 
-  protected resolveTemplates(node: NodeContext): TemplatesResolver {
+  protected resolveTemplates(node: NodeContext): [Type, TemplatesResolver] {
     const resolver = new TemplatesResolver();
-    for (const [name, type] of this.params) {
+    for (const [name, type] of this.functionParams) {
       if (type.id === "template") {
         const input = node.tryGetInput(name);
         if (input) {
@@ -140,17 +127,26 @@ export class FunctionNode extends CompilerNode {
       }
     }
 
-    for (const [name, type] of this.params) {
+    for (const [name, type] of this.functionParams) {
       if (type.id === "template" && resolver.notResolved(type)) {
         resolver.resolve(type, this.getInput(node, name).type);
       }
     }
-    return resolver;
+
+    if (this.outType.id === "template") {
+      return [resolver.getResolvedType(this.outType.name), resolver];
+    }
+
+    if (this.outType.id === "templateComponent") {
+      return [resolver.getResolvedComponentType(this.outType.name), resolver];
+    }
+
+    return [this.outType, resolver];
   }
   // TODO add getInfo here to change allowed types
 
   outType: Type | TemplateType | TemplateComponentType;
-  params: Param[];
+  functionParams: Param[];
   name: string;
   description: string;
 }
