@@ -17,13 +17,13 @@ export interface ConstrainedVector {
   size?: number;
 }
 
-function constrainedScalar(): ConstrainedScalar {
+export function constrainedScalar(): ConstrainedScalar {
   return {
     type: "scalar",
   };
 }
 
-function constrainedVector(size?: number): ConstrainedVector {
+export function constrainedVector(size?: number): ConstrainedVector {
   return {
     type: "vector",
     size,

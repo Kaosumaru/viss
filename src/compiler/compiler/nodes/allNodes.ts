@@ -21,6 +21,8 @@ import {
   templateComponent,
 } from "./functions/functionNode/templateResolver";
 import {
+  constrainedVector,
+  constraintInfo,
   genFDType,
   genFIDType,
   genFType,
@@ -206,7 +208,18 @@ const functionsVec = createCategory({
         genFDType
       )
     ),
-    // TODO cross
+    cross: new FunctionNode(
+      "cross",
+      "Cross product of two vectors",
+      signature(
+        template(),
+        [
+          ["x", template()],
+          ["y", template()],
+        ],
+        constraintInfo(["float", "double"], [constrainedVector(3)])
+      )
+    ),
     normalize: new FunctionNode(
       "normalize",
       "Normalize a vector",
