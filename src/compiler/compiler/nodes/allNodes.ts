@@ -18,7 +18,6 @@ import { glslFunction } from "./functions/glslFunction";
 import { color } from "./basic/color";
 import {
   template,
-  templateBooleanComponent,
   templateComponent,
   templateOrComponent,
   templateOrComponentOrBoolean,
@@ -104,21 +103,6 @@ const functions = createCategory({
     floor: new FunctionNode(
       "floor",
       "Floor of a value",
-      signature(template(), [["in", template()]], genFDType)
-    ),
-    trunc: new FunctionNode(
-      "trunc",
-      "Truncate a value",
-      signature(template(), [["in", template()]], genFDType)
-    ),
-    round: new FunctionNode(
-      "round",
-      "Round a value",
-      signature(template(), [["in", template()]], genFDType)
-    ),
-    roundEven: new FunctionNode(
-      "roundEven",
-      "Round to nearest even",
       signature(template(), [["in", template()]], genFDType)
     ),
     ceil: new FunctionNode(
@@ -223,36 +207,6 @@ const functions = createCategory({
         genFIDUType
       )
     ),
-
-    isnan: new FunctionNode(
-      "isnan",
-      "Check if a value is NaN",
-      signature(templateBooleanComponent(), [["in", template()]], genFDType)
-    ),
-
-    isinf: new FunctionNode(
-      "isinf",
-      "Check if a value is infinite",
-      signature(templateBooleanComponent(), [["in", template()]], genFDType)
-    ),
-
-    // TODO floatBitsToInt, floatBitsToUint, intBitsToFloat, uintBitsToFloat (highp)
-
-    fma: new FunctionNode(
-      "fma",
-      "Fused multiply-add",
-      signature(
-        template(),
-        [
-          ["a", template()],
-          ["b", template()],
-          ["c", template()],
-        ],
-        genFDType
-      )
-    ),
-
-    // TODO missing frexp, ldexp (out highp)
   },
 });
 
