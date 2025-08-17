@@ -26,6 +26,7 @@ import {
   constraintInfo,
   genFDType,
   genFIDType,
+  genFIDUType,
   genFType,
 } from "./functions/functionNode/constraintInfo";
 
@@ -124,8 +125,59 @@ const functions = createCategory({
       "Fractional part of a value",
       signature(template(), [["in", template()]], genFDType)
     ),
+    mod: new FunctionNode(
+      "mod",
+      "Modulo operation",
+      signature(
+        template(),
+        [
+          ["x", template()],
+          ["y", templateOrComponent()],
+        ],
+        genFDType
+      )
+    ),
+    // missing modf - it has out parameter!
+    min: new FunctionNode(
+      "min",
+      "Minimum of two values",
+      signature(
+        template(),
+        [
+          ["x", template()],
+          ["y", templateOrComponent()],
+        ],
+        genFIDUType
+      )
+    ),
+    max: new FunctionNode(
+      "max",
+      "Maximum of two values",
+      signature(
+        template(),
+        [
+          ["x", template()],
+          ["y", templateOrComponent()],
+        ],
+        genFIDUType
+      )
+    ),
 
-    // TODO mix have quite a bit of overloads
+    clamp: new FunctionNode(
+      "clamp",
+      "Clamp a value between a minimum and maximum",
+      signature(
+        template(),
+        [
+          ["x", template()],
+          ["min", templateOrComponent()],
+          ["max", templateOrComponent()],
+        ],
+        genFIDUType
+      )
+    ),
+
+    // TODO missing boolean overload for a
     mix: new FunctionNode(
       "mix",
       "Linear interpolation",
@@ -139,6 +191,52 @@ const functions = createCategory({
         genFDType
       )
     ),
+
+    step: new FunctionNode(
+      "step",
+      "Step function",
+      signature(
+        template(),
+        [
+          ["edge", templateOrComponent()],
+          ["x", template()],
+        ],
+        genFIDUType
+      )
+    ),
+
+    smoothstep: new FunctionNode(
+      "smoothstep",
+      "Smooth step function",
+      signature(
+        template(),
+        [
+          ["edge0", templateOrComponent()],
+          ["edge1", templateOrComponent()],
+          ["x", template()],
+        ],
+        genFIDUType
+      )
+    ),
+
+    // TODO missing isnan, isinf
+    // TODO floatBitsToInt, floatBitsToUint, intBitsToFloat, uintBitsToFloat (highp)
+
+    fma: new FunctionNode(
+      "fma",
+      "Fused multiply-add",
+      signature(
+        template(),
+        [
+          ["a", template()],
+          ["b", template()],
+          ["c", template()],
+        ],
+        genFDType
+      )
+    ),
+
+    // TODO missing frexp, ldexp (out highp)
   },
 });
 

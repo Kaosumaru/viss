@@ -149,3 +149,7 @@ export const genFIDType = constraintInfo(
   ["double", "int", "float"],
   [constrainedScalar(), constrainedVector()]
 );
+export const genFIDUType = constraintInfo(
+  ["double", "int", "float", "uint"],
+  [constrainedScalar(), constrainedVector()]
+);
