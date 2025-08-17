@@ -9,8 +9,7 @@ bugs
 2. Preview is in front of the right panel
 3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
 4. cannot change values in composed vectors
-5. mix have too many potential types at a (float, double, float, double)
-6. Copy & paste doesn't work in extension
+5. Copy & paste doesn't work in extension
 
 Next
 
