@@ -65,10 +65,6 @@ const literals = createCategory({
     vec3: new ComposeVector("float", 3),
     vec4: new ComposeVector("float", 4),
 
-    dvec2: new ComposeVector("double", 2),
-    dvec3: new ComposeVector("double", 3),
-    dvec4: new ComposeVector("double", 4),
-
     bvec2: new ComposeVector("bool", 2),
     bvec3: new ComposeVector("bool", 3),
     bvec4: new ComposeVector("bool", 4),
