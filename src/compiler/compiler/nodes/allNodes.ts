@@ -143,7 +143,7 @@ const functions = createCategory({
         genFDType
       )
     ),
-    // missing modf - it has out parameter!
+
     min: new FunctionNode(
       "min",
       "Minimum of two values",

@@ -3,7 +3,6 @@ import {
   CompilerNode,
   type NodeContext,
   type NodeInfo,
-  type Pins,
 } from "../../compilerNode";
 import type { Context } from "@compiler/context";
 import { TemplatesResolver, type TemplateParameter } from "./templateResolver";
@@ -11,7 +10,11 @@ import type { ConstraintInfo } from "./constraintInfo";
 import { variantToFirstType } from "@glsl/types/variantToFirstType";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 
-type Param = [string, Type | TemplateParameter];
+interface ParamOptions {
+  output?: boolean;
+}
+
+type Param = [string, Type | TemplateParameter, ParamOptions?];
 
 export interface Signature {
   outType: Type | TemplateParameter;
@@ -35,6 +38,12 @@ export function signature(
   };
 }
 
+interface ParamPin {
+  name: string;
+  type: Type;
+  output: boolean;
+}
+
 export class FunctionNode extends CompilerNode {
   constructor(name: string, description: string, signature: Signature) {
     super();
@@ -47,7 +56,12 @@ export class FunctionNode extends CompilerNode {
 
   override compile(node: NodeContext): Context {
     const [resolvedOutType, resolvedInputs] = this.resolveTemplates(node);
-    const inputs = resolvedInputs.map(({ name, type }): string => {
+    const inputs = resolvedInputs.map(({ name, type, output }): string => {
+      if (output) {
+        const expression = defaultExpressionForType(type);
+        const v = node.createVariable(expression);
+        return v.data;
+      }
       const input = node.tryGetInput(name);
       if (input) {
         return input.data;
@@ -73,7 +87,7 @@ export class FunctionNode extends CompilerNode {
     return false;
   }
 
-  protected resolveTemplates(node: NodeContext): [Type, Pins] {
+  protected resolveTemplates(node: NodeContext): [Type, ParamPin[]] {
     const resolver = new TemplatesResolver();
 
     for (const [name, type] of Object.entries(this.templates)) {
@@ -81,7 +95,12 @@ export class FunctionNode extends CompilerNode {
     }
 
     // try to resolve type based on connected inputs
-    for (const [name, type] of this.functionParams) {
+    for (const [name, type, opts] of this.functionParams) {
+      const options = opts ?? {};
+      if (options.output) {
+        continue;
+      }
+
       const template = resolver.isTemplate(type);
       if (template) {
         const input = node.tryGetInput(name);
@@ -91,11 +110,17 @@ export class FunctionNode extends CompilerNode {
       }
     }
 
-    const inputPins: Pins = [];
+    const inputPins: ParamPin[] = [];
 
     // determine current types of inputs based on already connected ones
-    for (const [name, paramType] of this.functionParams) {
-      inputPins.push({ name, type: resolver.resolveType(paramType) });
+    for (const [name, paramType, opts] of this.functionParams) {
+      const options = opts ?? {};
+      const type = resolver.resolveType(paramType);
+      inputPins.push({
+        name,
+        type: options.output ? variantToFirstType(type) : type,
+        output: options.output ?? false,
+      });
     }
 
     const outType = resolver.resolveType(this.outType);
@@ -108,9 +133,12 @@ export class FunctionNode extends CompilerNode {
     return {
       name: this.name,
       description: this.description,
-      showPreview: true,
-      inputs,
-      outputs: [{ name: "out", type: resolvedOutType }],
+      showPreview: this.showPreview(),
+      inputs: inputs.filter((pin) => !pin.output),
+      outputs: [
+        ...inputs.filter((pin) => pin.output),
+        { name: "out", type: resolvedOutType },
+      ],
       parameters: [],
     };
   }
