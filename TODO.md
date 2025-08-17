@@ -1,7 +1,7 @@
 MVP
 
 1. loading glsl functions from file
-2. all overloads for mix function
+2. all overloads for mix function (missing only booleans - maybe a different function for that?)
 3. Uniforms
 4. Textures
 5. Missing mod, min, max, clamp, step, smoothstep...
