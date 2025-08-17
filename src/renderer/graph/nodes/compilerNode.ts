@@ -103,11 +103,11 @@ export class UICompilerNode extends ClassicPreset.Node {
       }
     }
 
-    for (const [name, socket] of Object.entries(this.outputs)) {
+    for (const [name, outputWithSocket] of Object.entries(this.outputs)) {
       const output = outputs.find(({ name: n }) => n === name);
       if (!output) continue;
-      if (socket instanceof SocketWithType) {
-        socket.glslType = output.type;
+      if (outputWithSocket?.socket instanceof SocketWithType) {
+        outputWithSocket.socket.glslType = output.type;
       }
     }
 
@@ -127,11 +127,11 @@ export class UICompilerNode extends ClassicPreset.Node {
       }
     }
 
-    for (const [name, socket] of Object.entries(this.inputs)) {
+    for (const [name, inputWithSocket] of Object.entries(this.inputs)) {
       const input = inputs.find(({ name: n }) => n === name);
       if (!input) continue;
-      if (socket instanceof SocketWithType) {
-        socket.glslType = input.type;
+      if (inputWithSocket?.socket instanceof SocketWithType) {
+        inputWithSocket.socket.glslType = input.type;
       }
     }
 

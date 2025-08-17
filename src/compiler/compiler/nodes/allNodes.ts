@@ -30,6 +30,7 @@ import {
   genFIDUType,
   genFType,
 } from "./functions/functionNode/constraintInfo";
+import { TestOutputSwitcher } from "./test/testOutputSwitcher";
 
 export interface NodeCategory {
   id: string;
@@ -385,6 +386,14 @@ const utils = createCategory({
   },
 });
 
+const test = createCategory({
+  id: "test",
+  name: "Test",
+  nodes: {
+    testOutputSwitcher: new TestOutputSwitcher(),
+  },
+});
+
 export const nodeCategories = [
   literals,
   operators,
@@ -395,6 +404,7 @@ export const nodeCategories = [
   uniforms,
   output,
   utils,
+  test,
 ] as const;
 
 export type NodeCategoryId = (typeof nodeCategories)[number]["id"];
@@ -409,6 +419,7 @@ export const nodes = {
   ...uniforms.nodes,
   ...output.nodes,
   ...utils.nodes,
+  ...test.nodes,
 
   glslFunction,
 };
