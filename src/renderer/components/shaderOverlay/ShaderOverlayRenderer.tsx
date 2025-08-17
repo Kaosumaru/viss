@@ -92,7 +92,7 @@ export const ShaderOverlayRenderer: React.FC<{ entries: ShaderEntry[] }> = ({
         pointerEvents: "none",
         width: "100vw",
         height: "100vh",
-        zIndex: 9999,
+        zIndex: 1,
       }}
     />
   );
