@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Box, TextField } from "@mui/material";
 import { NumberControl } from "./customParamControl";
 import { Drag } from "rete-react-plugin";
 
-export function CustomNumberControl(props: { data: NumberControl }) {
+function CustomNumberControlInternal(props: { data: NumberControl }) {
   const control = props.data;
   const [value, setValue] = useState(control.value);
   const [inputValue, setInputValue] = useState<string>(() => {
@@ -173,3 +173,5 @@ export function CustomNumberControl(props: { data: NumberControl }) {
     </Box>
   );
 }
+
+export const CustomNumberControl = memo(CustomNumberControlInternal);

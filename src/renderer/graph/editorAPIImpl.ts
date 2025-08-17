@@ -284,17 +284,19 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
 
-      if (updateProperties && diff.nodesWithModifiedProperties) {
+      if (diff.nodesWithModifiedProperties) {
         for (const node of diff.nodesWithModifiedProperties) {
           const uiNode = this.getNode(node.identifier);
           if (uiNode) {
-            await this.area.translate(node.identifier, {
-              x: node.position.x,
-              y: node.position.y,
-            });
-
             uiNode.updateControls(node.parameters);
-            this.area.update("node", uiNode.id);
+            if (updateProperties) {
+              await this.area.translate(node.identifier, {
+                x: node.position.x,
+                y: node.position.y,
+              });
+
+              this.area.update("node", uiNode.id);
+            }
           } else {
             console.warn(`Node ${node.identifier} not found in editor`);
           }

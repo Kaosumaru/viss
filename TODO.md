@@ -7,8 +7,7 @@ MVP
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
 2. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
-3. cannot change values in composed vectors
-4. Copy & paste doesn't work in extension
+3. Copy & paste doesn't work in extension
 
 Next
 

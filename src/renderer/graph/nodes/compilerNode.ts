@@ -72,7 +72,7 @@ export class UICompilerNode extends ClassicPreset.Node {
     this.errorMessage = description.errorMessage;
 
     for (const [key] of Object.entries(this.inputs)) {
-      if (description.inputs.find((i) => i.name !== key)) {
+      if (!description.inputs.find((i) => i.name === key)) {
         this.removeInput(key);
       }
     }
@@ -167,9 +167,14 @@ export class UICompilerNode extends ClassicPreset.Node {
   }
 
   public updateControls(parameters: GraphParameters) {
-    for (const [key, control] of Object.entries(this.controls)) {
-      const param = parameters[key];
-      if (!param) {
+    for (const [key, param] of Object.entries(parameters)) {
+      let control: ClassicPreset.Control | undefined | null;
+      control = this.controls[key];
+      if (!control) {
+        control = this.inputs[key]?.control;
+      }
+
+      if (!control) {
         continue;
       }
       if (control instanceof CustomParamControl) {
