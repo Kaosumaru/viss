@@ -8,8 +8,9 @@ import { scalar, type Type } from "@glsl/types/types";
 import type { CompilationOptions } from "@compiler/compiler";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Parameters as GraphParameters } from "@graph/parameter";
-import { toFloat } from "@glsl/utils";
+import { toFloat, toVec4 } from "@glsl/utils";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
+import type { ScalarTypeName } from "@glsl/types/typenames";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -205,9 +206,19 @@ export abstract class CompilerNode {
     return this.parameters_.find((param) => param.name === name);
   }
 
-  protected addFloat(name: string): void {
-    this.addInput(name, scalar("float"));
-    this.addParameter(name, "number", { type: "number", value: 0 });
+  protected addInputWithParam(name: string, type: ScalarTypeName): void {
+    switch (type) {
+      case "float":
+      case "double":
+        this.addInput(name, scalar(type));
+        this.addParameter(name, "number", { type: "number", value: 0 });
+        return;
+      case "bool":
+        this.addInput(name, scalar(type));
+        this.addParameter(name, "boolean", { type: "boolean", value: false });
+        return;
+    }
+    throw new Error(`Unsupported type: ${type}`);
   }
 
   protected getInput(node: NodeContext, name: string): Expression {
@@ -255,7 +266,11 @@ export abstract class CompilerNode {
     return value;
   }
 
-  protected getFloat(node: NodeContext, name: string): string {
+  protected getInputOrParam(
+    node: NodeContext,
+    name: string,
+    type: ScalarTypeName
+  ): string {
     const input = node.tryGetInput(name);
     if (input) {
       if (input.type.id === "scalar" && input.type.type === "float") {
@@ -264,11 +279,37 @@ export abstract class CompilerNode {
       throw new Error(`Input ${name} is not of type number`);
     }
 
-    const value = node.tryGetParamValue(name, "number");
+    const value = node.tryGetParamValue(name, this.scalarToParamType(type));
     if (value !== undefined) {
-      return toFloat(value);
+      return this.paramToGlsl(value, this.scalarToParamType(type));
     }
     throw new Error(`Input or parameter ${name} not found`);
+  }
+
+  protected scalarToParamType(type: ScalarTypeName): ParameterValueType {
+    switch (type) {
+      case "float":
+      case "double":
+        return "number";
+      case "bool":
+        return "boolean";
+    }
+    throw new Error(`Unsupported type: ${type}`);
+  }
+
+  protected paramToGlsl(
+    value: ParamExtractedValue<ParameterValueType>,
+    type: ParameterValueType
+  ): string {
+    switch (type) {
+      case "number":
+        return toFloat(value as number);
+      case "boolean":
+        return (value as boolean) ? "true" : "false";
+      case "color":
+        return toVec4(value as Color);
+    }
+    throw new Error(`Unsupported parameter type: ${type}`);
   }
 
   protected toVariable(node: NodeContext, outputData: Expression): Expression {

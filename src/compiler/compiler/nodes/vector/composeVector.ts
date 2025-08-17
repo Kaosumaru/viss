@@ -12,14 +12,14 @@ export class ComposeVector extends CompilerNode {
     this.typename = typeToGlsl(this.type);
 
     for (let i = 0; i < this.type.size; i++) {
-      this.addFloat(components[i]);
+      this.addInputWithParam(components[i], this.type.type);
     }
   }
 
   override compile(node: NodeContext): Context {
     const data: string[] = [];
     for (let i = 0; i < this.type.size; i++) {
-      data.push(this.getFloat(node, components[i]));
+      data.push(this.getInputOrParam(node, components[i], this.type.type));
     }
 
     return this.createOutput(node, {

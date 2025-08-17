@@ -1,21 +1,23 @@
 MVP
 
 1. loading glsl functions from file
-2. all overloads for mix function (missing only booleans - maybe a different function for that?)
-3. Uniforms
-4. Textures
-5. Missing mod, min, max, clamp, step, smoothstep...
+2. Uniforms
+3. Textures
+4. Missing modf
+
+bugs
+1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
+2. Preview is in front of the right panel
+3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
+4. cannot change values in composed vectors
 
 Next
 
 1. Loops validation
 2. Portals
 3. Matrices
+4. Add all functions
 
-bugs
-1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
-2. Preview is in front of the right panel
-3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
 
 Global uniforms variables
 - TODO

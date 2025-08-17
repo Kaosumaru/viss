@@ -1,4 +1,4 @@
-import { variant, type Type } from "@glsl/types/types";
+import { type Type } from "@glsl/types/types";
 import {
   CompilerNode,
   type NodeContext,
@@ -82,14 +82,11 @@ export class FunctionNode extends CompilerNode {
 
     // try to resolve type based on connected inputs
     for (const [name, type] of this.functionParams) {
-      if (
-        type.id === "template" ||
-        type.id === "templateComponent" ||
-        type.id === "templateOrComponent"
-      ) {
+      const template = resolver.isTemplate(type);
+      if (template) {
         const input = node.tryGetInput(name);
         if (input) {
-          resolver.resolve(type, input.type);
+          resolver.resolve(template, input.type);
         }
       }
     }
@@ -98,54 +95,11 @@ export class FunctionNode extends CompilerNode {
 
     // determine current types of inputs based on already connected ones
     for (const [name, paramType] of this.functionParams) {
-      if (paramType.id === "template") {
-        const type = resolver.getResolvedType(paramType.templateName);
-        inputPins.push({
-          name,
-          type,
-        });
-      } else if (paramType.id === "templateComponent") {
-        const type = resolver.getResolvedComponentType(paramType.templateName);
-        inputPins.push({
-          name,
-          type,
-        });
-      } else if (paramType.id === "templateOrComponent") {
-        const type1 = resolver.getResolvedType(paramType.templateName);
-        const type2 = resolver.getResolvedComponentType(paramType.templateName);
-        inputPins.push({
-          name,
-          type: type1.id === "scalar" ? type1 : variant([type1, type2]),
-        });
-      } else {
-        inputPins.push({ name, type: paramType });
-      }
+      inputPins.push({ name, type: resolver.resolveType(paramType) });
     }
 
-    // return output type and input pins
-    if (this.outType.id === "template") {
-      return [
-        variantToFirstType(resolver.getResolvedType(this.outType.templateName)),
-        inputPins,
-      ];
-    }
-
-    if (this.outType.id === "templateComponent") {
-      return [
-        variantToFirstType(
-          resolver.getResolvedComponentType(this.outType.templateName)
-        ),
-        inputPins,
-      ];
-    }
-
-    if (this.outType.id === "templateOrComponent") {
-      throw new Error(
-        `Template or component type ${this.outType.templateName} cannot be an output`
-      );
-    }
-
-    return [this.outType, inputPins];
+    const outType = resolver.resolveType(this.outType);
+    return [variantToFirstType(outType), inputPins];
   }
 
   override getInfo(node: NodeContext): NodeInfo {

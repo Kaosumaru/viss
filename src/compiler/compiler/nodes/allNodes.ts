@@ -18,8 +18,10 @@ import { glslFunction } from "./functions/glslFunction";
 import { color } from "./basic/color";
 import {
   template,
+  templateBooleanComponent,
   templateComponent,
   templateOrComponent,
+  templateOrComponentOrBoolean,
 } from "./functions/functionNode/templateResolver";
 import {
   constrainedVector,
@@ -67,6 +69,10 @@ const literals = createCategory({
     dvec2: new ComposeVector("double", 2),
     dvec3: new ComposeVector("double", 3),
     dvec4: new ComposeVector("double", 4),
+
+    bvec2: new ComposeVector("bool", 2),
+    bvec3: new ComposeVector("bool", 3),
+    bvec4: new ComposeVector("bool", 4),
   },
 });
 
@@ -177,7 +183,6 @@ const functions = createCategory({
       )
     ),
 
-    // TODO missing boolean overload for a
     mix: new FunctionNode(
       "mix",
       "Linear interpolation",
@@ -186,7 +191,7 @@ const functions = createCategory({
         [
           ["x", template()],
           ["y", template()],
-          ["a", templateOrComponent()],
+          ["a", templateOrComponentOrBoolean()],
         ],
         genFDType
       )
@@ -219,7 +224,18 @@ const functions = createCategory({
       )
     ),
 
-    // TODO missing isnan, isinf
+    isnan: new FunctionNode(
+      "isnan",
+      "Check if a value is NaN",
+      signature(templateBooleanComponent(), [["in", template()]], genFDType)
+    ),
+
+    isinf: new FunctionNode(
+      "isinf",
+      "Check if a value is infinite",
+      signature(templateBooleanComponent(), [["in", template()]], genFDType)
+    ),
+
     // TODO floatBitsToInt, floatBitsToUint, intBitsToFloat, uintBitsToFloat (highp)
 
     fma: new FunctionNode(
@@ -357,7 +373,7 @@ const functionsVec = createCategory({
         [
           ["I", template()],
           ["N", template()],
-          ["eta", templateComponent()],
+          ["eta", templateOrComponent()],
         ],
         genFDType
       )

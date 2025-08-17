@@ -24,9 +24,35 @@ export interface TemplateOrComponentType {
   templateName: string;
 }
 
+export interface TemplateOrComponentOrBooleanType {
+  id: "templateOrComponentOrBoolean";
+  templateName: string;
+}
+
+export interface TemplateBooleanComponentType {
+  id: "templateBooleanComponent";
+  templateName: string;
+}
+
+export type TemplateParameter =
+  | TemplateType
+  | TemplateComponentType
+  | TemplateOrComponentType
+  | TemplateBooleanComponentType
+  | TemplateOrComponentOrBooleanType;
+
 export function templateComponent(name: string = "T"): TemplateComponentType {
   return {
     id: "templateComponent",
+    templateName: name,
+  };
+}
+
+export function templateBooleanComponent(
+  name: string = "T"
+): TemplateBooleanComponentType {
+  return {
+    id: "templateBooleanComponent",
     templateName: name,
   };
 }
@@ -40,17 +66,21 @@ export function templateOrComponent(
   };
 }
 
+export function templateOrComponentOrBoolean(
+  name: string = "T"
+): TemplateOrComponentOrBooleanType {
+  return {
+    id: "templateOrComponentOrBoolean",
+    templateName: name,
+  };
+}
+
 export function template(name: string = "T"): TemplateType {
   return {
     id: "template",
     templateName: name,
   };
 }
-
-export type TemplateParameter =
-  | TemplateType
-  | TemplateComponentType
-  | TemplateOrComponentType;
 
 interface TemplateInfo {
   constraint: ConstraintInfo;
@@ -67,6 +97,7 @@ export class TemplatesResolver {
 
     switch (template.id) {
       case "template": {
+        // min(x, y) - providing x resolves whole template type
         result.constraint = constrainScalarType(
           result.constraint,
           componentType(inputType)
@@ -75,12 +106,15 @@ export class TemplatesResolver {
         break;
       }
       case "templateComponent":
+        // y = length(x) - y is scalar value of x (if vec2 is vec2, y is float)
         result.constraint = constrainScalarType(
           result.constraint,
           componentType(inputType)
         );
         break;
       case "templateOrComponent":
+        // min(x, y) - providing y either resolves whole template type
+        // of just gives information that x is uses float or double (can be float, double, vec2, etc)
         result.constraint = constrainScalarType(
           result.constraint,
           componentType(inputType)
@@ -89,6 +123,22 @@ export class TemplatesResolver {
           result.constraint = constrainType(result.constraint, inputType);
         }
         break;
+      case "templateBooleanComponent":
+        result.constraint = constrainType(result.constraint, inputType);
+        break;
+      case "templateOrComponentOrBoolean": {
+        const cType = componentType(inputType);
+
+        if (cType === "bool") {
+          result.constraint = constrainType(result.constraint, inputType);
+        } else {
+          result.constraint = constrainScalarType(result.constraint, cType);
+          if (inputType.id !== "scalar") {
+            result.constraint = constrainType(result.constraint, inputType);
+          }
+        }
+        break;
+      }
     }
   }
 
@@ -96,20 +146,66 @@ export class TemplatesResolver {
     this.templates.set(name, { constraint });
   }
 
-  getResolvedType(name: string): Type {
-    const template = this.templates.get(name);
-    if (!template) {
-      throw new Error(`Template ${name} is not defined`);
+  isTemplate(
+    inputType: Type | TemplateParameter
+  ): TemplateParameter | undefined {
+    switch (inputType.id) {
+      case "template":
+      case "templateComponent":
+      case "templateOrComponent":
+      case "templateBooleanComponent":
+      case "templateOrComponentOrBoolean":
+        return inputType;
     }
-    return constraintToType(template.constraint);
+    return undefined;
   }
 
-  getResolvedComponentType(name: string): Type {
-    const template = this.templates.get(name);
+  resolveType(inputType: Type | TemplateParameter): Type {
+    const template = this.isTemplate(inputType);
     if (!template) {
-      throw new Error(`Template ${name} is not defined`);
+      return inputType as Type;
     }
-    return constraintToComponentType(template.constraint);
+
+    let constraint = this.getConstraint(template);
+    if (inputType.id === "template") {
+      return constraintToType(constraint);
+    }
+
+    if (inputType.id === "templateComponent") {
+      return constraintToComponentType(constraint);
+    }
+
+    if (inputType.id === "templateOrComponent") {
+      const type1 = constraintToType(constraint);
+      const type2 = constraintToComponentType(constraint);
+      return type1.id === "scalar" ? type1 : variant([type1, type2]);
+    }
+
+    if (inputType.id === "templateBooleanComponent") {
+      constraint = { ...constraint, underlyingScalar: ["bool"] };
+      return constraintToType(constraint);
+    }
+
+    if (inputType.id === "templateOrComponentOrBoolean") {
+      constraint = {
+        ...constraint,
+        underlyingScalar: [...constraint.underlyingScalar, "bool"],
+      };
+
+      const type1 = constraintToType(constraint);
+      const type2 = constraintToComponentType(constraint);
+      return type1.id === "scalar" ? type1 : variant([type1, type2]);
+    }
+
+    return inputType;
+  }
+
+  protected getConstraint(param: TemplateParameter): ConstraintInfo {
+    const template = this.templates.get(param.templateName);
+    if (!template) {
+      throw new Error(`Template ${param.templateName} is not defined`);
+    }
+    return template.constraint;
   }
 
   protected templateConstraintToComponentConstraint(type: Type) {
