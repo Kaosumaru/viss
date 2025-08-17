@@ -1,7 +1,5 @@
 import type { ScalarTypeName } from "./typenames";
 
-export const genericFType = variantScalarVector("float");
-
 export interface ScalarType {
   id: "scalar";
   type: ScalarTypeName;
@@ -27,19 +25,20 @@ export interface VariantType {
 
 export type Type = ScalarType | VectorType | MatrixType | VariantType;
 
+const _cachedScalars = createScalarCache();
+const _cachedMatrix = createMatrixCache();
+
 export function scalar(type: ScalarTypeName): ScalarType {
-  return {
-    id: "scalar",
-    type,
-  };
+  return _cachedScalars[type].scalar;
 }
 
+export const genericFType = variantScalarVector("float");
+
 export function vector(type: ScalarTypeName, size: number): VectorType {
-  return {
-    id: "vector",
-    size,
-    type,
-  };
+  if (size < 2 || size > 4) {
+    throw new Error(`Invalid vector size: ${size}`);
+  }
+  return _cachedScalars[type].vectors[size - 2];
 }
 
 export function matrix(
@@ -47,12 +46,7 @@ export function matrix(
   rows: number,
   columns: number
 ): MatrixType {
-  return {
-    id: "matrix",
-    rows,
-    columns,
-    double,
-  };
+  return _cachedMatrix[+double][rows - 2][columns - 2];
 }
 
 export function variant(types: Type[]): VariantType {
@@ -115,5 +109,49 @@ function flattenVariantTypes(types: Type[]): Type[] {
       result.push(type);
     }
   }
-  return result;
+  return [...new Set(result)]; // Remove duplicates
+}
+
+// caches for intrinsics
+
+interface CachedScalarType {
+  scalar: ScalarType;
+  vectors: VectorType[];
+}
+
+function createMatrixCache(): MatrixType[][][] {
+  return Array.from({ length: 2 }, (_, double) =>
+    Array.from({ length: 3 }, (_, rows) =>
+      Array.from({ length: 3 }, (_, columns) => ({
+        id: "matrix",
+        double: !!double,
+        rows: rows + 2,
+        columns: columns + 2,
+      }))
+    )
+  );
+}
+
+function _cachedType(type: ScalarTypeName): CachedScalarType {
+  return {
+    scalar: {
+      id: "scalar",
+      type,
+    },
+    vectors: Array.from({ length: 3 }, (_, i) => ({
+      id: "vector",
+      type,
+      size: i + 2,
+    })),
+  };
+}
+
+function createScalarCache(): Record<ScalarTypeName, CachedScalarType> {
+  return {
+    float: _cachedType("float"),
+    int: _cachedType("int"),
+    bool: _cachedType("bool"),
+    uint: _cachedType("uint"),
+    double: _cachedType("double"),
+  };
 }

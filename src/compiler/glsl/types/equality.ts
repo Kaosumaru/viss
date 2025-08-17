@@ -2,6 +2,10 @@ import type { Type } from "./types";
 import { assertSameTypes } from "./utils";
 
 export function areTypesEqual(type1: Type, type2: Type): boolean {
+  if (type1 === type2) {
+    return true;
+  }
+
   if (type1.id !== type2.id) {
     return false;
   }
