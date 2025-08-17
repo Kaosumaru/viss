@@ -19,6 +19,7 @@ import { color } from "./basic/color";
 import {
   template,
   templateComponent,
+  templateOrComponent,
 } from "./functions/functionNode/templateResolver";
 import {
   constrainedVector,
@@ -133,7 +134,7 @@ const functions = createCategory({
         [
           ["x", template()],
           ["y", template()],
-          ["a", templateComponent()],
+          ["a", templateOrComponent()],
         ],
         genFDType
       )

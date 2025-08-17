@@ -19,9 +19,23 @@ export interface TemplateComponentType {
   templateName: string;
 }
 
+export interface TemplateOrComponentType {
+  id: "templateOrComponent";
+  templateName: string;
+}
+
 export function templateComponent(name: string = "T"): TemplateComponentType {
   return {
     id: "templateComponent",
+    templateName: name,
+  };
+}
+
+export function templateOrComponent(
+  name: string = "T"
+): TemplateOrComponentType {
+  return {
+    id: "templateOrComponent",
     templateName: name,
   };
 }
@@ -33,7 +47,10 @@ export function template(name: string = "T"): TemplateType {
   };
 }
 
-type TemplateParameter = TemplateType | TemplateComponentType;
+export type TemplateParameter =
+  | TemplateType
+  | TemplateComponentType
+  | TemplateOrComponentType;
 
 interface TemplateInfo {
   constraint: ConstraintInfo;
@@ -62,6 +79,16 @@ export class TemplatesResolver {
           result.constraint,
           componentType(inputType)
         );
+        break;
+      case "templateOrComponent":
+        result.constraint = constrainScalarType(
+          result.constraint,
+          componentType(inputType)
+        );
+        if (inputType.id !== "scalar") {
+          result.constraint = constrainType(result.constraint, inputType);
+        }
+        break;
     }
   }
 

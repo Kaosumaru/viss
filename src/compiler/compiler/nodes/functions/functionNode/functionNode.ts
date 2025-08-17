@@ -1,4 +1,4 @@
-import { type Type } from "@glsl/types/types";
+import { variant, type Type } from "@glsl/types/types";
 import {
   CompilerNode,
   type NodeContext,
@@ -6,25 +6,21 @@ import {
   type Pins,
 } from "../../compilerNode";
 import type { Context } from "@compiler/context";
-import {
-  type TemplateType,
-  type TemplateComponentType,
-  TemplatesResolver,
-} from "./templateResolver";
+import { TemplatesResolver, type TemplateParameter } from "./templateResolver";
 import type { ConstraintInfo } from "./constraintInfo";
 import { variantToFirstType } from "@glsl/types/variantToFirstType";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 
-type Param = [string, Type | TemplateType | TemplateComponentType];
+type Param = [string, Type | TemplateParameter];
 
 export interface Signature {
-  outType: Type | TemplateType | TemplateComponentType;
+  outType: Type | TemplateParameter;
   params: Param[];
   templates: Record<string, ConstraintInfo>;
 }
 
 export function signature(
-  outType: Type | TemplateType | TemplateComponentType,
+  outType: Type | TemplateParameter,
   params: Param[],
   template?: ConstraintInfo
 ): Signature {
@@ -86,7 +82,11 @@ export class FunctionNode extends CompilerNode {
 
     // try to resolve type based on connected inputs
     for (const [name, type] of this.functionParams) {
-      if (type.id === "template" || type.id === "templateComponent") {
+      if (
+        type.id === "template" ||
+        type.id === "templateComponent" ||
+        type.id === "templateOrComponent"
+      ) {
         const input = node.tryGetInput(name);
         if (input) {
           resolver.resolve(type, input.type);
@@ -110,6 +110,13 @@ export class FunctionNode extends CompilerNode {
           name,
           type,
         });
+      } else if (paramType.id === "templateOrComponent") {
+        const type1 = resolver.getResolvedType(paramType.templateName);
+        const type2 = resolver.getResolvedComponentType(paramType.templateName);
+        inputPins.push({
+          name,
+          type: type1.id === "scalar" ? type1 : variant([type1, type2]),
+        });
       } else {
         inputPins.push({ name, type: paramType });
       }
@@ -132,6 +139,12 @@ export class FunctionNode extends CompilerNode {
       ];
     }
 
+    if (this.outType.id === "templateOrComponent") {
+      throw new Error(
+        `Template or component type ${this.outType.templateName} cannot be an output`
+      );
+    }
+
     return [this.outType, inputPins];
   }
 
@@ -148,7 +161,7 @@ export class FunctionNode extends CompilerNode {
     };
   }
 
-  outType: Type | TemplateType | TemplateComponentType;
+  outType: Type | TemplateParameter;
   templates: Record<string, ConstraintInfo>;
   functionParams: Param[];
   name: string;
