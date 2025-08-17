@@ -10,7 +10,6 @@ bugs
 3. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
 4. cannot change values in composed vectors
 5. mix have too many potential types at a (float, double, float, double)
-6. We are using webGl1, remove functions from webGL2
 
 Next
 
