@@ -11,6 +11,7 @@ import type { Parameters as GraphParameters } from "@graph/parameter";
 import { toFloat, toVec4 } from "@glsl/utils";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 import type { ScalarTypeName } from "@glsl/types/typenames";
+import type { Uniform } from "@graph/uniform";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -35,6 +36,7 @@ export interface NodeContext {
   info(): string;
   options(): CompilationOptions;
   tryGetInput(name: string): Expression | undefined;
+  tryGetUniform(name: string): Uniform | undefined;
   tryGetParamValue<T extends ParameterValueType>(
     name: string,
     type: T

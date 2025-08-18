@@ -152,6 +152,10 @@ export function EditorView({ onChanged }: EditorViewProps) {
     return editorRef.current?.getCustomFunctions() || [];
   }, []);
 
+  const getUniforms = useCallback(() => {
+    return editorRef.current?.getUniforms() || {};
+  }, []);
+
   const getNodeById = useCallback(
     (nodeId: string): UICompilerNode | undefined => {
       return editorRef.current?.getNode(nodeId);
@@ -181,6 +185,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onContextMenuOpen={setLastContextMenuPosition}
       getNodeById={getNodeById}
       customFunctions={getCustomFunctions()}
+      uniforms={getUniforms()}
     >
       <ShaderOverlayRenderer entries={entries} />
       <NodeSelectionArea

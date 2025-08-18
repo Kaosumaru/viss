@@ -5,6 +5,7 @@ import type { Node } from "@graph/node";
 import type { CompilationOptions } from "./compiler";
 import type { CompilerInternal } from "./logic/compilerInternal";
 import type { FunctionDefinition } from "@glsl/function";
+import type { Uniform } from "@graph/uniform";
 
 export class CompileNodeContext implements NodeContext {
   constructor(
@@ -64,6 +65,10 @@ export class CompileNodeContext implements NodeContext {
       type: expr.type,
       trivial: true,
     };
+  }
+
+  tryGetUniform(name: string): Uniform | undefined {
+    return this.graph.getGraph().uniforms[name];
   }
 
   getVariables(): Variable[] {

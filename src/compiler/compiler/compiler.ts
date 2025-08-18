@@ -6,6 +6,7 @@ import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
 import type { SocketReference } from "@graph/socket";
+import type { Uniform } from "@graph/uniform";
 
 export interface CompilationOptions {
   noVariables?: boolean;
@@ -54,6 +55,14 @@ export class Compiler {
 
   public addConnection(connection: Connection): GraphDiff {
     return this.graph.addConnection(connection);
+  }
+
+  public updateUniform(uniform: Uniform): GraphDiff {
+    return this.graph.updateUniform(uniform);
+  }
+
+  public removeUniform(uniformId: string): GraphDiff {
+    return this.graph.removeUniform(uniformId);
   }
 
   public removeConnection(connection: Connection): GraphDiff {

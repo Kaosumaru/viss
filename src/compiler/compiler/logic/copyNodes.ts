@@ -11,6 +11,7 @@ export function copyNodes(
     includes: [],
     nodes: [],
     connections: [],
+    uniforms: {},
   };
 
   nodeIds.forEach((nodeId) => {

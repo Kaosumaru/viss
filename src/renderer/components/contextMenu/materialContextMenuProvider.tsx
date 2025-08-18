@@ -4,6 +4,7 @@ import { NodeContextMenu } from "./nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
 import type { MenuItem } from "./interface";
+import type { Uniforms } from "@graph/uniform";
 
 interface ContextMenuState {
   visible: boolean;
@@ -20,6 +21,7 @@ interface MaterialContextMenuProviderProps {
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
   customFunctions: FunctionDefinition[];
+  uniforms: Uniforms;
 }
 
 export const MaterialContextMenuProvider: React.FC<
@@ -32,6 +34,7 @@ export const MaterialContextMenuProvider: React.FC<
   onContextMenuOpen,
   getNodeById,
   customFunctions,
+  uniforms,
 }) => {
   const [contextMenuState, setContextMenuState] = useState<ContextMenuState>({
     visible: false,
@@ -137,6 +140,7 @@ export const MaterialContextMenuProvider: React.FC<
           onClose={hideContextMenu}
           onNodeCreate={handleNodeCreate}
           customFunctions={customFunctions}
+          uniforms={uniforms}
         />
       )}
       {contextMenuState.visible &&

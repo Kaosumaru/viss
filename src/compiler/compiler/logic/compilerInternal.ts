@@ -22,6 +22,7 @@ import type { SocketReference } from "@graph/socket";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 import deepEqual from "deep-equal";
 import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
+import type { Uniform } from "@graph/uniform";
 
 export interface InputConnection {
   node: Node;
@@ -40,6 +41,7 @@ export class CompilerInternal {
       includes: [],
       nodes: [],
       connections: [],
+      uniforms: {},
     };
     this.clearGraph();
   }
@@ -410,6 +412,28 @@ export class CompilerInternal {
     return this.graph;
   }
 
+  removeUniform(uniformId: string): GraphDiff {
+    this.graph.uniforms = Object.fromEntries(
+      Object.entries(this.graph.uniforms).filter(([id]) => id !== uniformId)
+    );
+    const invalidatedNodeIds = this.invalidateNodes(
+      this.getNodeIdsWithUniform(uniformId)
+    );
+    return {
+      invalidatedNodeIds,
+    };
+  }
+
+  updateUniform(uniform: Uniform): GraphDiff {
+    this.graph.uniforms = { ...this.graph.uniforms, [uniform.id]: uniform };
+    const invalidatedNodeIds = this.invalidateNodes(
+      this.getNodeIdsWithUniform(uniform.id)
+    );
+    return {
+      invalidatedNodeIds,
+    };
+  }
+
   clearGraph() {
     this.nodes.clear();
     this.getConnectedNode.clear();
@@ -420,6 +444,7 @@ export class CompilerInternal {
       includes: getBuiltInFunctions(),
       nodes: [],
       connections: [],
+      uniforms: {},
     };
 
     this.nameToFunction = parseFunctionsFrom(this.graph);
@@ -438,6 +463,15 @@ export class CompilerInternal {
 
   hasNode(identifier: string) {
     return this.nodes.has(identifier);
+  }
+
+  protected getNodeIdsWithUniform(uniformId: string): string[] {
+    return Array.from(this.nodes.values())
+      .filter((node) => {
+        const identifier = node.parameters["_identifier"];
+        return identifier.value === uniformId;
+      })
+      .map((node) => node.identifier);
   }
 
   protected cacheContext(nodeId: string, context: Context) {

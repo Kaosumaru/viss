@@ -31,6 +31,7 @@ import {
   genFType,
 } from "./functions/functionNode/constraintInfo";
 import { TestOutputSwitcher } from "./test/testOutputSwitcher";
+import { CustomUniform } from "./basic/customUniform";
 
 export interface NodeCategory {
   id: string;
@@ -422,6 +423,7 @@ export const nodes = {
   ...test.nodes,
 
   glslFunction,
+  uniform: new CustomUniform(),
 };
 
 export type NodeType = keyof typeof nodes;

@@ -13,14 +13,23 @@ import {
   Visibility as VisibilityIcon,
 } from "@mui/icons-material";
 import type { FunctionDefinition } from "@glsl/function";
+import type { Uniform, Uniforms } from "@graph/uniform";
 
-export function getMenuElements(customFunctions: FunctionDefinition[]) {
+export function getMenuElements(
+  customFunctions: FunctionDefinition[],
+  uniforms: Uniforms
+) {
   return [
     ...menuElements,
     {
       name: "Custom Functions",
       icon: <FunctionsIcon fontSize="small" />,
       items: customFunctions.map(functionToItem),
+    },
+    {
+      name: "Custom Uniforms",
+      icon: <FunctionsIcon fontSize="small" />,
+      items: Object.values(uniforms).map(uniformToItem),
     },
   ];
 }
@@ -30,6 +39,15 @@ function functionToItem(fn: FunctionDefinition): MenuItem {
     name: fn.name,
     nodeType: "glslFunction",
     identifierParam: fn.name,
+    description: "No description available",
+  };
+}
+
+function uniformToItem(fn: Uniform): MenuItem {
+  return {
+    name: fn.id,
+    nodeType: "uniform",
+    identifierParam: fn.id,
     description: "No description available",
   };
 }

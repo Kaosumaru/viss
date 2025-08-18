@@ -14,6 +14,7 @@ import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
+import type { Uniform, Uniforms } from "@graph/uniform";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -111,6 +112,18 @@ export class EditorAPIImp implements EditorAPI {
         parameters: params ?? {},
       })
     );
+  }
+
+  getUniforms(): Uniforms {
+    return this.compiler().getGraph().uniforms;
+  }
+
+  updateUniform(uniform: Uniform): Promise<void> {
+    return this.applyDiff(this.compiler().updateUniform(uniform));
+  }
+
+  removeUniform(uniformId: string): Promise<void> {
+    return this.applyDiff(this.compiler().removeUniform(uniformId));
   }
 
   async deleteNode(nodeId: string) {
@@ -326,7 +339,7 @@ export class EditorAPIImp implements EditorAPI {
     }
   }
 
-  updateInputsOutputs(invalidatedNodeIds: Set<string>) {
+  protected updateInputsOutputs(invalidatedNodeIds: Set<string>) {
     const infos = this.compiler().getInfo(Array.from(invalidatedNodeIds));
     for (const info of infos) {
       const node = this.getNode(info.node.identifier);

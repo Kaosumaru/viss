@@ -2,10 +2,12 @@ import type { NodeType } from "@compiler/nodes/allNodes";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Graph } from "@graph/graph";
 import type { Parameters } from "@graph/parameter";
+import type { Uniform, Uniforms } from "@graph/uniform";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
 export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
+  getUniforms(): Uniforms;
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;
   destroy: () => void;
@@ -32,6 +34,9 @@ export interface EditorAPI {
   loadGraphJSON: (graphJson: string) => Promise<void>;
   loadGraph: (graph: Graph) => Promise<void>;
   saveGraph: () => Graph;
+
+  updateUniform: (uniform: Uniform) => Promise<void>;
+  removeUniform: (uniformId: string) => Promise<void>;
 
   compileNode: (nodeId?: string) => string | undefined;
   getCustomFunctions: () => FunctionDefinition[];

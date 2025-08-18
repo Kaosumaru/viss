@@ -20,6 +20,7 @@ import { styled } from "@mui/material/styles";
 import type { MenuCategory, MenuItem } from "./interface";
 import { getMenuElements } from "./menuElements";
 import type { FunctionDefinition } from "@glsl/function";
+import type { Uniforms } from "@graph/uniform";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -108,6 +109,7 @@ interface MaterialContextMenuProps {
   onClose: () => void;
   onNodeCreate: (item: MenuItem) => void;
   customFunctions: FunctionDefinition[];
+  uniforms: Uniforms;
 }
 
 export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
@@ -115,8 +117,9 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   onClose,
   onNodeCreate,
   customFunctions,
+  uniforms,
 }) => {
-  const menuElements = getMenuElements(customFunctions);
+  const menuElements = getMenuElements(customFunctions, uniforms);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(menuElements.map((cat) => cat.name))
