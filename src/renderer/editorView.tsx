@@ -153,7 +153,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   }, []);
 
   const getUniforms = useCallback(() => {
-    return editorRef.current?.getUniforms() || {};
+    return editorRef.current?.uniforms() || {};
   }, []);
 
   const getNodeById = useCallback(

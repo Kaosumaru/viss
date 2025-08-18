@@ -114,17 +114,17 @@ export class EditorAPIImp implements EditorAPI {
     );
   }
 
-  getUniforms(): Uniforms {
+  uniforms: () => Uniforms = (): Uniforms => {
     return this.compiler().getGraph().uniforms;
-  }
+  };
 
-  updateUniform(uniform: Uniform): Promise<void> {
+  updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
     return this.applyDiff(this.compiler().updateUniform(uniform));
-  }
+  };
 
-  removeUniform(uniformId: string): Promise<void> {
+  removeUniform: (uniformId: string) => Promise<void> = (uniformId: string) => {
     return this.applyDiff(this.compiler().removeUniform(uniformId));
-  }
+  };
 
   async deleteNode(nodeId: string) {
     return this.applyDiff(this.compiler().removeNode(nodeId));

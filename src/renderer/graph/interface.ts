@@ -7,7 +7,7 @@ import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
 export interface EditorAPI {
   getNode(nodeId: string): UICompilerNode | undefined;
-  getUniforms(): Uniforms;
+
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;
   destroy: () => void;
@@ -35,6 +35,7 @@ export interface EditorAPI {
   loadGraph: (graph: Graph) => Promise<void>;
   saveGraph: () => Graph;
 
+  uniforms(): Uniforms;
   updateUniform: (uniform: Uniform) => Promise<void>;
   removeUniform: (uniformId: string) => Promise<void>;
 
