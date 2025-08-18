@@ -1,10 +1,12 @@
 import type { NodeInfo } from "@compiler/nodes/compilerNode";
 import type { Connection } from "./connection";
 import type { Node } from "./node";
+import type { Uniforms } from "./uniform";
 
 export interface Graph {
   version: number;
   includes: GLSLInclude[];
+  uniforms: Uniforms;
   nodes: Node[];
   connections: Connection[];
   // comments?: Comment[];
