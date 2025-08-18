@@ -14,10 +14,21 @@ export function exportGlsl(
   const variables = ctx.variables
     .map((variable: Variable) => compileVariable(variable, 1))
     .join("\n");
+
+  const uniforms = Object.entries(graph.uniforms)
+    .map(([name, uniform]) => {
+      const type = typeToGlsl(uniform.type);
+      return `uniform ${type} ${name};`;
+    })
+    .join("\n");
+
   const fragmentShader = `
 precision mediump float;
+
 uniform float uTime;
 uniform vec2 uResolution;
+${uniforms}
+
 varying vec2 vUv;
 
 ${graph.includes.map((include) => include.content).join("\n")}
