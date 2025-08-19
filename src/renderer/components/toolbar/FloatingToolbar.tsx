@@ -1,11 +1,16 @@
 import { Paper, IconButton, Tooltip } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  Visibility,
+  VisibilityOff,
+  ViewSidebar,
+  ViewSidebarOutlined,
+} from "@mui/icons-material";
 import styled from "styled-components";
 
 const ToolbarContainer = styled(Paper)`
   position: absolute;
   top: 16px;
-  right: 16px;
+  left: 16px;
   z-index: 1000;
   display: flex;
   flex-direction: row;
@@ -27,11 +32,15 @@ const ToolbarIconButton = styled(IconButton)`
 export interface FloatingToolbarProps {
   isPropertyViewVisible: boolean;
   onTogglePropertyView: () => void;
+  isUniformsPanelVisible: boolean;
+  onToggleUniformsPanel: () => void;
 }
 
 export function FloatingToolbar({
   isPropertyViewVisible,
   onTogglePropertyView,
+  isUniformsPanelVisible,
+  onToggleUniformsPanel,
 }: FloatingToolbarProps) {
   return (
     <ToolbarContainer elevation={3}>
@@ -42,6 +51,15 @@ export function FloatingToolbar({
       >
         <ToolbarIconButton onClick={onTogglePropertyView}>
           {isPropertyViewVisible ? <Visibility /> : <VisibilityOff />}
+        </ToolbarIconButton>
+      </Tooltip>
+      <Tooltip
+        title={
+          isUniformsPanelVisible ? "Hide Uniforms Panel" : "Show Uniforms Panel"
+        }
+      >
+        <ToolbarIconButton onClick={onToggleUniformsPanel}>
+          {isUniformsPanelVisible ? <ViewSidebar /> : <ViewSidebarOutlined />}
         </ToolbarIconButton>
       </Tooltip>
     </ToolbarContainer>

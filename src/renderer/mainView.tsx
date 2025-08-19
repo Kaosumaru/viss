@@ -10,12 +10,13 @@ import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
 import type { ScalarTypeName } from "@glsl/types/typenames";
 
-
-const Layout = styled.div`
+const Layout = styled.div<{ $sidebarVisible: boolean }>`
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: ${({ $sidebarVisible }) =>
+    $sidebarVisible ? "1fr 300px" : "1fr"};
   grid-template-rows: 1fr;
-  grid-template-areas: "canvas sidebar";
+  grid-template-areas: ${({ $sidebarVisible }) =>
+    $sidebarVisible ? '"canvas sidebar"' : '"canvas"'};
   box-sizing: border-box;
   height: 100vh;
 `;
@@ -60,6 +61,7 @@ void main() {
 export function MainView() {
   const [shader, setShader] = useState(fragmentShader); // Default color
   const [isPropertyViewVisible, setIsPropertyViewVisible] = useState(true);
+  const [isUniformsPanelVisible, setIsUniformsPanelVisible] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorAPI | undefined>(
     undefined
@@ -75,41 +77,49 @@ export function MainView() {
     setIsPropertyViewVisible((prev) => !prev);
   }, []);
 
+  const handleToggleUniformsPanel = useCallback(() => {
+    setIsUniformsPanelVisible((prev) => !prev);
+  }, []);
+
   return (
-    <Layout>
+    <Layout $sidebarVisible={isUniformsPanelVisible}>
       <Canvas>
         <EditorView onChanged={onChanged} />
         <FloatingToolbar
           isPropertyViewVisible={isPropertyViewVisible}
           onTogglePropertyView={handleTogglePropertyView}
+          isUniformsPanelVisible={isUniformsPanelVisible}
+          onToggleUniformsPanel={handleToggleUniformsPanel}
         />
         <FloatingPropertyView $isVisible={isPropertyViewVisible}>
           <PropertyView fragmentShader={shader} editorData={editorData} />
         </FloatingPropertyView>
       </Canvas>
-      <Sidebar>
-        {editorData && (
-          <UniformsPanel
-            uniforms={editorData.uniforms()}
-            onAdd={async (name, typeName) => {
-              // Only support scalar types for now
-              const uniform: Uniform = {
-                id: name,
-                type: {
-                  id: "scalar",
-                  type: typeName as ScalarTypeName,
-                },
-              };
-              await editorData.updateUniform(uniform);
-              setEditorData({ ...editorData }); // force update
-            }}
-            onRemove={async (name) => {
-              await editorData.removeUniform(name);
-              setEditorData({ ...editorData }); // force update
-            }}
-          />
-        )}
-      </Sidebar>
+      {isUniformsPanelVisible && (
+        <Sidebar>
+          {editorData && (
+            <UniformsPanel
+              uniforms={editorData.uniforms()}
+              onAdd={async (name, typeName) => {
+                // Only support scalar types for now
+                const uniform: Uniform = {
+                  id: name,
+                  type: {
+                    id: "scalar",
+                    type: typeName as ScalarTypeName,
+                  },
+                };
+                await editorData.updateUniform(uniform);
+                setEditorData({ ...editorData }); // force update
+              }}
+              onRemove={async (name) => {
+                await editorData.removeUniform(name);
+                setEditorData({ ...editorData }); // force update
+              }}
+            />
+          )}
+        </Sidebar>
+      )}
     </Layout>
   );
 }
