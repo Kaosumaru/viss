@@ -9,10 +9,25 @@ interface UniformsPanelProps {
 }
 
 const typeOptions = [
-  "float", "vec2", "vec3", "vec4", "int", "ivec2", "ivec3", "ivec4", "bool", "mat2", "mat3", "mat4"
+  "float",
+  "vec2",
+  "vec3",
+  "vec4",
+  "int",
+  "ivec2",
+  "ivec3",
+  "ivec4",
+  "bool",
+  "mat2",
+  "mat3",
+  "mat4",
 ];
 
-export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, onRemove }) => {
+export const UniformsPanel: React.FC<UniformsPanelProps> = ({
+  uniforms,
+  onAdd,
+  onRemove,
+}) => {
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState(typeOptions[0]);
 
@@ -25,13 +40,43 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, o
   };
 
   return (
-    <div style={{ padding: 16, height: "100%", overflowY: "auto", width: "100%", background: "#222", color: "#fff" }}>
+    <div
+      style={{
+        padding: 16,
+        height: "100%",
+        overflowY: "auto",
+        width: "100%",
+        background: "#222",
+        color: "#fff",
+      }}
+    >
       <h3>Uniforms</h3>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {Object.entries(uniforms).map(([name, uniform]) => (
-          <li key={name} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-            <span style={{ flex: 1 }}>{name} <span style={{ color: "#aaa" }}>({typeToName((uniform as Uniform).type)})</span></span>
-            <button onClick={() => onRemove(name)} style={{ marginLeft: 8, background: "#c00", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", padding: "2px 8px" }}>✕</button>
+          <li
+            key={name}
+            style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
+          >
+            <span style={{ flex: 1 }}>
+              {name}{" "}
+              <span style={{ color: "#aaa" }}>
+                ({typeToName((uniform as Uniform).type)})
+              </span>
+            </span>
+            <button
+              onClick={() => onRemove(name)}
+              style={{
+                marginLeft: 8,
+                background: "#c00",
+                color: "#fff",
+                border: "none",
+                borderRadius: 4,
+                cursor: "pointer",
+                padding: "2px 8px",
+              }}
+            >
+              ✕
+            </button>
           </li>
         ))}
       </ul>
@@ -40,19 +85,49 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, o
           type="text"
           placeholder="Name"
           value={newName}
-          onChange={e => setNewName(e.target.value)}
-          style={{ width: "45%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
+          onChange={(e) => setNewName(e.target.value)}
+          style={{
+            width: "45%",
+            marginRight: 8,
+            padding: 4,
+            borderRadius: 4,
+            border: "1px solid #444",
+            background: "#111",
+            color: "#fff",
+          }}
         />
         <select
           value={newType}
-          onChange={e => setNewType(e.target.value)}
-          style={{ width: "35%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
+          onChange={(e) => setNewType(e.target.value)}
+          style={{
+            width: "35%",
+            marginRight: 8,
+            padding: 4,
+            borderRadius: 4,
+            border: "1px solid #444",
+            background: "#111",
+            color: "#fff",
+          }}
         >
-          {typeOptions.map(type => (
-            <option key={type} value={type}>{type}</option>
+          {typeOptions.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
           ))}
         </select>
-        <button onClick={handleAdd} style={{ padding: "4px 12px", borderRadius: 4, background: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Add</button>
+        <button
+          onClick={handleAdd}
+          style={{
+            padding: "4px 12px",
+            borderRadius: 4,
+            background: "#28a745",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Add
+        </button>
       </div>
     </div>
   );
