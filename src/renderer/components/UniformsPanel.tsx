@@ -13,7 +13,6 @@ const typeOptions = [
 ];
 
 export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, onRemove }) => {
-  const [visible, setVisible] = useState(true);
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState(typeOptions[0]);
 
@@ -26,46 +25,35 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, o
   };
 
   return (
-    <div style={{ position: "fixed", top: 0, right: 0, height: "100%", width: visible ? 300 : 40, background: "#222", color: "#fff", transition: "width 0.2s", zIndex: 1000, boxShadow: visible ? "-2px 0 8px #0003" : undefined }}>
-      <button
-        style={{ position: "absolute", left: -40, top: 10, width: 40, height: 40, background: "#333", color: "#fff", border: "none", borderRadius: "4px 0 0 4px", cursor: "pointer" }}
-        onClick={() => setVisible(v => !v)}
-        title={visible ? "Hide" : "Show uniforms panel"}
-      >
-        {visible ? "→" : "←"}
-      </button>
-      {visible && (
-        <div style={{ padding: 16, height: "100%", overflowY: "auto" }}>
-          <h3>Uniforms</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {Object.entries(uniforms).map(([name, uniform]) => (
-              <li key={name} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ flex: 1 }}>{name} <span style={{ color: "#aaa" }}>({typeToName((uniform as Uniform).type)})</span></span>
-                <button onClick={() => onRemove(name)} style={{ marginLeft: 8, background: "#c00", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", padding: "2px 8px" }}>✕</button>
-              </li>
-            ))}
-          </ul>
-          <div style={{ marginTop: 24 }}>
-            <input
-              type="text"
-              placeholder="Name"
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              style={{ width: "45%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
-            />
-            <select
-              value={newType}
-              onChange={e => setNewType(e.target.value)}
-              style={{ width: "35%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
-            >
-              {typeOptions.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-            <button onClick={handleAdd} style={{ padding: "4px 12px", borderRadius: 4, background: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Add</button>
-          </div>
-        </div>
-      )}
+    <div style={{ padding: 16, height: "100%", overflowY: "auto", width: "100%", background: "#222", color: "#fff" }}>
+      <h3>Uniforms</h3>
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {Object.entries(uniforms).map(([name, uniform]) => (
+          <li key={name} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+            <span style={{ flex: 1 }}>{name} <span style={{ color: "#aaa" }}>({typeToName((uniform as Uniform).type)})</span></span>
+            <button onClick={() => onRemove(name)} style={{ marginLeft: 8, background: "#c00", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", padding: "2px 8px" }}>✕</button>
+          </li>
+        ))}
+      </ul>
+      <div style={{ marginTop: 24 }}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={newName}
+          onChange={e => setNewName(e.target.value)}
+          style={{ width: "45%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
+        />
+        <select
+          value={newType}
+          onChange={e => setNewType(e.target.value)}
+          style={{ width: "35%", marginRight: 8, padding: 4, borderRadius: 4, border: "1px solid #444", background: "#111", color: "#fff" }}
+        >
+          {typeOptions.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
+        <button onClick={handleAdd} style={{ padding: "4px 12px", borderRadius: 4, background: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Add</button>
+      </div>
     </div>
   );
 };

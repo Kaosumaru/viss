@@ -10,11 +10,12 @@ import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
 import type { ScalarTypeName } from "@glsl/types/typenames";
 
+
 const Layout = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 300px;
   grid-template-rows: 1fr;
-  grid-template-areas: "canvas";
+  grid-template-areas: "canvas sidebar";
   box-sizing: border-box;
   height: 100vh;
 `;
@@ -22,6 +23,18 @@ const Layout = styled.div`
 const Canvas = styled.div`
   grid-area: canvas;
   position: relative;
+  min-width: 0;
+`;
+
+const Sidebar = styled.div`
+  grid-area: sidebar;
+  height: 100%;
+  background: #222;
+  color: #fff;
+  box-shadow: -2px 0 8px #0003;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 `;
 
 const FloatingPropertyView = styled.div<{ $isVisible: boolean }>`
@@ -73,6 +86,8 @@ export function MainView() {
         <FloatingPropertyView $isVisible={isPropertyViewVisible}>
           <PropertyView fragmentShader={shader} editorData={editorData} />
         </FloatingPropertyView>
+      </Canvas>
+      <Sidebar>
         {editorData && (
           <UniformsPanel
             uniforms={editorData.uniforms()}
@@ -94,7 +109,7 @@ export function MainView() {
             }}
           />
         )}
-      </Canvas>
+      </Sidebar>
     </Layout>
   );
 }
