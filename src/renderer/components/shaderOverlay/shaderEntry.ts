@@ -1,3 +1,9 @@
+import {
+  applyUniforms,
+  type UniformEntry,
+  type UniformsEntries,
+} from "./uniform";
+
 const g_vertexShaderSrc = `
   precision mediump float;
   attribute vec2 a_position;
@@ -32,6 +38,24 @@ export class ShaderEntry {
     this.broken = false; // Reset broken state
     this.program = null; // Reset program to recompile with new shader
   }
+
+  updateUniforms(uniforms: UniformsEntries) {
+    this.uniforms = uniforms;
+    if (this.program) {
+      this.uniformsToUpdate = this.uniforms;
+    }
+  }
+
+  updateUniform(uniform: UniformEntry) {
+    this.uniforms[uniform.name] = uniform;
+    if (this.program) {
+      this.uniformsToUpdate = {
+        ...this.uniformsToUpdate,
+        [uniform.name]: uniform,
+      };
+    }
+  }
+
   constructor(fragmentShaderSrc?: string, vertexShaderSrc?: string) {
     this.fragmentShaderSrc = fragmentShaderSrc || g_fragmentShaderSrc;
     this.vertexShaderSrc = vertexShaderSrc || g_vertexShaderSrc;
@@ -49,12 +73,20 @@ export class ShaderEntry {
 
     if (!this.program) {
       this.program = this.createProgram(gl);
+      if (this.program) {
+        this.uniformsToUpdate = this.uniforms;
+      }
     }
 
     if (!this.program) {
       console.error("Failed to create shader program");
       this.broken = true;
       return;
+    }
+
+    if (this.uniformsToUpdate) {
+      applyUniforms(gl, this.program, this.uniformsToUpdate);
+      this.uniformsToUpdate = undefined;
     }
 
     gl.useProgram(this.program);
@@ -148,4 +180,6 @@ export class ShaderEntry {
   program: WebGLProgram | null = null;
   fragmentShaderSrc: string;
   vertexShaderSrc: string;
+  uniforms: UniformsEntries = {};
+  uniformsToUpdate: UniformsEntries | undefined;
 }
