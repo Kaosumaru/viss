@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import type { Uniforms, Uniform } from "../../compiler/graph/uniform";
-import { typeToName } from "../../compiler/glsl/types/typeToString";
 import { allTypeNames } from "@glsl/types/typenames";
+import { UniformDisplay } from "./UniformDisplay";
+import { UniformDefaultValueEditor } from "./UniformDefaultValueEditor";
 
 interface UniformsPanelProps {
   uniforms: Uniforms;
   onAdd: (name: string, type: string) => void;
   onRemove: (name: string) => void;
+  onSetDefaultValue?: (name: string, value: number | number[]) => void;
 }
 
 export const UniformsPanel: React.FC<UniformsPanelProps> = ({
   uniforms,
   onAdd,
   onRemove,
+  onSetDefaultValue,
 }) => {
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState(allTypeNames[0]);
@@ -38,33 +41,70 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({
     >
       <h3>Uniforms</h3>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {Object.entries(uniforms).map(([name, uniform]) => (
-          <li
-            key={name}
-            style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-          >
-            <span style={{ flex: 1 }}>
-              {name}{" "}
-              <span style={{ color: "#aaa" }}>
-                ({typeToName((uniform as Uniform).type)})
-              </span>
-            </span>
-            <button
-              onClick={() => onRemove(name)}
-              style={{
-                marginLeft: 8,
-                background: "#c00",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer",
-                padding: "2px 8px",
-              }}
+        {Object.entries(uniforms).map(([name, uniform]) => {
+          let canEditDefault = false;
+          let typeString = "";
+          if (uniform.type.id === "scalar" && uniform.type.type === "float") {
+            canEditDefault = true;
+            typeString = "float";
+          } else if (
+            uniform.type.id === "vector" &&
+            uniform.type.type === "float"
+          ) {
+            canEditDefault = true;
+            typeString = `vec${uniform.type.size}`;
+          }
+          return (
+            <li
+              key={name}
+              style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
             >
-              ✕
-            </button>
-          </li>
-        ))}
+              <span style={{ flex: 1 }}>
+                <UniformDisplay name={name} uniform={uniform as Uniform} />
+                {canEditDefault && onSetDefaultValue && (
+                  <UniformDefaultValueEditor
+                    type={typeString}
+                    value={(() => {
+                      if (
+                        uniform.defaultValue &&
+                        "value" in uniform.defaultValue
+                      ) {
+                        const v = uniform.defaultValue.value;
+                        if (typeof v === "number") return v;
+                        if (
+                          Array.isArray(v) &&
+                          v.every((x) => typeof x === "number")
+                        )
+                          return v;
+                      }
+                      if (typeString === "float") return 0;
+                      if (typeString.startsWith("vec"))
+                        return Array(
+                          parseInt(typeString.replace("vec", ""), 10)
+                        ).fill(0);
+                      return 0;
+                    })()}
+                    onChange={(v) => onSetDefaultValue(name, v)}
+                  />
+                )}
+              </span>
+              <button
+                onClick={() => onRemove(name)}
+                style={{
+                  marginLeft: 8,
+                  background: "#c00",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  padding: "2px 8px",
+                }}
+              >
+                ✕
+              </button>
+            </li>
+          );
+        })}
       </ul>
       <div style={{ marginTop: 24 }}>
         <input
