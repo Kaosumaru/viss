@@ -70,7 +70,6 @@ export function variantAllScalarsVectors(): VariantType {
     variantScalarVector("int"),
     variantScalarVector("bool"),
     variantScalarVector("uint"),
-    variantScalarVector("double"),
   ]);
 }
 
@@ -80,7 +79,6 @@ export function variantAllTypes(): VariantType {
     variantScalarVector("int"),
     variantScalarVector("bool"),
     variantScalarVector("uint"),
-    variantScalarVector("double"),
     variantMatrix(false),
     variantMatrix(true),
   ]);
@@ -152,6 +150,5 @@ function createScalarCache(): Record<ScalarTypeName, CachedScalarType> {
     int: _cachedType("int"),
     bool: _cachedType("bool"),
     uint: _cachedType("uint"),
-    double: _cachedType("double"),
   };
 }

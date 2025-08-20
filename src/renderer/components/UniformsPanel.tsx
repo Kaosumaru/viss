@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Uniforms, Uniform } from "../../compiler/graph/uniform";
 import { typeToName } from "../../compiler/glsl/types/typeToString";
+import { allTypeNames } from "@glsl/types/typenames";
 
 interface UniformsPanelProps {
   uniforms: Uniforms;
@@ -8,34 +9,19 @@ interface UniformsPanelProps {
   onRemove: (name: string) => void;
 }
 
-const typeOptions = [
-  "float",
-  "vec2",
-  "vec3",
-  "vec4",
-  "int",
-  "ivec2",
-  "ivec3",
-  "ivec4",
-  "bool",
-  "mat2",
-  "mat3",
-  "mat4",
-];
-
 export const UniformsPanel: React.FC<UniformsPanelProps> = ({
   uniforms,
   onAdd,
   onRemove,
 }) => {
   const [newName, setNewName] = useState("");
-  const [newType, setNewType] = useState(typeOptions[0]);
+  const [newType, setNewType] = useState(allTypeNames[0]);
 
   const handleAdd = () => {
     if (newName.trim() && newType) {
       onAdd(newName.trim(), newType);
       setNewName("");
-      setNewType(typeOptions[0]);
+      setNewType(allTypeNames[0]);
     }
   };
 
@@ -109,7 +95,7 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({
             color: "#fff",
           }}
         >
-          {typeOptions.map((type) => (
+          {allTypeNames.map((type) => (
             <option key={type} value={type}>
               {type}
             </option>
