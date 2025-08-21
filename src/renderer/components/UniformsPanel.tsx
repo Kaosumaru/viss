@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import type { Uniforms, Uniform } from "../../compiler/graph/uniform";
-import { typeToName } from "../../compiler/glsl/types/typeToString";
 import { allTypeNames } from "@glsl/types/typenames";
+import { Box, Typography, Button, TextField, Select, MenuItem, InputLabel, FormControl, Stack, Paper } from "@mui/material";
+import UniformItem from "./UniformItem";
 
 interface UniformsPanelProps {
   uniforms: Uniforms;
@@ -9,11 +10,7 @@ interface UniformsPanelProps {
   onRemove: (name: string) => void;
 }
 
-export const UniformsPanel: React.FC<UniformsPanelProps> = ({
-  uniforms,
-  onAdd,
-  onRemove,
-}) => {
+export const UniformsPanel: React.FC<UniformsPanelProps> = ({ uniforms, onAdd, onRemove }) => {
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState(allTypeNames[0]);
 
@@ -26,95 +23,44 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({
   };
 
   return (
-    <div
-      style={{
-        padding: 16,
-        height: "100%",
-        overflowY: "auto",
-        width: "100%",
-        background: "#222",
-        color: "#fff",
-      }}
-    >
-      <h3>Uniforms</h3>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <Paper sx={{ p: 2, height: "100%", overflowY: "auto", width: "100%", bgcolor: "#222", color: "#fff" }}>
+      <Typography variant="h6" gutterBottom>Uniforms</Typography>
+      <Stack spacing={1}>
         {Object.entries(uniforms).map(([name, uniform]) => (
-          <li
-            key={name}
-            style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-          >
-            <span style={{ flex: 1 }}>
-              {name}{" "}
-              <span style={{ color: "#aaa" }}>
-                ({typeToName((uniform as Uniform).type)})
-              </span>
-            </span>
-            <button
-              onClick={() => onRemove(name)}
-              style={{
-                marginLeft: 8,
-                background: "#c00",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer",
-                padding: "2px 8px",
-              }}
-            >
-              ✕
-            </button>
-          </li>
+          <UniformItem key={name} name={name} uniform={uniform as Uniform} onRemove={onRemove} />
         ))}
-      </ul>
-      <div style={{ marginTop: 24 }}>
-        <input
-          type="text"
-          placeholder="Name"
+      </Stack>
+      <Box mt={3} display="flex" gap={1} alignItems="center">
+        <TextField
+          label="Name"
+          variant="outlined"
+          size="small"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          style={{
-            width: "45%",
-            marginRight: 8,
-            padding: 4,
-            borderRadius: 4,
-            border: "1px solid #444",
-            background: "#111",
-            color: "#fff",
-          }}
+          sx={{ flex: 2, bgcolor: "#111", input: { color: "#fff" }, label: { color: "#aaa" } }}
         />
-        <select
-          value={newType}
-          onChange={(e) => setNewType(e.target.value)}
-          style={{
-            width: "35%",
-            marginRight: 8,
-            padding: 4,
-            borderRadius: 4,
-            border: "1px solid #444",
-            background: "#111",
-            color: "#fff",
-          }}
-        >
-          {allTypeNames.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-        <button
+        <FormControl size="small" sx={{ flex: 1, minWidth: 100 }}>
+          <InputLabel sx={{ color: "#aaa" }}>Type</InputLabel>
+          <Select
+            value={newType}
+            label="Type"
+            onChange={(e) => setNewType(e.target.value)}
+            sx={{ bgcolor: "#111", color: "#fff" }}
+          >
+            {allTypeNames.map((type) => (
+              <MenuItem key={type} value={type}>{type}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="success"
           onClick={handleAdd}
-          style={{
-            padding: "4px 12px",
-            borderRadius: 4,
-            background: "#28a745",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
+          sx={{ height: 40 }}
         >
           Add
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Paper>
   );
 };
