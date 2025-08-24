@@ -5,6 +5,13 @@ export interface Uniform {
   id: string;
   type: Type;
   defaultValue?: ParameterValue;
+  visualizer?: UniformVisualizer;
 }
 
 export type Uniforms = Record<string, Uniform>;
+
+interface ScalarUniformVisualizer {
+  id: "scalar";
+}
+
+export type UniformVisualizer = ScalarUniformVisualizer;

@@ -2,13 +2,10 @@ import styled from "styled-components";
 import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { FloatingToolbar } from "./components/toolbar";
-import { UniformsPanel } from "./components/UniformsPanel";
-// ...existing code...
-import type { Uniform } from "../compiler/graph/uniform";
+import { UniformsPanel } from "./components/uniforms/UniformsPanel";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
-import type { ScalarTypeName } from "@glsl/types/typenames";
 
 const Layout = styled.div<{ $sidebarVisible: boolean }>`
   display: grid;
@@ -97,27 +94,7 @@ export function MainView() {
       </Canvas>
       {isUniformsPanelVisible && (
         <Sidebar>
-          {editorData && (
-            <UniformsPanel
-              uniforms={editorData.uniforms()}
-              onAdd={async (name, typeName) => {
-                // Only support scalar types for now
-                const uniform: Uniform = {
-                  id: name,
-                  type: {
-                    id: "scalar",
-                    type: typeName as ScalarTypeName,
-                  },
-                };
-                await editorData.updateUniform(uniform);
-                setEditorData({ ...editorData }); // force update
-              }}
-              onRemove={async (name) => {
-                await editorData.removeUniform(name);
-                setEditorData({ ...editorData }); // force update
-              }}
-            />
-          )}
+          {editorData && <UniformsPanel editorData={editorData} />}
         </Sidebar>
       )}
     </Layout>
