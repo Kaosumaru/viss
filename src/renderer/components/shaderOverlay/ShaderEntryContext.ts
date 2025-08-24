@@ -1,10 +1,12 @@
 import { createContext, useContext } from "react";
 import { ShaderEntry } from "./shaderEntry";
+import type { Uniform } from "@graph/uniform";
 
 export interface ShaderEntryContextType {
   addEntry: (entry: ShaderEntry) => void;
   removeEntry: (entry: ShaderEntry) => void;
   updateEntryShader: (entry: ShaderEntry, fragment: string) => void;
+  updateUniform: (uniform: Uniform) => void;
   updateEntryPosition: (
     entry: ShaderEntry,
     x: number,

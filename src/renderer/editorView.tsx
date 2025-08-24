@@ -14,6 +14,7 @@ import {
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
 import { Compiler } from "@compiler/compiler";
+import type { Uniform } from "@graph/uniform";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -49,6 +50,8 @@ export function EditorView({ onChanged }: EditorViewProps) {
     []
   );
 
+  const updateUniform = useCallback((uniform: Uniform) => {}, []);
+
   const updateEntryShader = useCallback(
     (entry: ShaderEntry, fragment: string) => {
       entry.setShader(fragment);
@@ -66,6 +69,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
           removeEntry,
           updateEntryPosition,
           updateEntryShader,
+          updateUniform,
         },
         onChanged
       );
@@ -79,6 +83,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       removeEntry,
       updateEntryPosition,
       updateEntryShader,
+      updateUniform,
       compiler,
     ]
   );
