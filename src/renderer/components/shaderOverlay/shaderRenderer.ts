@@ -104,7 +104,7 @@ export class ShaderRenderer implements ShaderEntryContextType {
     }
   };
 
-  updateUniform = (uniform: Uniform) => {
+  updateUniform = (_uniform: Uniform) => {
     // TODO
   };
 

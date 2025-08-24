@@ -15,6 +15,7 @@ import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
+import type { ShaderEntryContextType } from "@renderer/components/shaderOverlay/ShaderEntryContext";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -22,8 +23,10 @@ export class EditorAPIImp implements EditorAPI {
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
+    overlayContext: ShaderEntryContextType,
     onChanged?: OnGraphChanged
   ) {
+    this.overlayContext = overlayContext;
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
@@ -119,10 +122,12 @@ export class EditorAPIImp implements EditorAPI {
   };
 
   updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
+    this.overlayContext.updateUniform(uniform);
     return this.applyDiff(this.compiler().updateUniform(uniform));
   };
 
   updateUniformDefaultValue(name: string, defaultValue: ParameterValue) {
+    //this.overlayContext.updateUniform(uniform);
     return this.applyDiff(
       this.compiler().updateUniformDefaultValue(name, defaultValue)
     );
@@ -393,6 +398,7 @@ export class EditorAPIImp implements EditorAPI {
   private extension: EditorVSExtension;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;
+  private overlayContext: ShaderEntryContextType;
 }
 
 function uiConnectionToConnection(

@@ -46,6 +46,7 @@ export async function createEditor(
     editor,
     area,
     selectable,
+    overlayContext,
     onChanged
   );
 
