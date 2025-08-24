@@ -4,8 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
-import { ShaderOverlayRenderer } from "./components/shaderOverlay/ShaderOverlayRenderer";
-import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
 import type { MenuItem } from "./components/contextMenu/interface";
 import type { Parameters } from "@graph/parameter";
 import {
@@ -14,14 +12,16 @@ import {
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
 import { Compiler } from "@compiler/compiler";
-import type { Uniform } from "@graph/uniform";
+import { ShaderRenderer } from "./components/shaderOverlay/shaderRenderer";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
 }
 
 export function EditorView({ onChanged }: EditorViewProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const editorRef = useRef<EditorAPI | null>(null);
+  const shaderRendererRef = useRef<ShaderRenderer | null>(null);
   const compiler = useMemo(() => {
     const compiler = new Compiler();
 
@@ -33,59 +33,21 @@ export function EditorView({ onChanged }: EditorViewProps) {
     y: number;
   } | null>(null);
 
-  const [entries, setEntries] = useState<ShaderEntry[]>([]);
-
-  const addEntry = useCallback((entry: ShaderEntry) => {
-    setEntries((prev) => [...prev, entry]);
-  }, []);
-
-  const removeEntry = useCallback((entry: ShaderEntry) => {
-    setEntries((prev) => prev.filter((e) => e !== entry));
-  }, []);
-
-  const updateEntryPosition = useCallback(
-    (entry: ShaderEntry, x: number, y: number, w: number, h: number) => {
-      entry.setPosition(x, y, w, h);
-    },
-    []
-  );
-
-  const updateUniform = useCallback((uniform: Uniform) => {}, []);
-
-  const updateEntryShader = useCallback(
-    (entry: ShaderEntry, fragment: string) => {
-      entry.setShader(fragment);
-    },
-    []
-  );
-
   const create = useCallback(
     async (container: HTMLElement) => {
+      const shaderRenderer = new ShaderRenderer(canvasRef.current!);
       const editor = await createEditor(
         compiler,
         container,
-        {
-          addEntry,
-          removeEntry,
-          updateEntryPosition,
-          updateEntryShader,
-          updateUniform,
-        },
+        shaderRenderer,
         onChanged
       );
+      shaderRendererRef.current = shaderRenderer;
       editorRef.current = editor;
       onChanged?.(editor);
       return editor;
     },
-    [
-      addEntry,
-      onChanged,
-      removeEntry,
-      updateEntryPosition,
-      updateEntryShader,
-      updateUniform,
-      compiler,
-    ]
+    [onChanged, compiler]
   );
 
   const [ref] = useRete(create);
@@ -96,6 +58,11 @@ export function EditorView({ onChanged }: EditorViewProps) {
       if (editorRef.current) {
         editorRef.current.destroy();
         editorRef.current = null;
+      }
+
+      if (shaderRendererRef.current) {
+        shaderRendererRef.current.dispose();
+        shaderRendererRef.current = null;
       }
     };
   }, []);
@@ -192,7 +159,19 @@ export function EditorView({ onChanged }: EditorViewProps) {
       customFunctions={getCustomFunctions()}
       uniforms={getUniforms()}
     >
-      <ShaderOverlayRenderer entries={entries} />
+      <canvas
+        ref={canvasRef}
+        className="shader-overlay"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          pointerEvents: "none",
+          width: "100vw",
+          height: "100vh",
+          zIndex: 1,
+        }}
+      />
       <NodeSelectionArea
         onNodeSelection={handleNodeSelection}
         getNodesInArea={getNodesInArea}

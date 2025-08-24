@@ -89,35 +89,35 @@ export class ShaderRenderer implements ShaderEntryContextType {
   private entries: ShaderEntry[] = [];
   private deinit?: () => void;
 
-  addEntry(entry: ShaderEntry) {
+  addEntry = (entry: ShaderEntry) => {
     this.entries.push(entry);
-  }
+  };
 
-  removeEntry(entry: ShaderEntry) {
+  removeEntry = (entry: ShaderEntry) => {
     this.entries = this.entries.filter((e) => e !== entry);
-  }
+  };
 
-  updateEntryShader(entry: ShaderEntry, fragment: string) {
+  updateEntryShader = (entry: ShaderEntry, fragment: string) => {
     const existingEntry = this.entries.find((e) => e === entry);
     if (existingEntry) {
       existingEntry.setShader(fragment);
     }
-  }
+  };
 
-  updateUniform(uniform: Uniform) {
+  updateUniform = (uniform: Uniform) => {
     // TODO
-  }
+  };
 
-  updateEntryPosition(
+  updateEntryPosition = (
     entry: ShaderEntry,
     x: number,
     y: number,
     w: number,
     h: number
-  ) {
+  ) => {
     const existingEntry = this.entries.find((e) => e === entry);
     if (existingEntry) {
       existingEntry.setPosition(x, y, w, h);
     }
-  }
+  };
 }
