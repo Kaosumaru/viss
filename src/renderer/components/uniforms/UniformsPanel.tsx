@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import type { Uniforms, Uniform } from "../../../compiler/graph/uniform";
-import { allTypeNames, type ScalarTypeName } from "@glsl/types/typenames";
+import type {
+  Uniforms,
+  Uniform,
+  UniformVisualizer,
+} from "../../../compiler/graph/uniform";
+import { type ScalarTypeName } from "@glsl/types/typenames";
+import { uniformVisualizers } from "./entries";
 import {
   Box,
   Typography,
@@ -22,7 +27,7 @@ interface UniformsPanelProps {
 
 export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
   const [newName, setNewName] = useState("");
-  const [newType, setNewType] = useState(allTypeNames[0]);
+  const [newType, setNewType] = useState(uniformVisualizers[0]?.name || "");
   const [uniforms, setUniforms] = useState<Uniforms>({});
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
       await editorData.updateUniform(uniform);
       setUniforms(editorData.uniforms());
       setNewName("");
-      setNewType(allTypeNames[0]);
+  setNewType(uniformVisualizers[0]?.name || "");
     }
   };
 
@@ -109,9 +114,9 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
             onChange={(e) => setNewType(e.target.value)}
             sx={{ bgcolor: "#111", color: "#fff" }}
           >
-            {allTypeNames.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
+            {uniformVisualizers.map((entry) => (
+              <MenuItem key={entry.name} value={entry.name}>
+                {entry.name}
               </MenuItem>
             ))}
           </Select>
