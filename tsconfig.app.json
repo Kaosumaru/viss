@@ -26,6 +26,7 @@
     "baseUrl": "./src",
     "paths": {
       "@compiler/*": ["compiler/compiler/*"],
+      "@renderer/*": ["renderer/*"],
       "@glsl/*": ["compiler/glsl/*"],
       "@graph/*": ["compiler/graph/*"],
       "@test/*": ["compiler/test/*"],

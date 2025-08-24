@@ -9,6 +9,6 @@ export function componentType(type: Type): ScalarTypeName {
     case "variant":
       throw new Error("Cannot get component type of variant");
     case "matrix":
-      return type.double ? "double" : "float";
+      return "float";
   }
 }

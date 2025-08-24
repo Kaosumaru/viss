@@ -1,6 +1,7 @@
 import type { ParameterValue } from "@graph/parameter";
 import type { UniformVisualizer, UniformVisualizerId } from "@graph/uniform";
-import UniformItem, { type UniformItemProps } from "./UniformItem";
+import { type UniformItemProps } from "./UniformItem";
+import FloatUniformItem from "./FloatUniformItem";
 import { scalar, type Type } from "@glsl/types/types";
 
 interface UniformVisualizerEntry {
@@ -26,6 +27,6 @@ export const uniformComponents: Record<
   UniformVisualizerId,
   React.FC<UniformItemProps>
 > = {
-  float: UniformItem,
+  float: FloatUniformItem,
   // Add other components here
 };

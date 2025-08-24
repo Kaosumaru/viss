@@ -211,7 +211,6 @@ export abstract class CompilerNode {
   protected addInputWithParam(name: string, type: ScalarTypeName): void {
     switch (type) {
       case "float":
-      case "double":
         this.addInput(name, scalar(type));
         this.addParameter(name, "number", { type: "number", value: 0 });
         return;
@@ -291,7 +290,6 @@ export abstract class CompilerNode {
   protected scalarToParamType(type: ScalarTypeName): ParameterValueType {
     switch (type) {
       case "float":
-      case "double":
         return "number";
       case "bool":
         return "boolean";

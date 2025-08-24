@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@compiler": path.resolve(__dirname, "src/compiler/compiler"),
+      "@renderer": path.resolve(__dirname, "src/renderer"),
       "@glsl": path.resolve(__dirname, "src/compiler/glsl"),
       "@graph": path.resolve(__dirname, "src/compiler/graph"),
       "@test": path.resolve(__dirname, "src/compiler/test"),

@@ -32,8 +32,6 @@ function defaultExpressionForScalar(type: ScalarType): Expression {
       return { data: "false", type, trivial: true };
     case "uint":
       return { data: "0u", type, trivial: true };
-    case "double":
-      return { data: "0.0", type, trivial: true };
   }
 }
 
@@ -59,9 +57,7 @@ function defaultExpressionForVariant(variant: VariantType): Expression {
 }
 
 function defaultExpressionForMatrix(matrix: MatrixType) {
-  const value = defaultExpressionForScalar(
-    scalar(matrix.double ? "double" : "float")
-  );
+  const value = defaultExpressionForScalar(scalar("float"));
   const defaultValue = Array(matrix.rows * matrix.columns).map(
     () => value.data
   );

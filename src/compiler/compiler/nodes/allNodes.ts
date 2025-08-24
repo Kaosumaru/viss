@@ -284,7 +284,7 @@ const functionsVec = createCategory({
           ["x", template()],
           ["y", template()],
         ],
-        constraintInfo(["float", "double"], [constrainedVector(3)])
+        constraintInfo(["float"], [constrainedVector(3)])
       )
     ),
     normalize: new FunctionNode(

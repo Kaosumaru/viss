@@ -137,19 +137,15 @@ export const genFType = constraintInfo(
   ["float"],
   [constrainedScalar(), constrainedVector()]
 );
-export const genDType = constraintInfo(
-  ["double"],
-  [constrainedScalar(), constrainedVector()]
-);
 export const genFDType = constraintInfo(
-  ["float", "double"],
+  ["float"],
   [constrainedScalar(), constrainedVector()]
 );
 export const genFIDType = constraintInfo(
-  ["double", "int", "float"],
+  ["float", "int"],
   [constrainedScalar(), constrainedVector()]
 );
 export const genFIDUType = constraintInfo(
-  ["double", "int", "float", "uint"],
+  ["int", "float", "uint"],
   [constrainedScalar(), constrainedVector()]
 );

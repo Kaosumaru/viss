@@ -31,7 +31,5 @@ function scalarToVectorPrefix(scalar: ScalarTypeName): string {
       return "bvec";
     case "uint":
       return "uvec";
-    case "double":
-      return "dvec";
   }
 }

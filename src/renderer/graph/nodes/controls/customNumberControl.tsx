@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, memo } from "react";
 import { Box } from "@mui/material";
 import { NumberControl } from "./customParamControl";
 import { Drag } from "rete-react-plugin";
-import { NumberInputField } from "renderer/components/NumberInputField";
+import { NumberInputField } from "@renderer/components/NumberInputField";
 
 function CustomNumberControlInternal(props: { data: NumberControl }) {
   const control = props.data;

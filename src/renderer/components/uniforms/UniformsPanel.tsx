@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Uniform } from "../../../compiler/graph/uniform";
 
-import { uniformVisualizers } from "./entries";
+import { uniformVisualizers, uniformComponents } from "./entries";
 import {
   Box,
   Typography,
@@ -69,15 +69,18 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
         Uniforms
       </Typography>
       <Stack spacing={1}>
-        {Object.entries(uniforms).map(([name, uniform]) => (
-          <UniformItem
-            key={name}
-            name={name}
-            uniform={uniform as Uniform}
-            onChange={onChange}
-            onRemove={handleRemove}
-          />
-        ))}
+        {Object.entries(uniforms).map(([name, uniform]) => {
+          const Comp = uniformComponents[uniform.visualizer?.id as keyof typeof uniformComponents] || UniformItem;
+          return (
+            <Comp
+              key={name}
+              name={name}
+              uniform={uniform as Uniform}
+              onChange={onChange}
+              onRemove={handleRemove}
+            />
+          );
+        })}
       </Stack>
       <Box mt={3} display="flex" gap={1} alignItems="center">
         <TextField

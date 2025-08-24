@@ -35,13 +35,11 @@ function canScalarBeImplicitlyConverted(
 ): boolean {
   switch (from) {
     case "int":
-      return to === "int" || to === "uint" || to === "float" || to === "double";
+      return to === "int" || to === "uint" || to === "float";
     case "uint":
-      return to === "uint" || to === "float" || to === "double";
+      return to === "uint" || to === "float";
     case "float":
-      return to === "float" || to === "double";
-    case "double":
-      return to === "double";
+      return to === "float";
     case "bool":
       return to === "bool";
   }
