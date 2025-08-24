@@ -1,8 +1,11 @@
 import type { ParameterValue } from "@graph/parameter";
-import type { UniformVisualizer } from "@graph/uniform";
+import type { UniformVisualizer, UniformVisualizerId } from "@graph/uniform";
+import UniformItem, { type UniformItemProps } from "./UniformItem";
+import { scalar, type Type } from "@glsl/types/types";
 
 interface UniformVisualizerEntry {
   name: string;
+  type: Type;
   visualizer: UniformVisualizer;
   defaultValue?: ParameterValue;
 }
@@ -10,12 +13,19 @@ interface UniformVisualizerEntry {
 export const uniformVisualizers: UniformVisualizerEntry[] = [
   {
     name: "Float",
-    visualizer: {
-      id: "scalar",
-    },
+    visualizer: { id: "float" },
+    type: scalar("float"),
     defaultValue: {
       type: "number",
       value: 0.0,
     },
   },
 ];
+
+export const uniformComponents: Record<
+  UniformVisualizerId,
+  React.FC<UniformItemProps>
+> = {
+  float: UniformItem,
+  // Add other components here
+};

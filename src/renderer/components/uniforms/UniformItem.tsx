@@ -4,7 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import type { Uniform } from "../../../compiler/graph/uniform";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
 
-interface UniformItemProps {
+export interface UniformItemProps {
   name: string;
   uniform: Uniform;
   onChange: (uniform: Uniform) => void;
@@ -14,7 +14,6 @@ interface UniformItemProps {
 const UniformItem: React.FC<UniformItemProps> = ({
   name,
   uniform,
-  onChange,
   onRemove,
 }) => {
   return (

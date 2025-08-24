@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from "react";
-import type {
-  Uniforms,
-  Uniform,
-  UniformVisualizer,
-} from "../../../compiler/graph/uniform";
-import { type ScalarTypeName } from "@glsl/types/typenames";
+import React, { useState } from "react";
+import type { Uniform } from "../../../compiler/graph/uniform";
+
 import { uniformVisualizers } from "./entries";
 import {
   Box,
@@ -27,44 +23,35 @@ interface UniformsPanelProps {
 
 export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
   const [newName, setNewName] = useState("");
-  const [newType, setNewType] = useState(uniformVisualizers[0]?.name || "");
-  const [uniforms, setUniforms] = useState<Uniforms>({});
-
-  useEffect(() => {
-    if (editorData) {
-      setUniforms(editorData.uniforms());
-    }
-  }, [editorData]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   if (!editorData) {
     return null;
   }
 
+  const uniforms = editorData.uniforms();
+
   const handleAdd = async () => {
-    if (newName.trim() && newType) {
-      // Only support scalar types for now
+    const entry = uniformVisualizers[selectedIndex];
+    if (newName.trim() && entry) {
       const uniform: Uniform = {
         id: newName.trim(),
-        type: {
-          id: "scalar",
-          type: newType as ScalarTypeName,
-        },
+        type: entry.type,
+        defaultValue: entry.defaultValue,
+        visualizer: entry.visualizer,
       };
       await editorData.updateUniform(uniform);
-      setUniforms(editorData.uniforms());
       setNewName("");
-  setNewType(uniformVisualizers[0]?.name || "");
+      setSelectedIndex(0);
     }
   };
 
   const onChange = async (uniform: Uniform) => {
     await editorData.updateUniform(uniform);
-    setUniforms(editorData.uniforms());
   };
 
   const handleRemove = async (name: string) => {
     await editorData?.removeUniform(name);
-    setUniforms(editorData.uniforms());
   };
 
   return (
@@ -109,13 +96,13 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
         <FormControl size="small" sx={{ flex: 1, minWidth: 100 }}>
           <InputLabel sx={{ color: "#aaa" }}>Type</InputLabel>
           <Select
-            value={newType}
+            value={selectedIndex}
             label="Type"
-            onChange={(e) => setNewType(e.target.value)}
+            onChange={(e) => setSelectedIndex(Number(e.target.value))}
             sx={{ bgcolor: "#111", color: "#fff" }}
           >
-            {uniformVisualizers.map((entry) => (
-              <MenuItem key={entry.name} value={entry.name}>
+            {uniformVisualizers.map((entry, idx) => (
+              <MenuItem key={entry.name} value={idx}>
                 {entry.name}
               </MenuItem>
             ))}

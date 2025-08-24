@@ -10,8 +10,9 @@ export interface Uniform {
 
 export type Uniforms = Record<string, Uniform>;
 
-interface ScalarUniformVisualizer {
-  id: "scalar";
+interface FloatUniformVisualizer {
+  id: "float";
 }
 
-export type UniformVisualizer = ScalarUniformVisualizer;
+export type UniformVisualizer = FloatUniformVisualizer;
+export type UniformVisualizerId = UniformVisualizer["id"];
