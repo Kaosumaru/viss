@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import UniformItem from "./UniformItem";
 import type { EditorAPI } from "renderer/graph/interface";
+import type { ParameterValue } from "@graph/parameter";
 
 interface UniformsPanelProps {
   editorData: EditorAPI | undefined;
@@ -50,6 +51,10 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
     await editorData.updateUniform(uniform);
   };
 
+  const onChangeValue = async (name: string, defaultValue: ParameterValue) => {
+    await editorData.updateUniformDefaultValue(name, defaultValue);
+  };
+
   const handleRemove = async (name: string) => {
     await editorData?.removeUniform(name);
   };
@@ -80,6 +85,7 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
               name={name}
               uniform={uniform as Uniform}
               onChange={onChange}
+              onChangeValue={(value) => onChangeValue(name, value)}
               onRemove={handleRemove}
             />
           );

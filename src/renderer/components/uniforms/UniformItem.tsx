@@ -3,11 +3,13 @@ import { Box, Typography, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { Uniform } from "../../../compiler/graph/uniform";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
+import type { ParameterValue } from "@graph/parameter";
 
 export interface UniformItemProps {
   name: string;
   uniform: Uniform;
   onChange: (uniform: Uniform) => void;
+  onChangeValue: (defaultValue: ParameterValue) => void;
   onRemove: (name: string) => void;
 }
 

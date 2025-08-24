@@ -1,11 +1,15 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Graph } from "@graph/graph";
-import type { Parameters } from "@graph/parameter";
+import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
 export interface EditorAPI {
+  updateUniformDefaultValue(
+    name: string,
+    defaultValue: ParameterValue
+  ): unknown;
   getNode(nodeId: string): UICompilerNode | undefined;
 
   getSelectedNodes: () => string[];

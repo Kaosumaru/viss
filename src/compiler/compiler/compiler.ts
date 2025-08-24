@@ -61,6 +61,13 @@ export class Compiler {
     return this.graph.updateUniform(uniform);
   }
 
+  public updateUniformDefaultValue(
+    name: string,
+    defaultValue: ParameterValue
+  ): GraphDiff {
+    return this.graph.updateUniformDefaultValue(name, defaultValue);
+  }
+
   public removeUniform(uniformId: string): GraphDiff {
     return this.graph.removeUniform(uniformId);
   }

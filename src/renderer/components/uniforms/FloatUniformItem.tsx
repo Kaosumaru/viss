@@ -6,24 +6,31 @@ import { typeToName } from "../../../compiler/glsl/types/typeToString";
 import { NumberInputField } from "../NumberInputField";
 import type { UniformItemProps } from "./UniformItem";
 
-const FloatUniformItem: React.FC<UniformItemProps> = ({ name, uniform, onChange, onRemove }) => {
+const FloatUniformItem: React.FC<UniformItemProps> = ({
+  name,
+  uniform,
+  onChangeValue,
+  onRemove,
+}) => {
   // The value is stored in uniform.defaultValue?.value (if type is number)
-  const value = (uniform.defaultValue && uniform.defaultValue.type === "number")
-    ? (uniform.defaultValue as NumberValue).value
-    : 0.0;
+  const value =
+    uniform.defaultValue && uniform.defaultValue.type === "number"
+      ? (uniform.defaultValue as NumberValue).value
+      : 0.0;
 
   const handleValueChange = (val: number) => {
     if (uniform.defaultValue && uniform.defaultValue.type === "number") {
-      onChange({ ...uniform, defaultValue: { ...uniform.defaultValue, value: val } });
+      onChangeValue({ ...uniform.defaultValue, value: val });
     } else {
-      onChange({ ...uniform, defaultValue: { type: "number", value: val } });
+      onChangeValue({ type: "number", value: val });
     }
   };
 
   return (
     <Box display="flex" alignItems="center" mb={1} gap={1}>
       <Typography variant="body1" sx={{ flex: 1 }}>
-        {name} <span style={{ color: "#aaa" }}>({typeToName(uniform.type)})</span>
+        {name}{" "}
+        <span style={{ color: "#aaa" }}>({typeToName(uniform.type)})</span>
       </Typography>
       <NumberInputField
         value={value}

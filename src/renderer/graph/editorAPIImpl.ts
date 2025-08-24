@@ -8,7 +8,7 @@ import { UICompilerNode } from "./nodes/compilerNode";
 import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
 import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
-import type { Parameters } from "@graph/parameter";
+import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
@@ -121,6 +121,12 @@ export class EditorAPIImp implements EditorAPI {
   updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
     return this.applyDiff(this.compiler().updateUniform(uniform));
   };
+
+  updateUniformDefaultValue(name: string, defaultValue: ParameterValue) {
+    return this.applyDiff(
+      this.compiler().updateUniformDefaultValue(name, defaultValue)
+    );
+  }
 
   removeUniform: (uniformId: string) => Promise<void> = (uniformId: string) => {
     return this.applyDiff(this.compiler().removeUniform(uniformId));

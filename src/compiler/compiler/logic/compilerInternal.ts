@@ -426,8 +426,20 @@ export class CompilerInternal {
 
   updateUniform(uniform: Uniform): GraphDiff {
     this.graph.uniforms = { ...this.graph.uniforms, [uniform.id]: uniform };
+
+    return {};
+  }
+
+  updateUniformDefaultValue(
+    name: string,
+    defaultValue: ParameterValue
+  ): GraphDiff {
+    this.graph.uniforms[name] = {
+      ...this.graph.uniforms[name],
+      defaultValue,
+    };
     const invalidatedNodeIds = this.invalidateNodes(
-      this.getNodeIdsWithUniform(uniform.id)
+      this.getNodeIdsWithUniform(name)
     );
     return {
       invalidatedNodeIds,
