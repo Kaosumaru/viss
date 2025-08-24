@@ -70,7 +70,10 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
       </Typography>
       <Stack spacing={1}>
         {Object.entries(uniforms).map(([name, uniform]) => {
-          const Comp = uniformComponents[uniform.visualizer?.id as keyof typeof uniformComponents] || UniformItem;
+          const Comp =
+            uniformComponents[
+              uniform.visualizer?.id as keyof typeof uniformComponents
+            ] || UniformItem;
           return (
             <Comp
               key={name}
