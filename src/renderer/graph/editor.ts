@@ -23,20 +23,20 @@ import {
   type SelectableAPI,
 } from "./extensions/selectable";
 import { Compiler } from "@compiler/compiler";
+import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
 export async function createEditor(
   compiler: Compiler,
   container: HTMLElement,
-  overlayContext: ShaderEntryContextType,
+  overlayElement: HTMLCanvasElement,
   onChanged?: OnGraphChanged
 ): Promise<EditorAPI> {
+
+
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
-  const connection = new ConnectionPlugin<Schemes, AreaExtra>();
-  const render = createRenderer(overlayContext);
-  const arrange = new AutoArrangePlugin<Schemes>();
   const selectable: SelectableAPI = selectableNodes(area, selector(), {
     accumulating: accumulateOnCtrl(),
   });
@@ -46,9 +46,13 @@ export async function createEditor(
     editor,
     area,
     selectable,
-    overlayContext,
-    onChanged
+    overlayElement,
+    onChanged,
   );
+
+  const connection = new ConnectionPlugin<Schemes, AreaExtra>();
+  const render = createRenderer(editorData.getShaderEntryContext());
+  const arrange = new AutoArrangePlugin<Schemes>();
 
   addCustomBackground(area);
   connection.addPreset(ConnectionPresets.classic.setup());

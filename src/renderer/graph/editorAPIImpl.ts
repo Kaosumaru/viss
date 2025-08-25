@@ -16,6 +16,7 @@ import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import type { ShaderEntryContextType } from "@renderer/components/shaderOverlay/ShaderEntryContext";
+import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -23,10 +24,10 @@ export class EditorAPIImp implements EditorAPI {
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
-    overlayContext: ShaderEntryContextType,
+    overlayElement: HTMLCanvasElement,
     onChanged?: OnGraphChanged
   ) {
-    this.overlayContext = overlayContext;
+    this.shaderRenderer =  new ShaderRenderer(overlayElement);;
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
@@ -117,12 +118,16 @@ export class EditorAPIImp implements EditorAPI {
     );
   }
 
+  getShaderEntryContext(): ShaderEntryContextType {
+    return this.shaderRenderer;
+  }
+
   uniforms: () => Uniforms = (): Uniforms => {
     return this.compiler().getGraph().uniforms;
   };
 
   updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
-    this.overlayContext.updateUniform(uniform);
+    this.shaderRenderer.updateUniform(uniform);
     return this.applyDiff(this.compiler().updateUniform(uniform));
   };
 
@@ -133,7 +138,7 @@ export class EditorAPIImp implements EditorAPI {
 
     const uniform = this.compiler().getGraph().uniforms[name];
     if (uniform) {
-      this.overlayContext.updateUniform(uniform);
+      this.shaderRenderer.updateUniform(uniform);
     }
 
     return diff;
@@ -238,6 +243,7 @@ export class EditorAPIImp implements EditorAPI {
     this.extension.destroy();
     this.keybindings.destroy();
     this.area.destroy();
+    this.shaderRenderer.dispose();
   }
 
   getCustomFunctions: () => FunctionDefinition[] = () => {
@@ -404,7 +410,7 @@ export class EditorAPIImp implements EditorAPI {
   private extension: EditorVSExtension;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;
-  private overlayContext: ShaderEntryContextType;
+  private shaderRenderer: ShaderRenderer;
 }
 
 function uiConnectionToConnection(
