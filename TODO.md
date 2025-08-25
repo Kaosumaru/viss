@@ -2,6 +2,7 @@ MVP
 
 1. loading glsl functions from file
 2. Uniforms
+    - initial support for uniform is ready, but I'm only handling float now
 3. Textures
 
 bugs
