@@ -481,7 +481,7 @@ export class CompilerInternal {
     return Array.from(this.nodes.values())
       .filter((node) => {
         const identifier = node.parameters["_identifier"];
-        return identifier.value === uniformId;
+        return identifier?.value === uniformId;
       })
       .map((node) => node.identifier);
   }
