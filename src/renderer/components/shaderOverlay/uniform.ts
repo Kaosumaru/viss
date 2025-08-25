@@ -1,3 +1,7 @@
+import type { ScalarType } from "@glsl/types/types";
+import type { ParameterValue } from "@graph/parameter";
+import type { Uniform } from "@graph/uniform";
+
 export type UniformsEntries = Record<string, UniformEntry>;
 
 export interface UniformEntry {
@@ -69,4 +73,27 @@ export function applyUniforms(
       }
     }
   }
+}
+
+export function uniformEntryFromUniform(uniform: Uniform): UniformEntry {
+  switch(uniform.type.id) {
+    case "scalar":
+      return uniformEntryFromScalar(uniform.id, uniform.type, uniform.defaultValue);
+  }
+
+  throw new Error("Unsupported uniform type");
+}
+
+function uniformEntryFromScalar(name: string, type: ScalarType, defaultValue?: ParameterValue): UniformEntry {
+  const value = defaultValue?.type === "number" ? defaultValue.value : 0;
+
+  return {
+    name,
+    value: {
+      id: "vector",
+      type: type.type === "float" ? "f" : "i",
+      size: 1,
+      value: [value]
+    }
+  };
 }

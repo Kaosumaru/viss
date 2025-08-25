@@ -127,10 +127,16 @@ export class EditorAPIImp implements EditorAPI {
   };
 
   updateUniformDefaultValue(name: string, defaultValue: ParameterValue) {
-    //this.overlayContext.updateUniform(uniform);
-    return this.applyDiff(
+    const diff = this.applyDiff(
       this.compiler().updateUniformDefaultValue(name, defaultValue)
     );
+
+    const uniform = this.compiler().getGraph().uniforms[name];
+    if (uniform) {
+      this.overlayContext.updateUniform(uniform);
+    }
+
+    return diff;
   }
 
   removeUniform: (uniformId: string) => Promise<void> = (uniformId: string) => {

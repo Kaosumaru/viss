@@ -1,6 +1,7 @@
-import type { Uniform } from "@graph/uniform";
+import type { Uniform, Uniforms } from "@graph/uniform";
 import type { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
+import { uniformEntryFromUniform } from "./uniform";
 
 export class ShaderRenderer implements ShaderEntryContextType {
   constructor(canvas: HTMLCanvasElement) {
@@ -91,6 +92,10 @@ export class ShaderRenderer implements ShaderEntryContextType {
 
   addEntry = (entry: ShaderEntry) => {
     this.entries.push(entry);
+
+    for (const uniform of Object.values(this.uniforms)) {
+      entry.updateUniform(uniformEntryFromUniform(uniform));
+    }
   };
 
   removeEntry = (entry: ShaderEntry) => {
@@ -104,8 +109,13 @@ export class ShaderRenderer implements ShaderEntryContextType {
     }
   };
 
-  updateUniform = (_uniform: Uniform) => {
-    // TODO
+  updateUniform = (uniform: Uniform) => {
+    this.uniforms[uniform.id] = uniform;
+
+    const uniformEntry = uniformEntryFromUniform(uniform);
+    for (const entry of this.entries) {
+      entry.updateUniform(uniformEntry);
+    }
   };
 
   updateEntryPosition = (
@@ -120,4 +130,6 @@ export class ShaderRenderer implements ShaderEntryContextType {
       existingEntry.setPosition(x, y, w, h);
     }
   };
+
+  uniforms: Uniforms = {};
 }
