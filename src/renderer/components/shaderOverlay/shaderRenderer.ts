@@ -1,5 +1,5 @@
 import type { Uniform, Uniforms } from "@graph/uniform";
-import type { ShaderEntry } from "./shaderEntry";
+import { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
 import { uniformEntryFromUniform } from "./uniform";
 
@@ -90,12 +90,15 @@ export class ShaderRenderer implements ShaderEntryContextType {
   private entries: ShaderEntry[] = [];
   private deinit?: () => void;
 
-  addEntry = (entry: ShaderEntry) => {
+  addEntry = (): ShaderEntry => {
+    const entry = new ShaderEntry(this);
     this.entries.push(entry);
 
     for (const uniform of Object.values(this.uniforms)) {
       entry.updateUniform(uniformEntryFromUniform(uniform));
     }
+
+    return entry;
   };
 
   removeEntry = (entry: ShaderEntry) => {
@@ -130,6 +133,11 @@ export class ShaderRenderer implements ShaderEntryContextType {
       existingEntry.setPosition(x, y, w, h);
     }
   };
+
+  getTexture(path: string): number {
+    // TODO
+    throw new Error("Method not implemented.");
+  }
 
   uniforms: Uniforms = {};
 }

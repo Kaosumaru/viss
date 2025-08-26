@@ -1,3 +1,4 @@
+import type { ShaderRenderer } from "./shaderRenderer";
 import {
   applyUniforms,
   type UniformEntry,
@@ -56,7 +57,8 @@ export class ShaderEntry {
     }
   }
 
-  constructor(fragmentShaderSrc?: string, vertexShaderSrc?: string) {
+  constructor(renderer: ShaderRenderer, fragmentShaderSrc?: string, vertexShaderSrc?: string) {
+    this.renderer = renderer;
     this.fragmentShaderSrc = fragmentShaderSrc || g_fragmentShaderSrc;
     this.vertexShaderSrc = vertexShaderSrc || g_vertexShaderSrc;
   }
@@ -85,7 +87,7 @@ export class ShaderEntry {
     }
 
     if (this.uniformsToUpdate) {
-      applyUniforms(gl, this.program, this.uniformsToUpdate);
+      applyUniforms(gl, this.program, this.uniformsToUpdate, this.renderer);
       this.uniformsToUpdate = undefined;
     }
 
@@ -182,4 +184,5 @@ export class ShaderEntry {
   vertexShaderSrc: string;
   uniforms: UniformsEntries = {};
   uniformsToUpdate: UniformsEntries | undefined;
+  renderer: ShaderRenderer;
 }

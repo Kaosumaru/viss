@@ -10,9 +10,8 @@ export function CustomPreviewControl(props: { data: PreviewControl }) {
 
   useEffect(() => {
     // Create shader entry
-    const shaderEntry = new ShaderEntry();
+    const shaderEntry = addEntry();
     shaderEntryRef.current = shaderEntry;
-    addEntry(shaderEntry);
 
     return () => {
       // Cleanup shader entry

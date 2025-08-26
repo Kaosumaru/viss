@@ -11,8 +11,6 @@ import {
 import type { AreaExtra, Schemes } from "./node";
 import { addCustomBackground } from "./nodes/customBackground";
 import type { EditorAPI } from "./interface";
-
-import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
 import { EditorAPIImp } from "./editorAPIImpl";
 import { createRenderer } from "./renderer";
 
@@ -23,7 +21,6 @@ import {
   type SelectableAPI,
 } from "./extensions/selectable";
 import { Compiler } from "@compiler/compiler";
-import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 

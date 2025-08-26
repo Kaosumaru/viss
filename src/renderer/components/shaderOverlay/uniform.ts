@@ -1,6 +1,7 @@
 import type { ScalarType } from "@glsl/types/types";
 import type { ParameterValue } from "@graph/parameter";
 import type { Uniform } from "@graph/uniform";
+import type { ShaderRenderer } from "./shaderRenderer";
 
 export type UniformsEntries = Record<string, UniformEntry>;
 
@@ -19,13 +20,14 @@ export interface VectorValue {
 export interface TextureValue {
   id: "texture";
   type: "2d" | "cube";
-  value: WebGLTexture;
+  path: string;
 }
 
 export function applyUniforms(
   gl: WebGLRenderingContext,
   program: WebGLProgram,
-  uniforms: Record<string, UniformEntry>
+  uniforms: Record<string, UniformEntry>,
+  shaderRenderer: ShaderRenderer,
 ): void {
   for (const [name, entry] of Object.entries(uniforms)) {
     const location = gl.getUniformLocation(program, name);
@@ -65,11 +67,12 @@ export function applyUniforms(
         }
       }
     } else if (entry.value.id === "texture") {
-      const { type, value } = entry.value;
+      const { type, path } = entry.value;
       if (type === "2d") {
-        gl.uniform1i(location, value as number); // Assuming texture unit is passed as a number
+        const id = shaderRenderer.getTexture(path);
+        gl.uniform1i(location, id); 
       } else if (type === "cube") {
-        gl.uniform1i(location, value as number); // Assuming texture unit is passed as a number
+        // TODO
       }
     }
   }
