@@ -2,7 +2,10 @@
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
 //
-export function loadTexture(gl: WebGLRenderingContext, url: string) {
+export function loadTexture(
+  gl: WebGLRenderingContext,
+  url: string
+): WebGLTexture {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -28,7 +31,7 @@ export function loadTexture(gl: WebGLRenderingContext, url: string) {
     border,
     srcFormat,
     srcType,
-    pixel,
+    pixel
   );
 
   const image = new Image();
@@ -40,7 +43,7 @@ export function loadTexture(gl: WebGLRenderingContext, url: string) {
       internalFormat,
       srcFormat,
       srcType,
-      image,
+      image
     );
 
     // WebGL1 has different requirements for power of 2 images

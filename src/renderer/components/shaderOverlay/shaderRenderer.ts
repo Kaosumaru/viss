@@ -2,12 +2,14 @@ import type { Uniform, Uniforms } from "@graph/uniform";
 import { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
 import { uniformEntryFromUniform } from "./uniform";
+import { loadTexture } from "./helpers";
 
 export class ShaderRenderer implements ShaderEntryContextType {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
 
     const gl = canvas.getContext("webgl", { alpha: true });
+    this.gl = gl;
     if (!gl) {
       console.error("WebGL not supported");
       return;
@@ -145,29 +147,67 @@ export class ShaderRenderer implements ShaderEntryContextType {
   };
 
   getTexturePath(uniform: Uniform | undefined) {
-    if (uniform 
-      && uniform.type.id === "sampler2D"
-      &&  uniform.defaultValue
-      && uniform.defaultValue.type === "string") {
+    if (
+      uniform &&
+      uniform.type.id === "sampler2D" &&
+      uniform.defaultValue &&
+      uniform.defaultValue.type === "string"
+    ) {
       return uniform.defaultValue.value;
     }
     return undefined;
   }
 
   getTexture(path: string): number {
-    // TODO
-    throw new Error("Method not implemented.");
+    const entry = this.textures.get(path);
+    if (entry) {
+      return entry.uniformUnit;
+    }
+    return -1;
   }
 
-  unloadTexture(id: string, previousPath: string) {
-    throw new Error("Method not implemented.");
+  unloadTexture(id: string, path: string) {
+    const entry = this.textures.get(path);
+    if (!entry) {
+      return;
+    }
+
+    entry.uniforms.delete(id);
+    if (entry.uniforms.size !== 0) {
+      return;
+    }
+
+    const unit = entry.uniformUnit;
+    this.freeTextures.unshift(unit);
+
+    this.textures.delete(path);
   }
 
-  loadTexture(id: string, previousPath: string) {
-    throw new Error("Method not implemented.");
+  loadTexture(id: string, path: string) {
+    if (!this.gl) return;
+    let entry = this.textures.get(path);
+    if (!entry) {
+      const unit = this.freeTextures.pop();
+      if (unit === undefined) {
+        return;
+      }
+      const texture = loadTexture(this.gl, path);
+      entry = { uniforms: new Set(), uniformUnit: unit, texture };
+      this.textures.set(path, entry);
+    }
+
+    entry.uniforms.add(id);
   }
 
-  freeTextures = [0,1,2,3,4,5,6,7];
+  freeTextures = [0, 1, 2, 3, 4, 5, 6, 7];
 
   uniforms: Uniforms = {};
+  textures = new Map<string, TextureEntry>();
+  gl: WebGLRenderingContext | null;
+}
+
+interface TextureEntry {
+  uniforms: Set<string>;
+  uniformUnit: number;
+  texture: WebGLTexture;
 }
