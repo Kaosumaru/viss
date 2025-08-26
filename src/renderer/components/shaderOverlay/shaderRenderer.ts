@@ -113,13 +113,17 @@ export class ShaderRenderer implements ShaderEntryContextType {
   };
 
   updateUniform = (uniform: Uniform) => {
-    const previousValue = this.uniforms[uniform.id];
-    if (previousValue && previousValue.defaultValue) {
-      // TODO unload texture
-      //if (previousValue.defaultValue.type === "string")
+    const oldTexturePath = this.getTexturePath(this.uniforms[uniform.id]);
+    if (oldTexturePath) {
+      this.unloadTexture(uniform.id, oldTexturePath);
     }
 
     this.uniforms[uniform.id] = uniform;
+
+    const newTexturePath = this.getTexturePath(uniform);
+    if (newTexturePath) {
+      this.loadTexture(uniform.id, newTexturePath);
+    }
 
     const uniformEntry = uniformEntryFromUniform(uniform);
     for (const entry of this.entries) {
@@ -140,8 +144,26 @@ export class ShaderRenderer implements ShaderEntryContextType {
     }
   };
 
+  getTexturePath(uniform: Uniform | undefined) {
+    if (uniform 
+      && uniform.type.id === "sampler2D"
+      &&  uniform.defaultValue
+      && uniform.defaultValue.type === "string") {
+      return uniform.defaultValue.value;
+    }
+    return undefined;
+  }
+
   getTexture(path: string): number {
     // TODO
+    throw new Error("Method not implemented.");
+  }
+
+  unloadTexture(id: string, previousPath: string) {
+    throw new Error("Method not implemented.");
+  }
+
+  loadTexture(id: string, previousPath: string) {
     throw new Error("Method not implemented.");
   }
 
