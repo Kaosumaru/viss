@@ -83,7 +83,7 @@ export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
             <Comp
               key={name}
               name={name}
-              uniform={uniform as Uniform}
+              uniform={uniform}
               onChange={onChange}
               onChangeValue={(value) => onChangeValue(name, value)}
               onRemove={handleRemove}

@@ -14,5 +14,9 @@ interface FloatUniformVisualizer {
   id: "float";
 }
 
-export type UniformVisualizer = FloatUniformVisualizer;
+interface TextureVisualizer {
+  id: "texture";
+}
+
+export type UniformVisualizer = FloatUniformVisualizer | TextureVisualizer;
 export type UniformVisualizerId = UniformVisualizer["id"];

@@ -2,7 +2,8 @@ import type { ParameterValue } from "@graph/parameter";
 import type { UniformVisualizer, UniformVisualizerId } from "@graph/uniform";
 import { type UniformItemProps } from "./UniformItem";
 import FloatUniformItem from "./FloatUniformItem";
-import { scalar, type Type } from "@glsl/types/types";
+import { sampler2D, scalar, type Type } from "@glsl/types/types";
+import TextureUniformItem from "./TextureUniformItem";
 
 interface UniformVisualizerEntry {
   name: string;
@@ -21,6 +22,15 @@ export const uniformVisualizers: UniformVisualizerEntry[] = [
       value: 0.0,
     },
   },
+  {
+    name: "Texture",
+    visualizer: { id: "texture" },
+    type: sampler2D(),
+    defaultValue: {
+      type: "string",
+      value: "",
+    },
+  },
 ];
 
 export const uniformComponents: Record<
@@ -28,5 +38,6 @@ export const uniformComponents: Record<
   React.FC<UniformItemProps>
 > = {
   float: FloatUniformItem,
+  texture: TextureUniformItem,
   // Add other components here
 };

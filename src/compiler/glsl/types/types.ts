@@ -27,11 +27,23 @@ export interface Sampler2DType {
   id: "sampler2D";
 }
 
-
-export type Type = ScalarType | VectorType | MatrixType | VariantType | Sampler2DType;
+export type Type =
+  | ScalarType
+  | VectorType
+  | MatrixType
+  | VariantType
+  | Sampler2DType;
 
 const _cachedScalars = createScalarCache();
 const _cachedMatrix = createMatrixCache();
+
+const _sampler2D: Sampler2DType = {
+  id: "sampler2D",
+};
+
+export function sampler2D(): Sampler2DType {
+  return _sampler2D;
+}
 
 export function scalar(type: ScalarTypeName): ScalarType {
   return _cachedScalars[type].scalar;

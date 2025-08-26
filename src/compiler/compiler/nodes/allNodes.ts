@@ -32,6 +32,7 @@ import {
 } from "./functions/functionNode/constraintInfo";
 import { TestOutputSwitcher } from "./test/testOutputSwitcher";
 import { CustomUniform } from "./basic/customUniform";
+import { Texture2D } from "./texture/texture2D";
 
 export interface NodeCategory {
   id: string;
@@ -81,6 +82,14 @@ const operators = createCategory({
     substract,
     divide,
     multiply,
+  },
+});
+
+const texture = createCategory({
+  id: "texture",
+  name: "Texture",
+  nodes: {
+    texture2D: new Texture2D(),
   },
 });
 
@@ -397,6 +406,7 @@ const test = createCategory({
 
 export const nodeCategories = [
   literals,
+  texture,
   operators,
   functions,
   functionsTrig,
@@ -412,6 +422,7 @@ export type NodeCategoryId = (typeof nodeCategories)[number]["id"];
 
 export const nodes = {
   ...literals.nodes,
+  ...texture.nodes,
   ...operators.nodes,
   ...functions.nodes,
   ...functionsTrig.nodes,

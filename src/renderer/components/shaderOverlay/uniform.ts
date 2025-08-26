@@ -27,7 +27,7 @@ export function applyUniforms(
   gl: WebGLRenderingContext,
   program: WebGLProgram,
   uniforms: Record<string, UniformEntry>,
-  shaderRenderer: ShaderRenderer,
+  shaderRenderer: ShaderRenderer
 ): void {
   for (const [name, entry] of Object.entries(uniforms)) {
     const location = gl.getUniformLocation(program, name);
@@ -70,7 +70,7 @@ export function applyUniforms(
       const { type, path } = entry.value;
       if (type === "2d") {
         const id = shaderRenderer.getTexture(path);
-        gl.uniform1i(location, id); 
+        gl.uniform1i(location, id);
       } else if (type === "cube") {
         // TODO
       }
@@ -79,15 +79,41 @@ export function applyUniforms(
 }
 
 export function uniformEntryFromUniform(uniform: Uniform): UniformEntry {
-  switch(uniform.type.id) {
+  switch (uniform.type.id) {
     case "scalar":
-      return uniformEntryFromScalar(uniform.id, uniform.type, uniform.defaultValue);
+      return uniformEntryFromScalar(
+        uniform.id,
+        uniform.type,
+        uniform.defaultValue
+      );
+    case "sampler2D":
+      return uniformEntryFromTexture(uniform.id, uniform.defaultValue);
   }
 
   throw new Error("Unsupported uniform type");
 }
 
-function uniformEntryFromScalar(name: string, type: ScalarType, defaultValue?: ParameterValue): UniformEntry {
+function uniformEntryFromTexture(
+  name: string,
+  defaultValue?: ParameterValue
+): UniformEntry {
+  const value = defaultValue?.type === "string" ? defaultValue.value : "";
+
+  return {
+    name,
+    value: {
+      id: "texture",
+      type: "2d",
+      path: value,
+    },
+  };
+}
+
+function uniformEntryFromScalar(
+  name: string,
+  type: ScalarType,
+  defaultValue?: ParameterValue
+): UniformEntry {
   const value = defaultValue?.type === "number" ? defaultValue.value : 0;
 
   return {
@@ -96,7 +122,7 @@ function uniformEntryFromScalar(name: string, type: ScalarType, defaultValue?: P
       id: "vector",
       type: type.type === "float" ? "f" : "i",
       size: 1,
-      value: [value]
-    }
+      value: [value],
+    },
   };
 }
