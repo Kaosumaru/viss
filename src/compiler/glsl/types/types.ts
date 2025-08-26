@@ -23,7 +23,12 @@ export interface VariantType {
   types: Type[];
 }
 
-export type Type = ScalarType | VectorType | MatrixType | VariantType;
+export interface Sampler2DType {
+  id: "sampler2D";
+}
+
+
+export type Type = ScalarType | VectorType | MatrixType | VariantType | Sampler2DType;
 
 const _cachedScalars = createScalarCache();
 const _cachedMatrix = createMatrixCache();

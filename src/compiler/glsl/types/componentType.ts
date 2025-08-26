@@ -10,5 +10,7 @@ export function componentType(type: Type): ScalarTypeName {
       throw new Error("Cannot get component type of variant");
     case "matrix":
       return "float";
+    case "sampler2D":
+      throw new Error("Cannot get component type of sampler2D");
   }
 }

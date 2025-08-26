@@ -26,6 +26,8 @@ export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
         from.columns === to.columns &&
         (from.double === to.double || (!from.double && to.double))
       );
+    case "sampler2D":
+      return true;
   }
 }
 

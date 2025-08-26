@@ -29,6 +29,8 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
         type1.columns === type2.columns &&
         type1.double === type2.double
       );
+    case "sampler2D":
+      return true;
   }
 }
 

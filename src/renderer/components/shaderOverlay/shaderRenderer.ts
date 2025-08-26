@@ -113,6 +113,12 @@ export class ShaderRenderer implements ShaderEntryContextType {
   };
 
   updateUniform = (uniform: Uniform) => {
+    const previousValue = this.uniforms[uniform.id];
+    if (previousValue && previousValue.defaultValue) {
+      // TODO unload texture
+      //if (previousValue.defaultValue.type === "string")
+    }
+
     this.uniforms[uniform.id] = uniform;
 
     const uniformEntry = uniformEntryFromUniform(uniform);
@@ -138,6 +144,8 @@ export class ShaderRenderer implements ShaderEntryContextType {
     // TODO
     throw new Error("Method not implemented.");
   }
+
+  freeTextures = [0,1,2,3,4,5,6,7];
 
   uniforms: Uniforms = {};
 }

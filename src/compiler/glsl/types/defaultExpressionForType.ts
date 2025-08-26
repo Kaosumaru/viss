@@ -19,6 +19,8 @@ export function defaultExpressionForType(type: Type): Expression {
       return defaultExpressionForVariant(type);
     case "matrix":
       return defaultExpressionForMatrix(type);
+    case "sampler2D":
+      throw new Error("Cannot create default expression for sampler2D");
   }
 }
 
