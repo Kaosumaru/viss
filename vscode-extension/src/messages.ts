@@ -19,11 +19,25 @@ export interface ExportGraphResponseMessage {
   content?: string;
 }
 
+export interface ShowOpenDialogRequestMessage {
+  type: "showOpenDialog";
+  label: string;
+  filters?: Record<string, string[]>;
+  requestId: number;
+}
+
 export type EditorToExtensionMessage =
   | AlertMessage
   | RefreshContentMessage
   | SaveGraphMessage
-  | ExportGraphResponseMessage;
+  | ExportGraphResponseMessage
+  | ShowOpenDialogRequestMessage;
+
+export interface ShowOpenDialogResponseMessage {
+  type: "showOpenDialogResponse";
+  requestId: number;
+  fileUris: string[];
+}
 
 export interface LoadGraphMessage {
   type: "loadGraph";
@@ -38,4 +52,5 @@ export interface ExportGraphRequestMessage {
 
 export type ExtensionToEditorMessage =
   | LoadGraphMessage
-  | ExportGraphRequestMessage;
+  | ExportGraphRequestMessage
+  | ShowOpenDialogResponseMessage;

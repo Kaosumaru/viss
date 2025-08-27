@@ -133,7 +133,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     return vscode.workspace.applyEdit(edit);
   }
 
-  private handleMessage(
+  private async handleMessage(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
     event: EditorToExtensionMessage
@@ -142,6 +142,19 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       case "alert":
         vscode.window.showErrorMessage(event.text);
         break;
+      case "showOpenDialog": {
+        const fileUri = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            openLabel: event.label,
+            filters: event.filters
+        });
+        postMessage(webviewPanel, {
+          type: "showOpenDialogResponse",
+          requestId: event.requestId,
+          fileUris: fileUri ? fileUri.map(uri => webviewPanel.webview.asWebviewUri(uri).toString()) : []
+        });
+        break;
+      }
       case "refreshContent":
         this.requestIdCounter++;
         updateWebview(document, webviewPanel, this.requestIdCounter);
