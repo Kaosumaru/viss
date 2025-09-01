@@ -4,13 +4,25 @@ import type { AreaExtra, Schemes } from "./node";
 import type {
   EditorToExtensionMessage,
   ExtensionToEditorMessage,
+  ShowOpenDialogRequestMessage,
+  ShowOpenDialogResponseMessage,
 } from "../../../vscode-extension/src/messages";
 import { DisposeHelper } from "./utils/disposeHelper";
 import type { Graph, GraphDiff } from "@graph/graph";
 import type { Transform } from "rete-area-plugin/_types/area";
+import { AsyncRequestRouter } from "./utils/asyncRequestRouter";
+import { AsyncRequestManager } from "./utils/asyncRequestManager";
 
 export class EditorVSExtension {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
+    this.showOpenDialog = this.router.registerManager(
+      "showOpenDialogResponse",
+      AsyncRequestManager<
+        ShowOpenDialogRequestMessage,
+        ShowOpenDialogResponseMessage
+      >
+    );
+
     this.helper.add(() => {
       const cb = (event: MessageEvent) => {
         this.handleWindowMessage(event);
@@ -86,6 +98,10 @@ export class EditorVSExtension {
   }
 
   private async handleMessage(message: ExtensionToEditorMessage) {
+    if ("requestId" in message && message.requestId !== undefined) {
+      this.router.handleResponse(message);
+    }
+
     switch (message.type) {
       case "loadGraph":
         this.loadRequestId = message.requestId;
@@ -129,6 +145,14 @@ export class EditorVSExtension {
   private editor: EditorAPI;
   private area: AreaPlugin<Schemes, AreaExtra>;
   private vscode: VSCode | undefined;
+
+  public readonly showOpenDialog: (
+    req: ShowOpenDialogRequestMessage
+  ) => Promise<ShowOpenDialogResponseMessage>;
+
+  private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) =>
+    this.postMessage(req)
+  );
 }
 
 // Declare acquireVsCodeApi as a global function provided by VS Code webview

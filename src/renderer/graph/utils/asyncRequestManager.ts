@@ -7,14 +7,24 @@ interface PendingRequest<Response> {
 }
 
 export interface IMessage {
-  requestId: string | number;
+  type: string;
+  requestId?: unknown;
+}
+
+export interface IAsyncRequestManager<
+  Request extends IMessage,
+  Response extends IMessage
+> {
+  request(req: Request): Promise<Response>;
+  handleResponse(res: Response): void;
 }
 
 export class AsyncRequestManager<
   Request extends IMessage,
   Response extends IMessage
-> {
-  private pending = new Map<string | number, PendingRequest<Response>>();
+> implements IAsyncRequestManager<Request, Response>
+{
+  private pending = new Map<unknown, PendingRequest<Response>>();
 
   constructor(
     sendFn: RequestHandler<Request>,
