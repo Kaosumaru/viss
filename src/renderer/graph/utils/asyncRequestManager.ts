@@ -1,4 +1,4 @@
-type RequestHandler<Request, Response> = (req: Request) => void;
+type RequestHandler<Request> = (req: Request) => void;
 
 interface PendingRequest<Response> {
   resolve: (res: Response) => void;
@@ -6,35 +6,32 @@ interface PendingRequest<Response> {
   timeoutId?: ReturnType<typeof setTimeout>;
 }
 
+export interface IMessage {
+  requestId: string | number;
+}
+
 export class AsyncRequestManager<
-  Request,
-  Response,
-  RequestId extends string | number
+  Request extends IMessage,
+  Response extends IMessage
 > {
-  private pending = new Map<RequestId, PendingRequest<Response>>();
+  private pending = new Map<string | number, PendingRequest<Response>>();
 
   constructor(
-    sendFn: RequestHandler<Request, Response>,
-    getId: (req: Request) => RequestId,
-    getResponseId: (res: Response) => RequestId,
+    sendFn: RequestHandler<Request>,
     timeoutMs: number = 10000 // optional timeout for requests
   ) {
     this.sendFn = sendFn;
-    this.getId = getId;
-    this.getResponseId = getResponseId;
     this.timeoutMs = timeoutMs;
   }
 
-  private sendFn: RequestHandler<Request, Response>;
-  private getId: (req: Request) => RequestId;
-  private getResponseId: (res: Response) => RequestId;
+  private sendFn: RequestHandler<Request>;
   private timeoutMs: number = 10000;
 
   /**
    * Call this when a new response arrives from worker/API.
    */
   handleResponse(res: Response) {
-    const id = this.getResponseId(res);
+    const id = res.requestId;
     const pending = this.pending.get(id);
     if (!pending) return;
 
@@ -47,7 +44,7 @@ export class AsyncRequestManager<
    * Makes a request and waits for its response.
    */
   async request(req: Request): Promise<Response> {
-    const id = this.getId(req);
+    const id = req.requestId;
 
     return new Promise<Response>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
