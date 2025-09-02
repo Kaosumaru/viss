@@ -6,6 +6,7 @@ import { UniformsPanel } from "./components/uniforms/UniformsPanel";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
+import { EditorProvider } from "./context/editorProvider";
 
 const Layout = styled.div<{ $sidebarVisible: boolean }>`
   display: grid;
@@ -79,24 +80,24 @@ export function MainView() {
   }, []);
 
   return (
-    <Layout $sidebarVisible={isUniformsPanelVisible}>
-      <Canvas>
-        <EditorView onChanged={onChanged} />
-        <FloatingToolbar
-          isPropertyViewVisible={isPropertyViewVisible}
-          onTogglePropertyView={handleTogglePropertyView}
-          isUniformsPanelVisible={isUniformsPanelVisible}
-          onToggleUniformsPanel={handleToggleUniformsPanel}
-        />
-        <FloatingPropertyView $isVisible={isPropertyViewVisible}>
-          <PropertyView fragmentShader={shader} editorData={editorData} />
-        </FloatingPropertyView>
-      </Canvas>
-      {isUniformsPanelVisible && (
-        <Sidebar>
-          {editorData && <UniformsPanel editorData={editorData} />}
-        </Sidebar>
-      )}
-    </Layout>
+    <EditorProvider editor={editorData}>
+      <Layout $sidebarVisible={isUniformsPanelVisible}>
+        <Canvas>
+          <EditorView onChanged={onChanged} />
+          <FloatingToolbar
+            isPropertyViewVisible={isPropertyViewVisible}
+            onTogglePropertyView={handleTogglePropertyView}
+            isUniformsPanelVisible={isUniformsPanelVisible}
+            onToggleUniformsPanel={handleToggleUniformsPanel}
+          />
+          <FloatingPropertyView $isVisible={isPropertyViewVisible}>
+            <PropertyView fragmentShader={shader} />
+          </FloatingPropertyView>
+        </Canvas>
+        {isUniformsPanelVisible && (
+          <Sidebar>{editorData && <UniformsPanel />}</Sidebar>
+        )}
+      </Layout>
+    </EditorProvider>
   );
 }

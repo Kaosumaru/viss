@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import type { Uniform } from "../../../compiler/graph/uniform";
 
 import { uniformVisualizers, uniformComponents } from "./entries";
@@ -15,14 +15,11 @@ import {
   Paper,
 } from "@mui/material";
 import UniformItem from "./UniformItem";
-import type { EditorAPI } from "renderer/graph/interface";
 import type { ParameterValue } from "@graph/parameter";
+import { EditorContext } from "@renderer/context/EditorContext";
 
-interface UniformsPanelProps {
-  editorData: EditorAPI | undefined;
-}
-
-export const UniformsPanel: React.FC<UniformsPanelProps> = ({ editorData }) => {
+export const UniformsPanel: React.FC = () => {
+  const editorData = useContext(EditorContext).editor;
   const [newName, setNewName] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 

@@ -1,7 +1,8 @@
 import { Paper, Button } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
-import type { EditorAPI } from "./graph/interface";
 import styled from "styled-components";
+import { useContext } from "react";
+import { EditorContext } from "./context/EditorContext";
 
 const FloatingPaper = styled(Paper)`
   height: 100%;
@@ -24,13 +25,10 @@ void main() {
 
 export interface PropertyViewProps {
   fragmentShader: string;
-  editorData?: EditorAPI;
 }
 
-export function PropertyView({
-  fragmentShader: shader,
-  editorData,
-}: PropertyViewProps) {
+export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
+  const editorData = useContext(EditorContext).editor;
   const handleSaveGraph = async () => {
     if (!editorData) {
       console.warn("No editor available");

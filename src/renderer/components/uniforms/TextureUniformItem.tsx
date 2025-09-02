@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
 import type { UniformItemProps } from "./UniformItem";
-import imgUrl from "./test/test.png";
+import { EditorContext } from "@renderer/context/EditorContext";
 
 const TextureUniformItem: React.FC<UniformItemProps> = ({
   name,
@@ -11,9 +11,18 @@ const TextureUniformItem: React.FC<UniformItemProps> = ({
   onChangeValue,
   onRemove,
 }) => {
-  const handleClick = () => {
-    if (uniform.defaultValue && uniform.defaultValue.type === "string") {
-      onChangeValue({ ...uniform.defaultValue, value: imgUrl });
+  const { editor } = useContext(EditorContext);
+
+  const handleClick = async () => {
+    if (
+      uniform.defaultValue &&
+      uniform.defaultValue.type === "string" &&
+      editor
+    ) {
+      const imgUrl = await editor.selectImage();
+      if (imgUrl) {
+        onChangeValue({ ...uniform.defaultValue, value: imgUrl });
+      }
     }
   };
 

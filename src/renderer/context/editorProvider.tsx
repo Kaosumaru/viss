@@ -1,23 +1,19 @@
 import React from "react";
 import type { ReactNode } from "react";
-import type { NodeEditor } from "rete";
-import type { AreaPlugin } from "rete-area-plugin";
-import type { Schemes, AreaExtra } from "../graph/node";
 import { EditorContext } from "./EditorContext";
+import type { EditorAPI } from "@renderer/graph/interface";
 
 interface EditorProviderProps {
   children: ReactNode;
-  editor: NodeEditor<Schemes> | null;
-  area: AreaPlugin<Schemes, AreaExtra> | null;
+  editor: EditorAPI | undefined;
 }
 
 export const EditorProvider: React.FC<EditorProviderProps> = ({
   children,
   editor,
-  area,
 }) => {
   return (
-    <EditorContext.Provider value={{ editor, area }}>
+    <EditorContext.Provider value={{ editor }}>
       {children}
     </EditorContext.Provider>
   );

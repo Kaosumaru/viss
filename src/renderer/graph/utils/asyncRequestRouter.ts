@@ -19,11 +19,13 @@ export class AsyncRequestRouter<BaseRequest extends IMessage> {
     return (req: Request) => manager.request(req);
   }
 
-  handleResponse(res: IMessage) {
-    const manager = this.managers.get(res.requestId);
+  handleResponse(res: IMessage): boolean {
+    const manager = this.managers.get(res.type);
     if (manager) {
       manager.handleResponse(res);
+      return true;
     }
+    return false;
   }
 
   private managers = new Map<

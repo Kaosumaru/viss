@@ -28,7 +28,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   ): Promise<void> {
     // Setup initial content for the webview
     webviewPanel.webview.options = {
-      enableScripts: true,
+      enableScripts: true
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
@@ -148,10 +148,12 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
             openLabel: event.label,
             filters: event.filters
         });
+
+        const url = fileUri ? fileUri.map(uri => webviewPanel.webview.asWebviewUri(uri).toString()) : [];
         postMessage(webviewPanel, {
           type: "showOpenDialogResponse",
           requestId: event.requestId,
-          fileUris: fileUri ? fileUri.map(uri => webviewPanel.webview.asWebviewUri(uri).toString()) : []
+          fileUris: url
         });
         break;
       }

@@ -12,6 +12,7 @@ import type { Graph, GraphDiff } from "@graph/graph";
 import type { Transform } from "rete-area-plugin/_types/area";
 import { AsyncRequestRouter } from "./utils/asyncRequestRouter";
 import { AsyncRequestManager } from "./utils/asyncRequestManager";
+import imgUrl from "./data/test.png";
 
 export class EditorVSExtension {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
@@ -66,6 +67,26 @@ export class EditorVSExtension {
     }
   }
 
+  async selectImage(): Promise<string | undefined> {
+    if (!this.vscode) {
+      return imgUrl;
+    }
+
+    const response = await this.showOpenDialog({
+      label: "Select Image",
+      filters: { images: ["png", "jpg", "jpeg"] },
+      requestId: 0, // TODO
+      type: "showOpenDialog",
+    });
+
+    if (response) {
+      console.log("Selected file URI:", response.fileUris[0]);
+      return response.fileUris[0];
+    }
+
+    return undefined;
+  }
+
   public destroy() {
     this.saveState();
     this.helper.dispose();
@@ -99,7 +120,9 @@ export class EditorVSExtension {
 
   private async handleMessage(message: ExtensionToEditorMessage) {
     if ("requestId" in message && message.requestId !== undefined) {
-      this.router.handleResponse(message);
+      if (this.router.handleResponse(message)) {
+        return;
+      }
     }
 
     switch (message.type) {

@@ -27,7 +27,7 @@ export class EditorAPIImp implements EditorAPI {
     overlayElement: HTMLCanvasElement,
     onChanged?: OnGraphChanged
   ) {
-    this.shaderRenderer =  new ShaderRenderer(overlayElement);;
+    this.shaderRenderer = new ShaderRenderer(overlayElement);
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
@@ -91,6 +91,10 @@ export class EditorAPIImp implements EditorAPI {
 
     this.extension.initialize();
   }
+
+  selectImage = (): Promise<string | undefined> => {
+    return this.extension.selectImage();
+  };
 
   async createNode(
     nodeType: NodeType,

@@ -39,6 +39,8 @@ export interface EditorAPI {
   loadGraph: (graph: Graph) => Promise<void>;
   saveGraph: () => Graph;
 
+  selectImage: () => Promise<string | undefined>;
+
   uniforms(): Uniforms;
   updateUniform: (uniform: Uniform) => Promise<void>;
   removeUniform: (uniformId: string) => Promise<void>;
