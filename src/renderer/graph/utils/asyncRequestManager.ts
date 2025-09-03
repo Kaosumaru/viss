@@ -6,30 +6,35 @@ interface PendingRequest<Response> {
   timeoutId?: ReturnType<typeof setTimeout>;
 }
 
-export interface IMessage {
+export interface IRequest {
   type: string;
   requestId?: unknown;
+  params?: unknown;
 }
 
 export interface IAsyncRequestManager<
-  Request extends IMessage,
-  Response extends IMessage
+  Request extends IRequest,
+  Response extends IRequest
 > {
-  request(req: Request): Promise<Response>;
+  request(req: Request["params"]): Promise<Response["params"]>;
   handleResponse(res: Response): void;
 }
 
 export class AsyncRequestManager<
-  Request extends IMessage,
-  Response extends IMessage
+  Request extends IRequest,
+  Response extends IRequest
 > implements IAsyncRequestManager<Request, Response>
 {
-  private pending = new Map<unknown, PendingRequest<Response>>();
+  private pending = new Map<unknown, PendingRequest<Response["params"]>>();
+  private type: string;
+  private requestId = 0;
 
   constructor(
+    type: string,
     sendFn: RequestHandler<Request>,
     timeoutMs: number = 10000 // optional timeout for requests
   ) {
+    this.type = type;
     this.sendFn = sendFn;
     this.timeoutMs = timeoutMs;
   }
@@ -45,7 +50,7 @@ export class AsyncRequestManager<
     const pending = this.pending.get(id);
     if (!pending) return;
 
-    pending.resolve(res);
+    pending.resolve(res.params);
     if (pending.timeoutId) clearTimeout(pending.timeoutId);
     this.pending.delete(id);
   }
@@ -53,10 +58,15 @@ export class AsyncRequestManager<
   /**
    * Makes a request and waits for its response.
    */
-  async request(req: Request): Promise<Response> {
+  async request(params: Request["params"]): Promise<Response["params"]> {
+    const req: Request = {
+      type: this.type,
+      requestId: this.requestId++,
+      params,
+    } as Request; // TODO this cast isn't ideal, but it will do
     const id = req.requestId;
 
-    return new Promise<Response>((resolve, reject) => {
+    return new Promise<Response["params"]>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.pending.delete(id);
         reject(new Error(`Request ${id} timed out after ${this.timeoutMs}ms`));

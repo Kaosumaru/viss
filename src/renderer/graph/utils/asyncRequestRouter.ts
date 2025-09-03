@@ -1,25 +1,25 @@
-import type { IAsyncRequestManager, IMessage } from "./asyncRequestManager";
+import type { IAsyncRequestManager, IRequest } from "./asyncRequestManager";
 
 type RequestHandler<Request> = (req: Request) => void;
 
-export class AsyncRequestRouter<BaseRequest extends IMessage> {
+export class AsyncRequestRouter<BaseRequest extends IRequest> {
   constructor(sendFn: RequestHandler<BaseRequest>) {
     this.sendFn = sendFn;
   }
 
-  registerManager<Request extends BaseRequest, Response extends IMessage>(
+  registerManager<Request extends BaseRequest, Response extends IRequest>(
     id: Response["type"],
-    constructor: new (sendFn: RequestHandler<Request>) => IAsyncRequestManager<
-      Request,
-      Response
-    >
-  ): (req: Request) => Promise<Response> {
-    const manager = new constructor(this.sendFn);
+    constructor: new (
+      type: string,
+      sendFn: RequestHandler<BaseRequest>
+    ) => IAsyncRequestManager<Request, Response>
+  ): (req: Request["params"]) => Promise<Response["params"]> {
+    const manager = new constructor(id, this.sendFn);
     this.managers.set(id, manager);
-    return (req: Request) => manager.request(req);
+    return (params: Request["params"]) => manager.request(params);
   }
 
-  handleResponse(res: IMessage): boolean {
+  handleResponse(res: IRequest): boolean {
     const manager = this.managers.get(res.type);
     if (manager) {
       manager.handleResponse(res);
@@ -30,7 +30,7 @@ export class AsyncRequestRouter<BaseRequest extends IMessage> {
 
   private managers = new Map<
     unknown,
-    IAsyncRequestManager<IMessage, IMessage>
+    IAsyncRequestManager<IRequest, IRequest>
   >();
 
   private sendFn: RequestHandler<BaseRequest>;

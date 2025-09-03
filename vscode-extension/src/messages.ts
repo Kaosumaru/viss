@@ -21,9 +21,12 @@ export interface ExportGraphResponseMessage {
 
 export interface ShowOpenDialogRequestMessage {
   type: "showOpenDialog";
-  label: string;
-  filters?: Record<string, string[]>;
   requestId: number;
+
+  params: {
+    label: string;
+    filters?: Record<string, string[]>;
+  };
 }
 
 export type EditorToExtensionMessage =
@@ -36,7 +39,9 @@ export type EditorToExtensionMessage =
 export interface ShowOpenDialogResponseMessage {
   type: "showOpenDialogResponse";
   requestId: number;
-  fileUris: string[];
+  params: {
+    fileUris: string[];
+  };
 }
 
 export interface LoadGraphMessage {

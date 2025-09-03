@@ -16,13 +16,10 @@ import imgUrl from "./data/test.png";
 
 export class EditorVSExtension {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
-    this.showOpenDialog = this.router.registerManager(
-      "showOpenDialogResponse",
-      AsyncRequestManager<
-        ShowOpenDialogRequestMessage,
-        ShowOpenDialogResponseMessage
-      >
-    );
+    this.showOpenDialog = this.router.registerManager<
+      ShowOpenDialogRequestMessage,
+      ShowOpenDialogResponseMessage
+    >("showOpenDialogResponse", AsyncRequestManager);
 
     this.helper.add(() => {
       const cb = (event: MessageEvent) => {
@@ -75,8 +72,6 @@ export class EditorVSExtension {
     const response = await this.showOpenDialog({
       label: "Select Image",
       filters: { images: ["png", "jpg", "jpeg"] },
-      requestId: 0, // TODO
-      type: "showOpenDialog",
     });
 
     if (response) {
@@ -170,8 +165,8 @@ export class EditorVSExtension {
   private vscode: VSCode | undefined;
 
   public readonly showOpenDialog: (
-    req: ShowOpenDialogRequestMessage
-  ) => Promise<ShowOpenDialogResponseMessage>;
+    req: ShowOpenDialogRequestMessage["params"]
+  ) => Promise<ShowOpenDialogResponseMessage["params"]>;
 
   private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) =>
     this.postMessage(req)
