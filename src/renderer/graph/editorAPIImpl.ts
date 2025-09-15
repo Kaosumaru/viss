@@ -350,6 +350,12 @@ export class EditorAPIImp implements EditorAPI {
         this.reportChange();
       }
 
+      if (diff.warnings) {
+        for (const warning of diff.warnings) {
+          console.warn("Graph warning:", warning);
+        }
+      }
+
       const updatedJson =
         (diff.addedNodes?.length ?? 0) +
         (diff.removedNodes?.length ?? 0) +

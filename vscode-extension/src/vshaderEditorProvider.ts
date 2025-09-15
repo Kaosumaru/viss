@@ -145,15 +145,17 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
       case "showOpenDialog": {
         const fileUri = await vscode.window.showOpenDialog({
             canSelectMany: false,
-            openLabel: event.label,
-            filters: event.filters
+            openLabel: event.params.label,
+            filters: event.params.filters
         });
 
         const url = fileUri ? fileUri.map(uri => webviewPanel.webview.asWebviewUri(uri).toString()) : [];
         postMessage(webviewPanel, {
           type: "showOpenDialogResponse",
           requestId: event.requestId,
-          fileUris: url
+          params: {
+            fileUris: url
+          }
         });
         break;
       }

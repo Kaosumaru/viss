@@ -11,6 +11,7 @@ MVP
     - add support to select file in vscode
         - basics are working, we need to change paths to relative, and translate them by the extension
 4. sample with three.js (best if we would use 2d AND 3d model)
+5. Display warnings in the editor
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)

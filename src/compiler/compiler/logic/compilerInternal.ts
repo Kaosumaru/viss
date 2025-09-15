@@ -244,13 +244,13 @@ export class CompilerInternal {
   addConnections(connections: Connection[]): GraphDiff {
     const addedConnections: Connection[] = [];
     const invalidatedNodeIds: string[] = [];
+    const warnings: string[] = [];
 
     for (const connection of connections) {
       const fromNode = this.getNodeById(connection.from.nodeId);
       if (!fromNode) {
-        throw new Error(
-          `From node with id ${connection.from.nodeId} not found in graph`
-        );
+        warnings.push(`From node with id ${connection.from.nodeId} not found`);
+        continue;
       }
 
       // TODO throw error if connection is invalid (would cause loop or is of invalid type)
@@ -261,7 +261,15 @@ export class CompilerInternal {
         throw new Error("Connection already exists in graph");
       }
 
-      connection.type = this.getOutputType(connection.from);
+      try {
+        connection.type = this.getOutputType(connection.from);
+      } catch (error) {
+        warnings.push(
+          `Failed to get output type for connection from ${connection.from.nodeId}: ${error}`
+        );
+        continue;
+      }
+
       this.graph.connections.push(connection);
       this.cacheConnection(connection);
       addedConnections.push(connection);
@@ -271,6 +279,7 @@ export class CompilerInternal {
     return {
       addedConnections,
       invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds),
+      warnings: warnings.length > 0 ? warnings : undefined,
     };
   }
 
@@ -331,12 +340,12 @@ export class CompilerInternal {
       otherGraph.connections.map((conn) => [connectionToID(conn), conn])
     );
 
-    const addedConnections = otherGraph.connections.filter(
-      (conn) => !this.connectionsCache.has(connectionToID(conn))
-    );
-
     const addedNodes = otherGraph.nodes.filter(
       (otherNode) => !this.nodes.has(otherNode.identifier)
+    );
+
+    const addedConnections = otherGraph.connections.filter(
+      (conn) => !this.connectionsCache.has(connectionToID(conn))
     );
 
     const removedConnections: Connection[] = this.graph.connections.filter(

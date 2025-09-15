@@ -30,6 +30,8 @@ export interface GraphDiff {
   translatedNodes?: Set<string>;
   nodesWithModifiedProperties?: Node[];
   invalidatedNodeIds?: Set<string>;
+
+  warnings?: string[];
 }
 
 export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
@@ -58,6 +60,7 @@ export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
       ...(acc.nodesWithModifiedProperties || []),
       ...(diff.nodesWithModifiedProperties || []),
     ];
+    acc.warnings = [...(acc.warnings || []), ...(diff.warnings || [])];
     acc.translatedNodes =
       acc.translatedNodes || diff.translatedNodes
         ? new Set([
