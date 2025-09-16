@@ -3,10 +3,12 @@ import { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
 import { uniformEntryFromUniform } from "./uniform";
 import { loadTexture } from "./helpers";
+import type { EditorAPI } from "@renderer/graph/interface";
 
 export class ShaderRenderer implements ShaderEntryContextType {
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(editor: EditorAPI, canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.editor = editor;
 
     const gl = canvas.getContext("webgl", { alpha: true });
     this.gl = gl;
@@ -191,8 +193,18 @@ export class ShaderRenderer implements ShaderEntryContextType {
       if (unit === undefined) {
         return;
       }
-      const texture = loadTexture(this.gl, path);
-      entry = { uniforms: new Set(), uniformUnit: unit, texture };
+      const texture = loadTexture(this.gl);
+      entry = {
+        uniforms: new Set(),
+        uniformUnit: unit,
+        texture: texture.texture,
+      };
+
+      this.editor.relativePathToURL(path).then((url) => {
+        if (url) {
+          texture.load(url);
+        }
+      });
       this.textures.set(path, entry);
     }
 
@@ -204,6 +216,7 @@ export class ShaderRenderer implements ShaderEntryContextType {
   uniforms: Uniforms = {};
   textures = new Map<string, TextureEntry>();
   gl: WebGLRenderingContext | null;
+  editor: EditorAPI;
 }
 
 interface TextureEntry {

@@ -6,6 +6,8 @@ import type {
   ExtensionToEditorMessage,
   ShowOpenDialogRequestMessage,
   ShowOpenDialogResponseMessage,
+  ToWebviewURIMessage,
+  ToWebviewURIResponseMessage,
 } from "../../../vscode-extension/src/messages";
 import { DisposeHelper } from "./utils/disposeHelper";
 import type { Graph, GraphDiff } from "@graph/graph";
@@ -19,7 +21,12 @@ export class EditorVSExtension {
     this.showOpenDialog = this.router.registerManager<
       ShowOpenDialogRequestMessage,
       ShowOpenDialogResponseMessage
-    >("showOpenDialogResponse", AsyncRequestManager);
+    >("showOpenDialog", "showOpenDialogResponse", AsyncRequestManager);
+
+    this.toWebviewURI = this.router.registerManager<
+      ToWebviewURIMessage,
+      ToWebviewURIResponseMessage
+    >("toWebviewURI", "toWebviewURIResponse", AsyncRequestManager);
 
     this.helper.add(() => {
       const cb = (event: MessageEvent) => {
@@ -75,11 +82,21 @@ export class EditorVSExtension {
     });
 
     if (response) {
-      console.log("Selected file URI:", response.fileUris[0]);
-      return response.fileUris[0];
+      console.log("Selected file URI:", response.relativePaths[0]);
+      return response.relativePaths[0];
     }
 
     return undefined;
+  }
+
+  async relativePathToURL(path: string): Promise<string | undefined> {
+    if (!this.vscode) {
+      return path;
+    }
+    const response = await this.toWebviewURI({
+      relativepaths: [path],
+    });
+    return response?.uris[0];
   }
 
   public destroy() {
@@ -167,6 +184,10 @@ export class EditorVSExtension {
   public readonly showOpenDialog: (
     req: ShowOpenDialogRequestMessage["params"]
   ) => Promise<ShowOpenDialogResponseMessage["params"]>;
+
+  public readonly toWebviewURI: (
+    req: ToWebviewURIMessage["params"]
+  ) => Promise<ToWebviewURIResponseMessage["params"]>;
 
   private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) =>
     this.postMessage(req)

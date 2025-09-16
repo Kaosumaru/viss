@@ -27,7 +27,7 @@ export class EditorAPIImp implements EditorAPI {
     overlayElement: HTMLCanvasElement,
     onChanged?: OnGraphChanged
   ) {
-    this.shaderRenderer = new ShaderRenderer(overlayElement);
+    this.shaderRenderer = new ShaderRenderer(this, overlayElement);
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
@@ -209,6 +209,10 @@ export class EditorAPIImp implements EditorAPI {
     if (noNodes) {
       AreaExtensions.zoomAt(this.area, this.editor.getNodes());
     }
+  }
+
+  relativePathToURL(path: string): Promise<string | undefined> {
+    return this.extension.relativePathToURL(path);
   }
 
   saveGraph() {

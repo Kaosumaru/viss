@@ -8,14 +8,15 @@ export class AsyncRequestRouter<BaseRequest extends IRequest> {
   }
 
   registerManager<Request extends BaseRequest, Response extends IRequest>(
-    id: Response["type"],
+    requestId: Request["type"],
+    responseId: Response["type"],
     constructor: new (
       type: string,
       sendFn: RequestHandler<BaseRequest>
     ) => IAsyncRequestManager<Request, Response>
   ): (req: Request["params"]) => Promise<Response["params"]> {
-    const manager = new constructor(id, this.sendFn);
-    this.managers.set(id, manager);
+    const manager = new constructor(requestId, this.sendFn);
+    this.managers.set(responseId, manager);
     return (params: Request["params"]) => manager.request(params);
   }
 

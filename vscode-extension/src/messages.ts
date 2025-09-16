@@ -13,6 +13,15 @@ export interface SaveGraphMessage {
   requestId?: number;
 }
 
+export interface ToWebviewURIMessage {
+  type: "toWebviewURI";
+  requestId?: number;
+
+  params: {
+    relativepaths: string[];
+  };
+}
+
 export interface ExportGraphResponseMessage {
   type: "exportGraphResponse";
   path: string;
@@ -34,13 +43,14 @@ export type EditorToExtensionMessage =
   | RefreshContentMessage
   | SaveGraphMessage
   | ExportGraphResponseMessage
-  | ShowOpenDialogRequestMessage;
+  | ShowOpenDialogRequestMessage
+  | ToWebviewURIMessage;
 
 export interface ShowOpenDialogResponseMessage {
   type: "showOpenDialogResponse";
   requestId: number;
   params: {
-    fileUris: string[];
+    relativePaths: string[];
   };
 }
 
@@ -55,7 +65,17 @@ export interface ExportGraphRequestMessage {
   path: string;
 }
 
+export interface ToWebviewURIResponseMessage {
+  type: "toWebviewURIResponse";
+  requestId?: number;
+
+  params: {
+    uris: string[];
+  };
+}
+
 export type ExtensionToEditorMessage =
   | LoadGraphMessage
   | ExportGraphRequestMessage
-  | ShowOpenDialogResponseMessage;
+  | ShowOpenDialogResponseMessage
+  | ToWebviewURIResponseMessage;

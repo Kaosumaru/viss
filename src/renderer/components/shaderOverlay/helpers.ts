@@ -1,11 +1,10 @@
 //
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-//
 export function loadTexture(
   gl: WebGLRenderingContext,
-  url: string
-): WebGLTexture {
+  url?: string
+): TextureData {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -60,9 +59,23 @@ export function loadTexture(
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
   };
-  image.src = url;
 
-  return texture;
+  if (url) {
+    // Start loading the image
+    image.src = url;
+  }
+
+  return {
+    texture: texture,
+    load: (path: string) => {
+      image.src = path;
+    },
+  };
+}
+
+interface TextureData {
+  texture: WebGLTexture;
+  load: (path: string) => void;
 }
 
 function isPowerOf2(value: number) {

@@ -5,6 +5,8 @@ import {
   EditorToExtensionMessage,
   ExtensionToEditorMessage,
   SaveGraphMessage,
+  ShowOpenDialogRequestMessage,
+  ToWebviewURIMessage,
 } from "./messages";
 
 export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
@@ -28,7 +30,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   ): Promise<void> {
     // Setup initial content for the webview
     webviewPanel.webview.options = {
-      enableScripts: true
+      enableScripts: true,
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
@@ -143,20 +145,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
         vscode.window.showErrorMessage(event.text);
         break;
       case "showOpenDialog": {
-        const fileUri = await vscode.window.showOpenDialog({
-            canSelectMany: false,
-            openLabel: event.params.label,
-            filters: event.params.filters
-        });
-
-        const url = fileUri ? fileUri.map(uri => webviewPanel.webview.asWebviewUri(uri).toString()) : [];
-        postMessage(webviewPanel, {
-          type: "showOpenDialogResponse",
-          requestId: event.requestId,
-          params: {
-            fileUris: url
-          }
-        });
+        await showOpenDialog(document, webviewPanel, event);
         break;
       }
       case "refreshContent":
@@ -178,11 +167,39 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
           this.updateTextDocument(document, event);
         }
         break;
+      case "toWebviewURI": {
+        toWebViewURI(event, document, webviewPanel);
+        break;
+      }
     }
   }
 
   ignoreNextUpdate = false;
   private requestIdCounter = 0;
+}
+
+function toWebViewURI(
+  event: ToWebviewURIMessage,
+  document: vscode.TextDocument,
+  webviewPanel: vscode.WebviewPanel
+) {
+  const uris = event.params.relativepaths.map((p) => {
+    // Convert a workspace relative path to a webview uri
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+    if (!workspaceFolder) {
+      return "";
+    }
+    const fileUri = vscode.Uri.joinPath(workspaceFolder.uri, p);
+    return webviewPanel.webview.asWebviewUri(fileUri).toString();
+  });
+
+  postMessage(webviewPanel, {
+    type: "toWebviewURIResponse",
+    requestId: event.requestId,
+    params: {
+      uris,
+    },
+  });
 }
 
 function updateWebview(
@@ -221,4 +238,45 @@ function getDocumentAsJson(document: vscode.TextDocument): unknown {
       "Could not get document as json. Content is not valid json"
     );
   }
+}
+
+async function showOpenDialog(
+  document: vscode.TextDocument,
+  webviewPanel: vscode.WebviewPanel,
+  event: ShowOpenDialogRequestMessage
+) {
+  const fileUris = await vscode.window.showOpenDialog({
+    canSelectMany: false,
+    openLabel: event.params.label,
+    filters: event.params.filters,
+  });
+
+  const relativePaths: string[] = [];
+  const pathToDocument = document.uri;
+
+  for (const uri of fileUris || []) {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+    const documentWorkspaceFolder =
+      vscode.workspace.getWorkspaceFolder(pathToDocument);
+    if (
+      workspaceFolder?.uri.toString() !==
+      documentWorkspaceFolder?.uri.toString()
+    ) {
+      vscode.window.showErrorMessage(
+        "Please select a file within the current workspace."
+      );
+      continue;
+    }
+
+    // Make the uri relative
+    relativePaths.push(vscode.workspace.asRelativePath(uri));
+  }
+
+  postMessage(webviewPanel, {
+    type: "showOpenDialogResponse",
+    requestId: event.requestId,
+    params: {
+      relativePaths,
+    },
+  });
 }

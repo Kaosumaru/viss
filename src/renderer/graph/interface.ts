@@ -41,6 +41,8 @@ export interface EditorAPI {
 
   selectImage: () => Promise<string | undefined>;
 
+  relativePathToURL: (path: string) => Promise<string | undefined>;
+
   uniforms(): Uniforms;
   updateUniform: (uniform: Uniform) => Promise<void>;
   removeUniform: (uniformId: string) => Promise<void>;
