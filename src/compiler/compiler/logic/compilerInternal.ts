@@ -1,10 +1,5 @@
 import type { Connection } from "@graph/connection";
-import {
-  mergeGraphDiffs,
-  type AddedNodeInfo,
-  type Graph,
-  type GraphDiff,
-} from "@graph/graph";
+import { type AddedNodeInfo, type Graph, type GraphDiff } from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
 import type { Context } from "../context";
@@ -20,9 +15,9 @@ import { pasteNodes } from "./pasteNodes";
 import type { Type } from "@glsl/types/types";
 import type { SocketReference } from "@graph/socket";
 import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
-import deepEqual from "deep-equal";
 import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
-import type { Uniform } from "@graph/uniform";
+import type { Uniform, Uniforms } from "@graph/uniform";
+import { loadGraphIntoCompiler } from "./loadGraph";
 
 export interface InputConnection {
   node: Node;
@@ -332,71 +327,7 @@ export class CompilerInternal {
   }
 
   loadGraph(otherGraph: Graph): GraphDiff {
-    const otherNodes = new Map(
-      otherGraph.nodes.map((node) => [node.identifier, node])
-    );
-
-    const otherConnections = new Map(
-      otherGraph.connections.map((conn) => [connectionToID(conn), conn])
-    );
-
-    const addedNodes = otherGraph.nodes.filter(
-      (otherNode) => !this.nodes.has(otherNode.identifier)
-    );
-
-    const addedConnections = otherGraph.connections.filter(
-      (conn) => !this.connectionsCache.has(connectionToID(conn))
-    );
-
-    const removedConnections: Connection[] = this.graph.connections.filter(
-      (conn) => !otherConnections.has(connectionToID(conn))
-    );
-
-    const removedNodes = this.graph.nodes
-      .filter((node) => !otherNodes.get(node.identifier))
-      .map((node) => node.identifier);
-
-    const modifiedNodes = this.graph.nodes.filter((node) => {
-      const otherNode = otherNodes.get(node.identifier);
-      if (!otherNode) return false;
-
-      return !deepEqual(node, otherNode);
-    });
-
-    let diff: GraphDiff = {};
-
-    diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
-    diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes, false)]);
-    diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
-    diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);
-
-    diff.nodesWithModifiedProperties = diff.nodesWithModifiedProperties
-      ? [...diff.nodesWithModifiedProperties, ...modifiedNodes]
-      : modifiedNodes;
-    const invalidatedNodeIds = this.invalidateNodes(
-      modifiedNodes.map((node) => node.identifier)
-    );
-
-    if (invalidatedNodeIds.size > 0 && !diff.invalidatedNodeIds) {
-      diff.invalidatedNodeIds = new Set();
-    }
-    for (const node of invalidatedNodeIds) {
-      diff.invalidatedNodeIds!.add(node);
-    }
-
-    for (const node of modifiedNodes) {
-      const otherNode = otherNodes.get(node.identifier);
-      if (otherNode) {
-        node.position = {
-          ...otherNode.position,
-        };
-        node.parameters = {
-          ...otherNode.parameters,
-        };
-      }
-    }
-
-    return diff;
+    return loadGraphIntoCompiler.call(this, otherGraph);
   }
 
   getGraphAsDiff(): GraphDiff {
@@ -421,22 +352,39 @@ export class CompilerInternal {
     return this.graph;
   }
 
-  removeUniform(uniformId: string): GraphDiff {
+  removeUniforms(uniformIds: string[]): GraphDiff {
     this.graph.uniforms = Object.fromEntries(
-      Object.entries(this.graph.uniforms).filter(([id]) => id !== uniformId)
+      Object.entries(this.graph.uniforms).filter(
+        ([id]) => !uniformIds.includes(id)
+      )
     );
     const invalidatedNodeIds = this.invalidateNodes(
-      this.getNodeIdsWithUniform(uniformId)
+      this.getNodeIdsWithUniforms(uniformIds)
     );
     return {
       invalidatedNodeIds,
     };
   }
 
-  updateUniform(uniform: Uniform): GraphDiff {
-    this.graph.uniforms = { ...this.graph.uniforms, [uniform.id]: uniform };
+  removeUniform(uniformId: string): GraphDiff {
+    return this.removeUniforms([uniformId]);
+  }
 
-    return {};
+  updateUniform(uniform: Uniform): GraphDiff {
+    return this.updateUniforms({ [uniform.id]: uniform });
+  }
+
+  updateUniforms(uniforms: Uniforms): GraphDiff {
+    this.graph.uniforms = {
+      ...this.graph.uniforms,
+      ...uniforms,
+    };
+    const invalidatedNodeIds = this.invalidateNodes(
+      this.getNodeIdsWithUniforms(Object.keys(uniforms))
+    );
+    return {
+      invalidatedNodeIds,
+    };
   }
 
   updateUniformDefaultValue(
@@ -448,7 +396,7 @@ export class CompilerInternal {
       defaultValue,
     };
     const invalidatedNodeIds = this.invalidateNodes(
-      this.getNodeIdsWithUniform(name)
+      this.getNodeIdsWithUniforms([name])
     );
     return {
       invalidatedNodeIds,
@@ -486,11 +434,15 @@ export class CompilerInternal {
     return this.nodes.has(identifier);
   }
 
-  protected getNodeIdsWithUniform(uniformId: string): string[] {
+  protected getNodeIdsWithUniforms(uniformIds: string[]): string[] {
     return Array.from(this.nodes.values())
       .filter((node) => {
+        // TODO is _identifier always the right parameter name?
         const identifier = node.parameters["_identifier"];
-        return identifier?.value === uniformId;
+        return (
+          typeof identifier?.value === "string" &&
+          uniformIds.includes(identifier?.value)
+        );
       })
       .map((node) => node.identifier);
   }
@@ -593,6 +545,6 @@ function globalToSocketRef(ref: SocketReference): string {
   return `${ref.nodeId}///${ref.socketId}`;
 }
 
-function connectionToID(ref: Connection): string {
+export function connectionToID(ref: Connection): string {
   return `${globalToSocketRef(ref.from)}->${globalToSocketRef(ref.to)}`;
 }
