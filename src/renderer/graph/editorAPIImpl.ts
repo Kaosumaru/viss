@@ -307,6 +307,12 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
 
+      if (diff.updatedUniforms) {
+        for (const uniform of Object.values(diff.updatedUniforms)) {
+          this.shaderRenderer.updateUniform(uniform);
+        }
+      }
+
       if (diff.addedNodes) {
         for (const node of diff.addedNodes) {
           await this.addNode(node);

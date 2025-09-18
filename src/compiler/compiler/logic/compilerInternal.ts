@@ -383,6 +383,7 @@ export class CompilerInternal {
       this.getNodeIdsWithUniforms(Object.keys(uniforms))
     );
     return {
+      updatedUniforms: uniforms,
       invalidatedNodeIds,
     };
   }

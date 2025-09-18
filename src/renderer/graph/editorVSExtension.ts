@@ -91,7 +91,7 @@ export class EditorVSExtension {
 
   async relativePathToURL(path: string): Promise<string | undefined> {
     if (!this.vscode) {
-      return path;
+      return imgUrl;
     }
     const response = await this.toWebviewURI({
       relativepaths: [path],
