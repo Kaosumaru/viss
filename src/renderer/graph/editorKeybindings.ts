@@ -11,13 +11,41 @@ export class EditorKeybindings {
 
     area.container.tabIndex = 0;
 
+    // Use native copy, cut, paste events instead of key combinations
     this.helper.add(() => {
-      const cbkeydown = (event: KeyboardEvent) => {
-        this.handleKeyDown(event);
+      const cbCopy = (event: ClipboardEvent) => {
+        const selectedNodes = this.editor.getSelectedNodes();
+        if (selectedNodes.length > 0) {
+          const graphJson = this.editor.copyNodes(selectedNodes);
+          event.clipboardData?.setData("text/plain", graphJson);
+          event.preventDefault();
+        }
       };
-      window.addEventListener("keyup", cbkeydown);
+      const cbCut = (event: ClipboardEvent) => {
+        const selectedNodes = this.editor.getSelectedNodes();
+        if (selectedNodes.length > 0) {
+          const graphJson = this.editor.copyNodes(selectedNodes);
+          event.clipboardData?.setData("text/plain", graphJson);
+          this.editor.deleteNodes(selectedNodes);
+          event.preventDefault();
+        }
+      };
+      const cbPaste = (event: ClipboardEvent) => {
+        const graphJson = event.clipboardData?.getData("text/plain");
+        if (graphJson) {
+          const offsetX = this.mousePosition.x;
+          const offsetY = this.mousePosition.y;
+          this.editor.pasteNodes(graphJson, "screen", offsetX, offsetY);
+          event.preventDefault();
+        }
+      };
+      this.area.container.addEventListener("copy", cbCopy);
+      this.area.container.addEventListener("cut", cbCut);
+      this.area.container.addEventListener("paste", cbPaste);
       return () => {
-        window.removeEventListener("keyup", cbkeydown);
+        this.area.container.removeEventListener("copy", cbCopy);
+        this.area.container.removeEventListener("cut", cbCut);
+        this.area.container.removeEventListener("paste", cbPaste);
       };
     });
 
@@ -37,6 +65,8 @@ export class EditorKeybindings {
     this.mousePosition.y = event.clientY - rect.top;
   }
 
+  // Clipboard actions are now handled by native events
+  // Delete key handling can remain if desired
   public handleKeyDown(event: KeyboardEvent): void {
     if (event.key === "Delete" || event.key === "Backspace") {
       const selectedNodes = this.editor.getSelectedNodes();
@@ -44,34 +74,6 @@ export class EditorKeybindings {
         this.editor.deleteNodes(selectedNodes);
         event.preventDefault();
       }
-    }
-
-    if (event.key === "x" && (event.ctrlKey || event.metaKey)) {
-      const selectedNodes = this.editor.getSelectedNodes();
-      if (selectedNodes.length > 0) {
-        const graphJson = this.editor.copyNodes(selectedNodes);
-        navigator.clipboard.writeText(graphJson);
-        this.editor.deleteNodes(selectedNodes);
-        event.preventDefault();
-      }
-    }
-
-    if (event.key === "c" && (event.ctrlKey || event.metaKey)) {
-      const selectedNodes = this.editor.getSelectedNodes();
-      if (selectedNodes.length > 0) {
-        const graphJson = this.editor.copyNodes(selectedNodes);
-        navigator.clipboard.writeText(graphJson);
-        event.preventDefault();
-      }
-    }
-    if (event.key === "v" && (event.ctrlKey || event.metaKey)) {
-      navigator.clipboard.readText().then((graphJson) => {
-        const offsetX = this.mousePosition.x;
-        const offsetY = this.mousePosition.y;
-
-        this.editor.pasteNodes(graphJson, "screen", offsetX, offsetY);
-        event.preventDefault();
-      });
     }
   }
 

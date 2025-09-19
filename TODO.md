@@ -8,16 +8,14 @@ MVP
 3. Textures
     - initial support ready
     - we need to check if multiple textures are working (probably not right now, we arent switching textures)
-    - add support to select file in vscode
-        - basics are working, we need to change paths to relative, and translate them by the extension
+    - missing support for textures/uniforms in the preview window
 4. sample with three.js (best if we would use 2d AND 3d model)
 5. Display warnings in the editor
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
 2. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
-3. Copy & paste doesn't work in extension
-4. graphs don't load in vscode
+3. delete button doesn't work in extension
 
 Next
 
