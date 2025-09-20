@@ -28,7 +28,7 @@ export interface EditorAPI {
     params?: Parameters
   ) => Promise<void>;
 
-  addUniformCallback: (callback: IUniformCallback) => void;
+  addUniformCallback: (callback: IUniformCallback) => () => void;
 
   deleteNode: (nodeId: string) => Promise<void>;
   deleteNodes: (nodeIds: string[]) => Promise<void>;

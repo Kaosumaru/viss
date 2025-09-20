@@ -5,11 +5,8 @@ MVP
         - selecting files would be simplest for now - just a separate list of files after uniforms
 2. Uniforms
     - handle at least vector2, vector3, vector4
-3. Textures
-    - missing support for textures/uniforms in the preview window
-    - alright, so we should probably decouple that shader overlay from the actual editor
-4. sample with three.js (best if we would use 2d AND 3d model)
-5. Display warnings in the editor
+3. sample with three.js (best if we would use 2d AND 3d model)
+4. Display warnings in the editor
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)

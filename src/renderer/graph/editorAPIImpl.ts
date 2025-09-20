@@ -114,10 +114,19 @@ export class EditorAPIImp implements EditorAPI {
     );
   }
 
-  addUniformCallback: (callback: IUniformCallback) => void = (
+  addUniformCallback: (callback: IUniformCallback) => () => void = (
     callback: IUniformCallback
   ) => {
     this.uniformCallbacks.push(callback);
+
+    for (const uniform of Object.values(this.uniforms())) {
+      callback.updateUniform(uniform);
+    }
+    return () => {
+      this.uniformCallbacks = this.uniformCallbacks.filter(
+        (cb) => cb !== callback
+      );
+    };
   };
 
   uniforms: () => Uniforms = (): Uniforms => {

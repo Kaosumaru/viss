@@ -1,18 +1,34 @@
-import React, { useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { ShaderRenderer } from "./components/shaderOverlay/shaderRenderer";
+import type { ShaderEntry } from "./components/shaderOverlay/shaderEntry";
+import { EditorContext } from "./context/EditorContext";
 
 type ShaderCanvasProps = {
   vertexShader: string;
   fragmentShader: string;
 };
 
-export const ShaderCanvas: React.FC<ShaderCanvasProps> = () => {
+const previewSize = 256;
+
+export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
+  fragmentShader,
+}) => {
+  const editorData = useContext(EditorContext).editor;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderer = useRef<ShaderRenderer | null>(null);
+  const shaderEntryRef = useRef<ShaderEntry | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasRef.current) {
       renderer.current = new ShaderRenderer(canvasRef.current, false);
+      shaderEntryRef.current = renderer.current.addEntry();
+      renderer.current.updateEntryPosition(
+        shaderEntryRef.current,
+        0,
+        0,
+        previewSize,
+        previewSize
+      );
     }
     return () => {
       renderer.current?.dispose();
@@ -20,11 +36,29 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (editorData && renderer.current) {
+      const dispose = editorData.addUniformCallback(renderer.current);
+      return () => {
+        dispose();
+      };
+    }
+  }, [editorData]);
+
+  useEffect(() => {
+    if (shaderEntryRef.current) {
+      renderer.current?.updateEntryShader(
+        shaderEntryRef.current,
+        fragmentShader
+      );
+    }
+  }, [fragmentShader]);
+
   return (
     <canvas
       ref={canvasRef}
-      width={256}
-      height={256}
+      width={previewSize}
+      height={previewSize}
       style={{ display: "block" }}
     />
   );

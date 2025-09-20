@@ -29,7 +29,7 @@ const g_fragmentShaderSrc = `
   uniform vec4 u_rect; // x, y, width, height in pixels
   varying vec2 vUv;
   void main() {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Dark green with 10% alpha
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); 
   }
 `;
 
