@@ -7,6 +7,10 @@ export class DisposeHelper {
     this.disposables.push(disposable());
   }
 
+  addDispose(dispose: () => void) {
+    this.disposables.push(dispose);
+  }
+
   dispose() {
     this.disposables.forEach((dispose) => dispose());
     this.disposables = [];

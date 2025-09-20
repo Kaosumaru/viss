@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
 import type { UniformItemProps } from "./UniformItem";
 import { EditorContext } from "@renderer/context/EditorContext";
+import { selectImage } from "@renderer/vscode/selectImage";
 
 const TextureUniformItem: React.FC<UniformItemProps> = ({
   name,
@@ -19,7 +20,7 @@ const TextureUniformItem: React.FC<UniformItemProps> = ({
       uniform.defaultValue.type === "string" &&
       editor
     ) {
-      const imgUrl = await editor.selectImage();
+      const imgUrl = await selectImage();
       if (imgUrl) {
         onChangeValue({ ...uniform.defaultValue, value: imgUrl });
       }

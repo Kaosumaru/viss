@@ -4,17 +4,18 @@ MVP
     - how this should work in vscode? Select folder, select file?
         - selecting files would be simplest for now - just a separate list of files after uniforms
 2. Uniforms
-    - initial support for uniform is ready, but I'm only handling float now
+    - handle at least vector2, vector3, vector4
 3. Textures
-    - initial support ready
-    - we need to check if multiple textures are working (probably not right now, we arent switching textures)
     - missing support for textures/uniforms in the preview window
+    - alright, so we should probably decouple that shader overlay from the actual editor
 4. sample with three.js (best if we would use 2d AND 3d model)
 5. Display warnings in the editor
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
 2. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
+3. Weird issue with shaders blinking while saving
+4. It seems that if you move a node and save, move isn't being saved
 
 Next
 

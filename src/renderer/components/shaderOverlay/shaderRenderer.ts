@@ -3,12 +3,14 @@ import { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
 import { uniformEntryFromUniform } from "./uniform";
 import { getTexturePath } from "./helpers";
-import type { EditorAPI } from "@renderer/graph/interface";
+import type { IUniformCallback } from "@renderer/graph/interface";
 import { createBuffer } from "./buffer";
 import { TextureHelper } from "./textureHelper";
 
-export class ShaderRenderer implements ShaderEntryContextType {
-  constructor(editor: EditorAPI, canvas: HTMLCanvasElement) {
+export class ShaderRenderer
+  implements ShaderEntryContextType, IUniformCallback
+{
+  constructor(canvas: HTMLCanvasElement, fillWindow = true) {
     const gl = canvas.getContext("webgl", { alpha: true });
     if (!gl) {
       throw new Error(
@@ -16,13 +18,13 @@ export class ShaderRenderer implements ShaderEntryContextType {
       );
     }
 
-    this.textureHelper = new TextureHelper(editor, gl);
+    this.textureHelper = new TextureHelper(gl);
+
     this.canvas = canvas;
-    this.editor = editor;
     this.gl = gl;
 
     createBuffer(gl);
-    const endResize = this.handleResize();
+    const endResize = this.handleResize(fillWindow);
     const endRender = this.startRenderLoop();
 
     this.deinit = () => {
@@ -31,11 +33,13 @@ export class ShaderRenderer implements ShaderEntryContextType {
     };
   }
 
-  private handleResize() {
+  private handleResize(fillWindow: boolean) {
     if (!this.gl) return () => {};
     const resize = () => {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
+      if (fillWindow) {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
       this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     };
     resize();
@@ -139,5 +143,4 @@ export class ShaderRenderer implements ShaderEntryContextType {
   uniforms: Uniforms = {};
   gl: WebGLRenderingContext;
   textureHelper: TextureHelper;
-  editor: EditorAPI;
 }

@@ -1,5 +1,5 @@
 import type { NodeEditor } from "rete";
-import type { EditorAPI } from "./interface";
+import type { EditorAPI, IUniformCallback } from "./interface";
 import type { NodeType } from "@compiler/nodes/allNodes";
 import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
@@ -15,8 +15,6 @@ import type { SelectableAPI } from "./extensions/selectable";
 import type { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
-import type { ShaderEntryContextType } from "@renderer/components/shaderOverlay/ShaderEntryContext";
-import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -24,10 +22,8 @@ export class EditorAPIImp implements EditorAPI {
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
-    overlayElement: HTMLCanvasElement,
     onChanged?: OnGraphChanged
   ) {
-    this.shaderRenderer = new ShaderRenderer(this, overlayElement);
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
@@ -92,10 +88,6 @@ export class EditorAPIImp implements EditorAPI {
     this.extension.initialize();
   }
 
-  selectImage = (): Promise<string | undefined> => {
-    return this.extension.selectImage();
-  };
-
   async createNode(
     nodeType: NodeType,
     space: "screen" | "absolute",
@@ -122,16 +114,18 @@ export class EditorAPIImp implements EditorAPI {
     );
   }
 
-  getShaderEntryContext(): ShaderEntryContextType {
-    return this.shaderRenderer;
-  }
+  addUniformCallback: (callback: IUniformCallback) => void = (
+    callback: IUniformCallback
+  ) => {
+    this.uniformCallbacks.push(callback);
+  };
 
   uniforms: () => Uniforms = (): Uniforms => {
     return this.compiler().getGraph().uniforms;
   };
 
   updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
-    this.shaderRenderer.updateUniform(uniform);
+    this.informAboutUniform(uniform);
     return this.applyDiff(this.compiler().updateUniform(uniform));
   };
 
@@ -142,7 +136,7 @@ export class EditorAPIImp implements EditorAPI {
 
     const uniform = this.compiler().getGraph().uniforms[name];
     if (uniform) {
-      this.shaderRenderer.updateUniform(uniform);
+      this.informAboutUniform(uniform);
     }
 
     return diff;
@@ -211,10 +205,6 @@ export class EditorAPIImp implements EditorAPI {
     }
   }
 
-  relativePathToURL(path: string): Promise<string | undefined> {
-    return this.extension.relativePathToURL(path);
-  }
-
   saveGraph() {
     return this.compiler().getGraph();
   }
@@ -251,7 +241,6 @@ export class EditorAPIImp implements EditorAPI {
     this.extension.destroy();
     this.keybindings.destroy();
     this.area.destroy();
-    this.shaderRenderer.dispose();
   }
 
   getCustomFunctions: () => FunctionDefinition[] = () => {
@@ -309,7 +298,7 @@ export class EditorAPIImp implements EditorAPI {
 
       if (diff.updatedUniforms) {
         for (const uniform of Object.values(diff.updatedUniforms)) {
-          this.shaderRenderer.updateUniform(uniform);
+          this.informAboutUniform(uniform);
         }
       }
 
@@ -422,6 +411,13 @@ export class EditorAPIImp implements EditorAPI {
       y: graphNode.position.y,
     });
   }
+
+  protected informAboutUniform(uniform: Uniform) {
+    this.uniformCallbacks.forEach((callback) =>
+      callback.updateUniform(uniform)
+    );
+  }
+
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;
@@ -430,7 +426,7 @@ export class EditorAPIImp implements EditorAPI {
   private extension: EditorVSExtension;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;
-  private shaderRenderer: ShaderRenderer;
+  private uniformCallbacks: IUniformCallback[] = [];
 }
 
 function uiConnectionToConnection(

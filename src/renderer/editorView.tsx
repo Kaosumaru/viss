@@ -12,6 +12,7 @@ import {
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
 import { Compiler } from "@compiler/compiler";
+import { ShaderRenderer } from "./components/shaderOverlay/shaderRenderer";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -19,6 +20,7 @@ export interface EditorViewProps {
 
 export function EditorView({ onChanged }: EditorViewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const shaderRendererRef = useRef<ShaderRenderer | null>(null);
   const editorRef = useRef<EditorAPI | null>(null);
   const compiler = useMemo(() => {
     const compiler = new Compiler();
@@ -33,10 +35,12 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const create = useCallback(
     async (container: HTMLElement) => {
+      shaderRendererRef.current = new ShaderRenderer(canvasRef.current!);
+
       const editor = await createEditor(
         compiler,
         container,
-        canvasRef.current!,
+        shaderRendererRef.current,
         onChanged
       );
       editorRef.current = editor;
@@ -51,6 +55,10 @@ export function EditorView({ onChanged }: EditorViewProps) {
   // Cleanup EditorAPI when component unmounts
   useEffect(() => {
     return () => {
+      if (shaderRendererRef.current) {
+        shaderRendererRef.current.dispose();
+        shaderRendererRef.current = null;
+      }
       if (editorRef.current) {
         editorRef.current.destroy();
         editorRef.current = null;

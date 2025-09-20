@@ -1,9 +1,12 @@
-import type { EditorAPI } from "@renderer/graph/interface";
+import { vscode } from "@renderer/vscode/vscodeManager";
 import { loadTexture } from "./helpers";
 
+export type GetTexturePath = (
+  relativePath: string
+) => Promise<string | undefined>;
+
 export class TextureHelper {
-  constructor(editor: EditorAPI, gl: WebGLRenderingContext) {
-    this.editor = editor;
+  constructor(gl: WebGLRenderingContext) {
     this.gl = gl;
   }
 
@@ -50,7 +53,7 @@ export class TextureHelper {
         texture: texture.texture,
       };
 
-      this.editor.relativePathToURL(path).then((url) => {
+      vscode.relativePathToURL(path).then((url) => {
         if (url) {
           texture.load(url);
         }
@@ -62,7 +65,6 @@ export class TextureHelper {
   }
 
   private gl: WebGLRenderingContext;
-  private editor: EditorAPI;
   private textures = new Map<string, TextureEntry>();
   private freeTextures = [0, 1, 2, 3, 4, 5, 6, 7];
 }

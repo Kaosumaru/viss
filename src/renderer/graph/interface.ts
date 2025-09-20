@@ -5,6 +5,10 @@ import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
+export interface IUniformCallback {
+  updateUniform: (uniform: Uniform) => void;
+}
+
 export interface EditorAPI {
   updateUniformDefaultValue(
     name: string,
@@ -24,6 +28,8 @@ export interface EditorAPI {
     params?: Parameters
   ) => Promise<void>;
 
+  addUniformCallback: (callback: IUniformCallback) => void;
+
   deleteNode: (nodeId: string) => Promise<void>;
   deleteNodes: (nodeIds: string[]) => Promise<void>;
 
@@ -38,10 +44,6 @@ export interface EditorAPI {
   loadGraphJSON: (graphJson: string) => Promise<void>;
   loadGraph: (graph: Graph) => Promise<void>;
   saveGraph: () => Graph;
-
-  selectImage: () => Promise<string | undefined>;
-
-  relativePathToURL: (path: string) => Promise<string | undefined>;
 
   uniforms(): Uniforms;
   updateUniform: (uniform: Uniform) => Promise<void>;
