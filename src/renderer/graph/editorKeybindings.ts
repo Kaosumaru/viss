@@ -11,6 +11,17 @@ export class EditorKeybindings {
 
     area.container.tabIndex = 0;
 
+    // Add keydown event listener to call handleKeyDown
+    this.helper.add(() => {
+      const cbKeyDown = (event: KeyboardEvent) => {
+        this.handleKeyDown(event);
+      };
+      this.area.container.addEventListener("keydown", cbKeyDown);
+      return () => {
+        this.area.container.removeEventListener("keydown", cbKeyDown);
+      };
+    });
+
     // Use native copy, cut, paste events instead of key combinations
     this.helper.add(() => {
       const cbCopy = (event: ClipboardEvent) => {
@@ -59,7 +70,8 @@ export class EditorKeybindings {
       };
     });
   }
-  handleMouseMove(event: MouseEvent) {
+
+  private handleMouseMove(event: MouseEvent) {
     const rect = this.area.container.getBoundingClientRect();
     this.mousePosition.x = event.clientX - rect.left;
     this.mousePosition.y = event.clientY - rect.top;
@@ -67,7 +79,7 @@ export class EditorKeybindings {
 
   // Clipboard actions are now handled by native events
   // Delete key handling can remain if desired
-  public handleKeyDown(event: KeyboardEvent): void {
+  private handleKeyDown(event: KeyboardEvent): void {
     if (event.key === "Delete" || event.key === "Backspace") {
       const selectedNodes = this.editor.getSelectedNodes();
       if (selectedNodes.length > 0) {
