@@ -69,7 +69,7 @@ export function applyUniforms(
     } else if (entry.value.id === "texture") {
       const { type, path } = entry.value;
       if (type === "2d") {
-        const id = shaderRenderer.getTexture(path);
+        const id = shaderRenderer.textureHelper.getTextureId(path);
         gl.uniform1i(location, id);
       } else if (type === "cube") {
         // TODO

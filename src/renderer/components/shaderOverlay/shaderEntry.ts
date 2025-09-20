@@ -57,7 +57,11 @@ export class ShaderEntry {
     }
   }
 
-  constructor(renderer: ShaderRenderer, fragmentShaderSrc?: string, vertexShaderSrc?: string) {
+  constructor(
+    renderer: ShaderRenderer,
+    fragmentShaderSrc?: string,
+    vertexShaderSrc?: string
+  ) {
     this.renderer = renderer;
     this.fragmentShaderSrc = fragmentShaderSrc || g_fragmentShaderSrc;
     this.vertexShaderSrc = vertexShaderSrc || g_vertexShaderSrc;
@@ -86,12 +90,12 @@ export class ShaderEntry {
       return;
     }
 
+    gl.useProgram(this.program);
+
     if (this.uniformsToUpdate) {
       applyUniforms(gl, this.program, this.uniformsToUpdate, this.renderer);
       this.uniformsToUpdate = undefined;
     }
-
-    gl.useProgram(this.program);
 
     const posAttrib = gl.getAttribLocation(this.program, "a_position");
     const uvAttrib = gl.getAttribLocation(this.program, "a_uv");

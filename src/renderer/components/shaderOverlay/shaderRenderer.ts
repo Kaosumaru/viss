@@ -2,65 +2,54 @@ import type { Uniform, Uniforms } from "@graph/uniform";
 import { ShaderEntry } from "./shaderEntry";
 import type { ShaderEntryContextType } from "./ShaderEntryContext";
 import { uniformEntryFromUniform } from "./uniform";
-import { loadTexture } from "./helpers";
+import { getTexturePath } from "./helpers";
 import type { EditorAPI } from "@renderer/graph/interface";
+import { createBuffer } from "./buffer";
+import { TextureHelper } from "./textureHelper";
 
 export class ShaderRenderer implements ShaderEntryContextType {
   constructor(editor: EditorAPI, canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    this.editor = editor;
-
     const gl = canvas.getContext("webgl", { alpha: true });
-    this.gl = gl;
     if (!gl) {
-      console.error("WebGL not supported");
-      return;
+      throw new Error(
+        "Unable to initialize WebGL. Your browser or machine may not support it."
+      );
     }
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    // Use unit quad (0,0 to 1,1) with UV coordinates
-    // Vertices: x, y, u, v (position + UV coordinates)
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([
-        // Triangle 1
-        0,
-        0,
-        0,
-        0, // Bottom-left
-        1,
-        0,
-        1,
-        0, // Bottom-right
-        0,
-        1,
-        0,
-        1, // Top-left
-        // Triangle 2
-        0,
-        1,
-        0,
-        1, // Top-left
-        1,
-        0,
-        1,
-        0, // Bottom-right
-        1,
-        1,
-        1,
-        1, // Top-right
-      ]),
-      gl.STATIC_DRAW
-    );
+    this.textureHelper = new TextureHelper(editor, gl);
+    this.canvas = canvas;
+    this.editor = editor;
+    this.gl = gl;
 
+    createBuffer(gl);
+    const endResize = this.handleResize();
+    const endRender = this.startRenderLoop();
+
+    this.deinit = () => {
+      endRender();
+      endResize();
+    };
+  }
+
+  private handleResize() {
+    if (!this.gl) return () => {};
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     };
     resize();
     window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+    };
+  }
+
+  private startRenderLoop() {
+    if (!this.gl) return () => {};
+    const gl = this.gl;
+    const canvas = this.canvas;
 
     let timerId: number;
     const startTime = performance.now();
@@ -78,11 +67,10 @@ export class ShaderRenderer implements ShaderEntryContextType {
     };
     timerId = requestAnimationFrame(loop);
 
-    this.deinit = () => {
+    return () => {
       if (timerId) {
         cancelAnimationFrame(timerId);
       }
-      window.removeEventListener("resize", resize);
     };
   }
 
@@ -117,16 +105,16 @@ export class ShaderRenderer implements ShaderEntryContextType {
   };
 
   updateUniform = (uniform: Uniform) => {
-    const oldTexturePath = this.getTexturePath(this.uniforms[uniform.id]);
+    const oldTexturePath = getTexturePath(this.uniforms[uniform.id]);
     if (oldTexturePath) {
-      this.unloadTexture(uniform.id, oldTexturePath);
+      this.textureHelper.unloadTexture(uniform.id, oldTexturePath);
     }
 
     this.uniforms[uniform.id] = uniform;
 
-    const newTexturePath = this.getTexturePath(uniform);
+    const newTexturePath = getTexturePath(uniform);
     if (newTexturePath) {
-      this.loadTexture(uniform.id, newTexturePath);
+      this.textureHelper.loadTexture(uniform.id, newTexturePath);
     }
 
     const uniformEntry = uniformEntryFromUniform(uniform);
@@ -148,79 +136,8 @@ export class ShaderRenderer implements ShaderEntryContextType {
     }
   };
 
-  getTexturePath(uniform: Uniform | undefined) {
-    if (
-      uniform &&
-      uniform.type.id === "sampler2D" &&
-      uniform.defaultValue &&
-      uniform.defaultValue.type === "string"
-    ) {
-      return uniform.defaultValue.value;
-    }
-    return undefined;
-  }
-
-  getTexture(path: string): number {
-    const entry = this.textures.get(path);
-    if (entry) {
-      return entry.uniformUnit;
-    }
-    return -1;
-  }
-
-  unloadTexture(id: string, path: string) {
-    const entry = this.textures.get(path);
-    if (!entry) {
-      return;
-    }
-
-    entry.uniforms.delete(id);
-    if (entry.uniforms.size !== 0) {
-      return;
-    }
-
-    const unit = entry.uniformUnit;
-    this.freeTextures.unshift(unit);
-
-    this.textures.delete(path);
-  }
-
-  loadTexture(id: string, path: string) {
-    if (!this.gl) return;
-    let entry = this.textures.get(path);
-    if (!entry) {
-      const unit = this.freeTextures.pop();
-      if (unit === undefined) {
-        return;
-      }
-      const texture = loadTexture(this.gl);
-      entry = {
-        uniforms: new Set(),
-        uniformUnit: unit,
-        texture: texture.texture,
-      };
-
-      this.editor.relativePathToURL(path).then((url) => {
-        if (url) {
-          texture.load(url);
-        }
-      });
-      this.textures.set(path, entry);
-    }
-
-    entry.uniforms.add(id);
-  }
-
-  freeTextures = [0, 1, 2, 3, 4, 5, 6, 7];
-
   uniforms: Uniforms = {};
-  textures = new Map<string, TextureEntry>();
-  gl: WebGLRenderingContext | null;
+  gl: WebGLRenderingContext;
+  textureHelper: TextureHelper;
   editor: EditorAPI;
-}
-
-interface TextureEntry {
-  uniforms: Set<string>;
-  uniformUnit: number;
-  texture: WebGLTexture;
 }

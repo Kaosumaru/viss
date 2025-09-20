@@ -1,5 +1,8 @@
 //
 // Initialize a texture and load an image.
+
+import type { Uniform } from "@graph/uniform";
+
 // When the image finished loading copy it into the texture.
 export function loadTexture(
   gl: WebGLRenderingContext,
@@ -80,4 +83,16 @@ interface TextureData {
 
 function isPowerOf2(value: number) {
   return (value & (value - 1)) === 0;
+}
+
+export function getTexturePath(uniform: Uniform | undefined) {
+  if (
+    uniform &&
+    uniform.type.id === "sampler2D" &&
+    uniform.defaultValue &&
+    uniform.defaultValue.type === "string"
+  ) {
+    return uniform.defaultValue.value;
+  }
+  return undefined;
 }
