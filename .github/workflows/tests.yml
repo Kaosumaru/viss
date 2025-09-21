@@ -2,10 +2,10 @@ name: Unit Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
-  workflow_dispatch:  # Allows manual triggering
+    branches: [master]
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   test:
@@ -13,41 +13,41 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]  # Using Node.js 20.x as it's the latest LTS
+        node-version: [20.x] # Using Node.js 20.x as it's the latest LTS
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run type checking
-      run: npm run check-types
-    
-    - name: Run tests
-      run: npm test -- --reporter=junit --outputFile=.vitest-results.xml
-    
-    - name: Upload test results
-      if: always()  # Run even if tests fail
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: .vitest-results.xml
-        if-no-files-found: ignore  # Don't fail if no result file is found
-        
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with:
-        name: Vitest Tests           # Name of the check run which will be created
-        path: .vitest-results.xml    # Path to test results
-        reporter: jest-junit         # Format of test results
+      - uses: actions/checkout@v4
 
-    - name: Run linting
-      run: npm run lint
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Run type checking
+        run: npm run check-types
+
+      - name: Run tests
+        run: npm test -- --reporter=junit --outputFile=.vitest-results.xml
+
+      - name: Upload test results
+        if: always() # Run even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: .vitest-results.xml
+          if-no-files-found: ignore # Don't fail if no result file is found
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: Vitest Tests # Name of the check run which will be created
+          path: .vitest-results.xml # Path to test results
+          reporter: jest-junit # Format of test results
+
+      - name: Run linting
+        run: npm run lint
