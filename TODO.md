@@ -4,7 +4,6 @@ MVP
     - how this should work in vscode? Select folder, select file?
         - selecting files would be simplest for now - just a separate list of files after uniforms
 2. sample with three.js (best if we would use 2d AND 3d model)
-3. Display warnings in the editor
 
 bugs
 1. Weird issue with shaders blinking while saving
