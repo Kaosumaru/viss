@@ -18,6 +18,7 @@ import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
 import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import { loadGraphIntoCompiler } from "./loadGraph";
+import { connectionToID, GraphCache } from "./graphCache";
 
 export interface InputConnection {
   node: Node;
@@ -41,6 +42,14 @@ export class CompilerInternal {
     this.clearGraph();
   }
 
+  getNodeById(id: string): Node | undefined {
+    return this.cache.getNodeById(id);
+  }
+
+  hasNode(identifier: string) {
+    return this.cache.hasNode(identifier);
+  }
+
   public getCustomFunctions(): FunctionDefinition[] {
     return Object.values(this.nameToFunction);
   }
@@ -56,7 +65,7 @@ export class CompilerInternal {
   }
 
   compile(nodeId: string): Context {
-    const node = this.getNodeById(nodeId);
+    const node = this.cache.getNodeById(nodeId);
     if (!node) {
       throw new Error(`Node with id ${nodeId} not found in graph`);
     }
@@ -80,7 +89,7 @@ export class CompilerInternal {
 
   public canConnect(output: SocketReference, input: SocketReference): boolean {
     const outputType = this.getOutputType(output);
-    const node = this.getNodeById(input.nodeId);
+    const node = this.cache.getNodeById(input.nodeId);
     if (!node) {
       return false;
     }
@@ -121,7 +130,7 @@ export class CompilerInternal {
       ...newNode.parameters,
     };
 
-    this.nodes.set(newNode.identifier, newNode);
+    this.cache.addNode(newNode);
     this.graph.nodes.push(newNode);
 
     return {
@@ -136,7 +145,7 @@ export class CompilerInternal {
         ...node,
       };
 
-      if (this.nodes.has(newNode.identifier)) {
+      if (this.cache.hasNode(newNode.identifier)) {
         throw new Error(
           `Node with identifier ${newNode.identifier} already exists`
         );
@@ -151,7 +160,7 @@ export class CompilerInternal {
         ...newNode.parameters,
       };
 
-      this.nodes.set(newNode.identifier, newNode);
+      this.cache.addNode(newNode);
       this.graph.nodes.push(newNode);
 
       addedNodes.push(this.getNodeInfo(newNode));
@@ -169,13 +178,13 @@ export class CompilerInternal {
     const invalidatedNodeIds: string[] = [];
 
     for (const nodeId of nodeIds) {
-      const node = this.getNodeById(nodeId);
+      const node = this.cache.getNodeById(nodeId);
       if (!node) continue;
 
       this.graph.nodes = this.graph.nodes.filter(
         (n) => n.identifier !== nodeId
       );
-      this.nodes.delete(nodeId);
+      this.cache.removeNode(nodeId);
 
       if (removeOrphanedConnections) {
         this.graph.connections = this.graph.connections.filter((c) => {
@@ -183,9 +192,7 @@ export class CompilerInternal {
             return true;
           }
           removedConnections.push(c);
-          const ref = globalToSocketRef(c.to);
-          this.getConnectedNode.delete(ref);
-          this.connectionsCache.delete(connectionToID(c));
+          this.cache.removeCachedConnection(c);
           return false;
         });
       }
@@ -207,7 +214,7 @@ export class CompilerInternal {
 
   getInfo(nodeIds: string[]): AddedNodeInfo[] {
     return nodeIds.map((nodeId) => {
-      const node = this.getNodeById(nodeId);
+      const node = this.cache.getNodeById(nodeId);
       if (!node) {
         throw new Error(`Node with id ${nodeId} not found in graph`);
       }
@@ -216,7 +223,7 @@ export class CompilerInternal {
   }
 
   translateNode(nodeId: string, x: number, y: number): GraphDiff {
-    const node = this.getNodeById(nodeId);
+    const node = this.cache.getNodeById(nodeId);
     if (!node) {
       throw new Error(`Node with id ${nodeId} not found in graph`);
     }
@@ -242,14 +249,14 @@ export class CompilerInternal {
     const warnings: string[] = [];
 
     for (const connection of connections) {
-      const fromNode = this.getNodeById(connection.from.nodeId);
+      const fromNode = this.cache.getNodeById(connection.from.nodeId);
       if (!fromNode) {
         warnings.push(`From node with id ${connection.from.nodeId} not found`);
         continue;
       }
 
       // TODO throw error if connection is invalid (would cause loop or is of invalid type)
-      const foundConnection = this.connectionsCache.get(
+      const foundConnection = this.cache.getConnectionById(
         connectionToID(connection)
       );
       if (foundConnection) {
@@ -266,7 +273,7 @@ export class CompilerInternal {
       }
 
       this.graph.connections.push(connection);
-      this.cacheConnection(connection);
+      this.cache.cacheConnection(connection);
       addedConnections.push(connection);
       invalidatedNodeIds.push(connection.to.nodeId);
     }
@@ -288,7 +295,7 @@ export class CompilerInternal {
 
     for (const connection of connections) {
       const id = connectionToID(connection);
-      const foundConnection = this.connectionsCache.get(id);
+      const foundConnection = this.cache.getConnectionById(id);
       if (!foundConnection) {
         continue;
         // TODO this happen when playing with reapplied connections
@@ -298,9 +305,8 @@ export class CompilerInternal {
       this.graph.connections = this.graph.connections.filter(
         (conn) => conn !== foundConnection
       );
-      const ref = globalToSocketRef(connection.to);
-      this.getConnectedNode.delete(ref);
-      this.connectionsCache.delete(id);
+
+      this.cache.removeCachedConnection(foundConnection);
 
       removedConnections.push(connection);
       invalidatedNodeIds.push(connection.to.nodeId);
@@ -313,7 +319,7 @@ export class CompilerInternal {
   }
 
   updateParameter(nodeId: string, paramName: string, value: ParameterValue) {
-    const node = this.getNodeById(nodeId);
+    const node = this.cache.getNodeById(nodeId);
     if (!node) {
       throw new Error(`Node with id ${nodeId} not found in graph`);
     }
@@ -405,10 +411,9 @@ export class CompilerInternal {
   }
 
   clearGraph() {
-    this.nodes.clear();
-    this.getConnectedNode.clear();
+    this.cache = new GraphCache();
     this.cachedContexts.clear();
-    this.nodes.clear();
+
     this.graph = {
       version: CompilerInternal.graphVersion,
       includes: getBuiltInFunctions(),
@@ -424,19 +429,11 @@ export class CompilerInternal {
     inputNodeId: string,
     inputSocketId: string
   ): InputConnection | undefined {
-    return this.getConnectedNode.get(`${inputNodeId}///${inputSocketId}`);
-  }
-
-  getNodeById(id: string): Node | undefined {
-    return this.nodes.get(id);
-  }
-
-  hasNode(identifier: string) {
-    return this.nodes.has(identifier);
+    return this.cache.getInputNode(inputNodeId, inputSocketId);
   }
 
   protected getNodeIdsWithUniforms(uniformIds: string[]): string[] {
-    return Array.from(this.nodes.values())
+    return Array.from(this.cache.allNodes())
       .filter((node) => {
         // TODO is _identifier always the right parameter name?
         const identifier = node.parameters["_identifier"];
@@ -456,17 +453,10 @@ export class CompilerInternal {
     return this.cachedContexts.get(nodeId);
   }
 
-  protected cacheConnection(connection: Connection) {
-    const id = connectionToID(connection);
-    this.connectionsCache.set(id, connection);
-    const key = globalToSocketRef(connection.to);
-    this.getConnectedNode.set(key, {
-      node: this.getNodeById(connection.from.nodeId)!,
-      socketId: connection.from.socketId,
-    });
-  }
-
   protected getNodeInfo(node: Node): AddedNodeInfo {
+    // node can have connections to input or output sockets that no longer exists
+    // get a list of all input connections to this node
+
     const nodeClass = getNode(node.nodeType as NodeType);
     try {
       const compiledContext = this.compile(node.identifier);
@@ -501,7 +491,7 @@ export class CompilerInternal {
       const currentNodeId = nodesToCheck.pop();
       if (!currentNodeId) continue;
 
-      const node = this.getNodeById(currentNodeId);
+      const node = this.cache.getNodeById(currentNodeId);
       if (!node)
         throw new Error(`Node with id ${currentNodeId} not found in graph`);
 
@@ -535,17 +525,7 @@ export class CompilerInternal {
     return socket.type;
   }
 
+  protected cache: GraphCache = new GraphCache();
   protected cachedContexts: Map<string, Context> = new Map();
-  protected getConnectedNode: Map<string, InputConnection> = new Map();
-  protected connectionsCache: Map<string, Connection> = new Map();
-  protected nodes: Map<string, Node> = new Map();
   protected nameToFunction: Record<string, FunctionDefinition> = {};
-}
-
-function globalToSocketRef(ref: SocketReference): string {
-  return `${ref.nodeId}///${ref.socketId}`;
-}
-
-export function connectionToID(ref: Connection): string {
-  return `${globalToSocketRef(ref.from)}->${globalToSocketRef(ref.to)}`;
 }

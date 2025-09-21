@@ -1,7 +1,8 @@
 import { type Graph, type GraphDiff, mergeGraphDiffs } from "@graph/graph";
 import deepEqual from "deep-equal";
 import type { Connection } from "@graph/connection";
-import { connectionToID, type CompilerInternal } from "./compilerInternal";
+import { type CompilerInternal } from "./compilerInternal";
+import { connectionToID } from "./graphCache";
 
 export function loadGraphIntoCompiler(
   this: CompilerInternal,
@@ -18,11 +19,11 @@ export function loadGraphIntoCompiler(
   );
 
   const addedNodes = otherGraph.nodes.filter(
-    (otherNode) => !this.nodes.has(otherNode.identifier)
+    (otherNode) => !this.cache.hasNode(otherNode.identifier)
   );
 
   const addedConnections = otherGraph.connections.filter(
-    (conn) => !this.connectionsCache.has(connectionToID(conn))
+    (conn) => !this.cache.getConnectionById(connectionToID(conn))
   );
 
   const removedConnections: Connection[] = this.graph.connections.filter(

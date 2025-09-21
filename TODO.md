@@ -3,10 +3,8 @@ MVP
 1. loading glsl functions from file
     - how this should work in vscode? Select folder, select file?
         - selecting files would be simplest for now - just a separate list of files after uniforms
-2. Uniforms
-    - handle at least vector2, vector3, vector4
-3. sample with three.js (best if we would use 2d AND 3d model)
-4. Display warnings in the editor
+2. sample with three.js (best if we would use 2d AND 3d model)
+3. Display warnings in the editor
 
 bugs
 1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
