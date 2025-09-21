@@ -1,11 +1,21 @@
-# React + TypeScript + Vite
+# VShader
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A shader editor built with React + TypeScript + Vite.
 
-Currently, two official plugins are available:
+## Deployment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application is automatically deployed to GitHub Pages when changes are pushed to the master branch using GitHub Actions.
+
+### GitHub Pages URL
+
+You can access the live version of the application at: https://kaosumaru.github.io/vshader/
+
+### Local Development
+
+This project is built with:
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
 
 ## Expanding the ESLint configuration
 

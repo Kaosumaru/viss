@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:web": "tsc -b && vite build --mode production",
     "build:vscode": "tsc -b && vite build --mode vscode-extension && npx copyfiles -u 1 \"dist/**/*\" \"vscode-extension/media/\"",
     "check-types": "tsc -b --noEmit",
     "lint": "eslint .",
