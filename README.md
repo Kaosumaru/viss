@@ -1,5 +1,7 @@
 # VShader
 
+[![Unit Tests](https://github.com/Kaosumaru/vshader/actions/workflows/tests.yml/badge.svg)](https://github.com/Kaosumaru/vshader/actions/workflows/tests.yml)
+
 A shader editor built with React + TypeScript + Vite.
 
 ## Deployment
