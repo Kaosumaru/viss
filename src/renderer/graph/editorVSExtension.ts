@@ -29,6 +29,12 @@ export class EditorVSExtension {
         }
       )
     );
+
+    this.helper.addDispose(
+      vscode.addMessageListener("dispose", () => {
+        this.saveState();
+      })
+    );
   }
 
   public async initialize() {
@@ -43,6 +49,8 @@ export class EditorVSExtension {
       });
     }
 
+    // TODO we should get a dispose message from the extension host
+    // but it seems that this is still needed - maybe transform is invalid?
     if (vscode.isAvailable) {
       this.area.addPipe((context) => {
         if (context.type === "zoomed" || context.type === "translated") {

@@ -74,8 +74,13 @@ export interface ToWebviewURIResponseMessage {
   };
 }
 
+export interface DisposeMessage {
+  type: "dispose";
+}
+
 export type ExtensionToEditorMessage =
   | LoadGraphMessage
   | ExportGraphRequestMessage
   | ShowOpenDialogResponseMessage
+  | DisposeMessage
   | ToWebviewURIResponseMessage;

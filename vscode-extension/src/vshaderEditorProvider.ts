@@ -69,6 +69,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
 
     // Make sure we get rid of the listeners when our editor is closed.
     webviewPanel.onDidDispose(() => {
+      postMessage(webviewPanel, { type: "dispose" });
       changeDocumentSubscription.dispose();
       saveDocumentSubscription.dispose();
     });

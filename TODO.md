@@ -5,9 +5,8 @@ MVP
         - selecting files would be simplest for now - just a separate list of files after uniforms
 2. sample with three.js (best if we would use 2d AND 3d model)
 
-bugs
-1. Weird issue with shaders blinking while saving
-2. It seems that if you move a node and save, move isn't being saved
+Small bugs
+1. Weird issue with shaders blinking while saving in VSCode
 
 Next
 
