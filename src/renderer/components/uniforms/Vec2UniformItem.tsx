@@ -13,7 +13,7 @@ const Vec2UniformItem: React.FC<UniformItemProps> = ({
 }) => {
   // Default values for vec2
   const defaultValues = [0.0, 0.0];
-  
+
   // The value is stored in uniform.defaultValue?.value (if type is vector)
   const values =
     uniform.defaultValue && uniform.defaultValue.type === "vector"

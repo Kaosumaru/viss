@@ -30,7 +30,7 @@ export type ParameterValue =
   | StringValue
   | ColorValue
   | VectorValue;
-  
+
 export type ParameterValueType = ParameterValue["type"];
 
 export interface Parameters {

@@ -34,12 +34,12 @@ interface TextureVisualizer {
   id: "texture";
 }
 
-export type UniformVisualizer = 
-  | FloatUniformVisualizer 
-  | Vec2UniformVisualizer 
-  | Vec3UniformVisualizer 
+export type UniformVisualizer =
+  | FloatUniformVisualizer
+  | Vec2UniformVisualizer
+  | Vec3UniformVisualizer
   | Vec4UniformVisualizer
-  | BoolUniformVisualizer 
+  | BoolUniformVisualizer
   | TextureVisualizer;
-  
+
 export type UniformVisualizerId = UniformVisualizer["id"];

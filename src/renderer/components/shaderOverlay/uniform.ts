@@ -142,7 +142,8 @@ function uniformEntryFromBool(
   name: string,
   defaultValue?: ParameterValue
 ): UniformEntry {
-  const value = defaultValue?.type === "boolean" ? (defaultValue.value ? 1 : 0) : 0;
+  const value =
+    defaultValue?.type === "boolean" ? (defaultValue.value ? 1 : 0) : 0;
 
   return {
     name,
@@ -161,7 +162,7 @@ function uniformEntryFromVector(
   defaultValue?: ParameterValue
 ): UniformEntry {
   let value: number[];
-  
+
   if (defaultValue?.type === "vector") {
     value = defaultValue.value.slice(0, type.size);
     // Ensure we have enough values
