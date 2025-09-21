@@ -19,11 +19,18 @@ export interface ColorValue {
   value: Color;
 }
 
+export interface VectorValue {
+  type: "vector";
+  value: number[];
+}
+
 export type ParameterValue =
   | NumberValue
   | BooleanValue
   | StringValue
-  | ColorValue;
+  | ColorValue
+  | VectorValue;
+  
 export type ParameterValueType = ParameterValue["type"];
 
 export interface Parameters {

@@ -14,9 +14,32 @@ interface FloatUniformVisualizer {
   id: "float";
 }
 
+interface Vec2UniformVisualizer {
+  id: "vec2";
+}
+
+interface Vec3UniformVisualizer {
+  id: "vec3";
+}
+
+interface Vec4UniformVisualizer {
+  id: "vec4";
+}
+
+interface BoolUniformVisualizer {
+  id: "bool";
+}
+
 interface TextureVisualizer {
   id: "texture";
 }
 
-export type UniformVisualizer = FloatUniformVisualizer | TextureVisualizer;
+export type UniformVisualizer = 
+  | FloatUniformVisualizer 
+  | Vec2UniformVisualizer 
+  | Vec3UniformVisualizer 
+  | Vec4UniformVisualizer
+  | BoolUniformVisualizer 
+  | TextureVisualizer;
+  
 export type UniformVisualizerId = UniformVisualizer["id"];

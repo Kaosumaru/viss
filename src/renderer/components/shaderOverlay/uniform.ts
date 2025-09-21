@@ -1,4 +1,4 @@
-import type { ScalarType } from "@glsl/types/types";
+import type { ScalarType, VectorType } from "@glsl/types/types";
 import type { ParameterValue } from "@graph/parameter";
 import type { Uniform } from "@graph/uniform";
 import type { ShaderRenderer } from "./shaderRenderer";
@@ -80,8 +80,19 @@ export function applyUniforms(
 
 export function uniformEntryFromUniform(uniform: Uniform): UniformEntry {
   switch (uniform.type.id) {
-    case "scalar":
+    case "scalar": {
+      // Handle scalar types (including bool)
+      if (uniform.type.type === "bool") {
+        return uniformEntryFromBool(uniform.id, uniform.defaultValue);
+      }
       return uniformEntryFromScalar(
+        uniform.id,
+        uniform.type,
+        uniform.defaultValue
+      );
+    }
+    case "vector":
+      return uniformEntryFromVector(
         uniform.id,
         uniform.type,
         uniform.defaultValue
@@ -123,6 +134,52 @@ function uniformEntryFromScalar(
       type: type.type === "float" ? "f" : "i",
       size: 1,
       value: [value],
+    },
+  };
+}
+
+function uniformEntryFromBool(
+  name: string,
+  defaultValue?: ParameterValue
+): UniformEntry {
+  const value = defaultValue?.type === "boolean" ? (defaultValue.value ? 1 : 0) : 0;
+
+  return {
+    name,
+    value: {
+      id: "vector",
+      type: "i", // booleans are represented as integers in shaders
+      size: 1,
+      value: [value],
+    },
+  };
+}
+
+function uniformEntryFromVector(
+  name: string,
+  type: VectorType,
+  defaultValue?: ParameterValue
+): UniformEntry {
+  let value: number[];
+  
+  if (defaultValue?.type === "vector") {
+    value = defaultValue.value.slice(0, type.size);
+    // Ensure we have enough values
+    while (value.length < type.size) {
+      value.push(0);
+    }
+  } else {
+    // Create a default array of zeros with the right size
+    value = Array(type.size).fill(0);
+  }
+
+  return {
+    name,
+    value: {
+      id: "vector",
+      type: type.type === "float" ? "f" : "i",
+      size: type.size,
+      value,
     },
   };
 }
