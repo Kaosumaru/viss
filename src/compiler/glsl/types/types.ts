@@ -27,12 +27,17 @@ export interface Sampler2DType {
   id: "sampler2D";
 }
 
+export interface ErrorType {
+  id: "error";
+}
+
 export type Type =
   | ScalarType
   | VectorType
   | MatrixType
   | VariantType
-  | Sampler2DType;
+  | Sampler2DType
+  | ErrorType; // used for undefined sockets, etc.
 
 const _cachedScalars = createScalarCache();
 const _cachedMatrix = createMatrixCache();

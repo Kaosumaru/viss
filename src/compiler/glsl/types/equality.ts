@@ -31,6 +31,8 @@ export function areTypesEqual(type1: Type, type2: Type): boolean {
       );
     case "sampler2D":
       return true;
+    case "error":
+      return false;
   }
 }
 

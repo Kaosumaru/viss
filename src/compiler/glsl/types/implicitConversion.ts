@@ -28,6 +28,8 @@ export function canBeImplicitlyConverted(from: Type, to: Type): boolean {
       );
     case "sampler2D":
       return true;
+    case "error":
+      return false;
   }
 }
 

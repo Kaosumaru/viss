@@ -7,10 +7,8 @@ MVP
 3. Display warnings in the editor
 
 bugs
-1. When changing number of outputs to fewer, you can orphan some connections (vector decompose is a good example)
-2. When type of connection is changed, errors in nodes cause noe to be unable to be deleted
-3. Weird issue with shaders blinking while saving
-4. It seems that if you move a node and save, move isn't being saved
+1. Weird issue with shaders blinking while saving
+2. It seems that if you move a node and save, move isn't being saved
 
 Next
 

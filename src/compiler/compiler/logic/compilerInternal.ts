@@ -6,7 +6,7 @@ import type { Context } from "../context";
 import type { ParameterValue } from "@graph/parameter";
 import { getNode, type NodeType } from "../nodes/allNodes";
 import { CompileNodeContext } from "../compilerNodeContext";
-import type { NodeContext } from "../nodes/compilerNode";
+import type { NodeContext, NodeInfo } from "../nodes/compilerNode";
 import type { CompilationOptions } from "../compiler";
 import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
 import { getBuiltInFunctions } from "@glsl/builtInIncludes";
@@ -460,25 +460,31 @@ export class CompilerInternal {
     const nodeClass = getNode(node.nodeType as NodeType);
     try {
       const compiledContext = this.compile(node.identifier);
+      const instanceInfo = nodeClass.getInfo(
+        this.createNodeContextFor(node),
+        compiledContext
+      );
+      this.cache.addMissingSockets(node.identifier, instanceInfo);
+
       return {
         node,
-        instanceInfo: nodeClass.getInfo(
-          this.createNodeContextFor(node),
-          compiledContext
-        ),
+        instanceInfo,
       };
     } catch (error) {
+      const instanceInfo: NodeInfo = {
+        name: nodeClass.getLabel(),
+        showPreview: false,
+        inputs: [],
+        outputs: [],
+        parameters: [],
+        description: "Error compiling node",
+        errorMessage: error instanceof Error ? error.message : String(error),
+      };
+      this.cache.addMissingSockets(node.identifier, instanceInfo);
+
       return {
         node,
-        instanceInfo: {
-          name: nodeClass.getLabel(),
-          showPreview: false,
-          inputs: [],
-          outputs: [],
-          parameters: [],
-          description: "Error compiling node",
-          errorMessage: error instanceof Error ? error.message : String(error),
-        },
+        instanceInfo,
       };
     }
   }

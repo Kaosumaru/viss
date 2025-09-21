@@ -20,6 +20,8 @@ export function typeToGlsl(type: Type): string {
       return `${type.double ? "d" : ""}mat${type.rows}x${type.columns}`;
     case "sampler2D":
       return "sampler2D";
+    case "error":
+      return "error";
   }
 }
 

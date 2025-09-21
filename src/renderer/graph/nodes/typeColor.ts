@@ -5,6 +5,8 @@ export function getTypeColor(type?: Type): string {
   if (!type) return "#ffffff47"; // Default white/transparent
 
   switch (type.id) {
+    case "error":
+      return "#ff0000"; // Red for error types
     case "scalar":
       switch (type.type) {
         case "float":
