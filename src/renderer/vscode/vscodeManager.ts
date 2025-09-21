@@ -1,11 +1,11 @@
 import type {
   EditorToExtensionMessage,
   ExtensionToEditorMessage,
-  ShowOpenDialogRequestMessage,
-  ShowOpenDialogResponseMessage,
-  ToWebviewURIMessage,
-  ToWebviewURIResponseMessage,
-} from "../../../vscode-extension/src/messages";
+  ShowOpenFileDialogRequestMessage,
+  ShowOpenFileDialogResponse,
+  ToWebviewURIRequest,
+  ToWebviewURIResponse,
+} from "../../../vscode-extension/src/messages/messages";
 import { AsyncRequestManager } from "./asyncRequestManager";
 import { AsyncRequestRouter } from "./asyncRequestRouter";
 import imgUrl from "./data/test.png";
@@ -24,14 +24,14 @@ class VSCodeManager {
     };
     window.addEventListener("message", cb);
 
-    this.showOpenDialog = this.router.registerManager<
-      ShowOpenDialogRequestMessage,
-      ShowOpenDialogResponseMessage
-    >("showOpenDialog", "showOpenDialogResponse", AsyncRequestManager);
+    this.showOpenFileDialog = this.router.registerManager<
+      ShowOpenFileDialogRequestMessage,
+      ShowOpenFileDialogResponse
+    >("showOpenFileDialog", "showOpenFileDialogResponse", AsyncRequestManager);
 
     this.toWebviewURI = this.router.registerManager<
-      ToWebviewURIMessage,
-      ToWebviewURIResponseMessage
+      ToWebviewURIRequest,
+      ToWebviewURIResponse
     >("toWebviewURI", "toWebviewURIResponse", AsyncRequestManager);
   }
 
@@ -99,13 +99,13 @@ class VSCodeManager {
 
   private vscode: VSCode | undefined;
 
-  public readonly showOpenDialog: (
-    req: ShowOpenDialogRequestMessage["params"]
-  ) => Promise<ShowOpenDialogResponseMessage["params"]>;
+  public readonly showOpenFileDialog: (
+    req: ShowOpenFileDialogRequestMessage["params"]
+  ) => Promise<ShowOpenFileDialogResponse["params"]>;
 
   public readonly toWebviewURI: (
-    req: ToWebviewURIMessage["params"]
-  ) => Promise<ToWebviewURIResponseMessage["params"]>;
+    req: ToWebviewURIRequest["params"]
+  ) => Promise<ToWebviewURIResponse["params"]>;
 
   private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) =>
     this.postMessage(req)

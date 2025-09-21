@@ -1,13 +1,12 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import { getNonce } from "./utils";
+import { getDocumentAsJson } from "./utils/utils";
 import {
   EditorToExtensionMessage,
-  ExtensionToEditorMessage,
   SaveGraphMessage,
-  ShowOpenDialogRequestMessage,
-  ToWebviewURIMessage,
-} from "./messages";
+} from "./messages/messages";
+import { postMessage } from "./utils/utils";
+import { generateHTML } from "./utils/generateHTML";
+import { handleMessage } from "./messageHandler";
 
 export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -98,22 +97,7 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     const assetsUri = webview.asWebviewUri(assetsPath);
 
     // Use a nonce to only allow specific scripts to be run
-    const nonce = getNonce();
-
-    return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; font-src ${webview.cspSource};">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>VShader Editor</title>
-                <link rel="stylesheet" crossorigin href="${assetsUri}/index-Gpo72nnT.css">
-            </head>
-            <body style="padding:0px">
-                <div id="root"></div>
-                <script type="module" nonce="${nonce}" src="${assetsUri}/index.js"></script>
-            </body>
-            </html>`;
+    return generateHTML(webview, assetsUri);
   }
 
   /**
@@ -142,25 +126,9 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
     event: EditorToExtensionMessage
   ) {
     switch (event.type) {
-      case "alert":
-        vscode.window.showErrorMessage(event.text);
-        break;
-      case "showOpenDialog": {
-        await showOpenDialog(document, webviewPanel, event);
-        break;
-      }
       case "refreshContent":
         this.requestIdCounter++;
         updateWebview(document, webviewPanel, this.requestIdCounter);
-        break;
-      case "exportGraphResponse":
-        try {
-          if (event.content) {
-            fs.promises.writeFile(event.path, event.content, "utf8");
-          }
-        } catch (error) {
-          vscode.window.showErrorMessage(`Failed to save GLSL file: ${error}`);
-        }
         break;
       case "saveGraph":
         if (event.requestId !== this.requestIdCounter) {
@@ -168,8 +136,8 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
           this.updateTextDocument(document, event);
         }
         break;
-      case "toWebviewURI": {
-        toWebViewURI(event, document, webviewPanel);
+      default: {
+        handleMessage(document, webviewPanel, event);
         break;
       }
     }
@@ -177,30 +145,6 @@ export class VShaderEditorProvider implements vscode.CustomTextEditorProvider {
 
   ignoreNextUpdate = false;
   private requestIdCounter = 0;
-}
-
-function toWebViewURI(
-  event: ToWebviewURIMessage,
-  document: vscode.TextDocument,
-  webviewPanel: vscode.WebviewPanel
-) {
-  const uris = event.params.relativepaths.map((p) => {
-    // Convert a workspace relative path to a webview uri
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-    if (!workspaceFolder) {
-      return "";
-    }
-    const fileUri = vscode.Uri.joinPath(workspaceFolder.uri, p);
-    return webviewPanel.webview.asWebviewUri(fileUri).toString();
-  });
-
-  postMessage(webviewPanel, {
-    type: "toWebviewURIResponse",
-    requestId: event.requestId,
-    params: {
-      uris,
-    },
-  });
 }
 
 function updateWebview(
@@ -212,72 +156,5 @@ function updateWebview(
     type: "loadGraph",
     json: getDocumentAsJson(document),
     requestId: id,
-  });
-}
-
-function postMessage(
-  webviewPanel: vscode.WebviewPanel,
-  message: ExtensionToEditorMessage
-) {
-  // Post a message to the webview
-  webviewPanel.webview.postMessage(message);
-}
-
-/**
- * Try to get a current document as json text.
- */
-function getDocumentAsJson(document: vscode.TextDocument): unknown {
-  const text = document.getText();
-  if (text.trim().length === 0) {
-    return {};
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error(
-      "Could not get document as json. Content is not valid json"
-    );
-  }
-}
-
-async function showOpenDialog(
-  document: vscode.TextDocument,
-  webviewPanel: vscode.WebviewPanel,
-  event: ShowOpenDialogRequestMessage
-) {
-  const fileUris = await vscode.window.showOpenDialog({
-    canSelectMany: false,
-    openLabel: event.params.label,
-    filters: event.params.filters,
-  });
-
-  const relativePaths: string[] = [];
-  const pathToDocument = document.uri;
-
-  for (const uri of fileUris || []) {
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-    const documentWorkspaceFolder =
-      vscode.workspace.getWorkspaceFolder(pathToDocument);
-    if (
-      workspaceFolder?.uri.toString() !==
-      documentWorkspaceFolder?.uri.toString()
-    ) {
-      vscode.window.showErrorMessage(
-        "Please select a file within the current workspace."
-      );
-      continue;
-    }
-
-    // Make the uri relative
-    relativePaths.push(vscode.workspace.asRelativePath(uri));
-  }
-
-  postMessage(webviewPanel, {
-    type: "showOpenDialogResponse",
-    requestId: event.requestId,
-    params: {
-      relativePaths,
-    },
   });
 }

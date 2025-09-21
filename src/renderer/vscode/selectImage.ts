@@ -6,7 +6,7 @@ export async function selectImage(): Promise<string | undefined> {
     return imgUrl;
   }
 
-  const response = await vscode.showOpenDialog({
+  const response = await vscode.showOpenFileDialog({
     label: "Select Image",
     filters: { images: ["png", "jpg", "jpeg"] },
   });

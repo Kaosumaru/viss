@@ -4,7 +4,7 @@ import type { AreaExtra, Schemes } from "./node";
 import type {
   ExportGraphRequestMessage,
   LoadGraphMessage,
-} from "../../../vscode-extension/src/messages";
+} from "../../../vscode-extension/src/messages/messages";
 import type { Graph, GraphDiff } from "@graph/graph";
 import type { Transform } from "rete-area-plugin/_types/area";
 import { vscode } from "@renderer/vscode/vscodeManager";
