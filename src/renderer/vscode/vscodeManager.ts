@@ -1,8 +1,10 @@
 import type {
   EditorToExtensionMessage,
   ExtensionToEditorMessage,
-  ShowOpenFileDialogRequestMessage,
+  ShowOpenFileDialogRequest,
   ShowOpenFileDialogResponse,
+  ShowOpenFolderDialogRequest,
+  ShowOpenFolderDialogResponse,
   ToWebviewURIRequest,
   ToWebviewURIResponse,
 } from "../../../vscode-extension/src/messages/messages";
@@ -25,9 +27,18 @@ class VSCodeManager {
     window.addEventListener("message", cb);
 
     this.showOpenFileDialog = this.router.registerManager<
-      ShowOpenFileDialogRequestMessage,
+      ShowOpenFileDialogRequest,
       ShowOpenFileDialogResponse
     >("showOpenFileDialog", "showOpenFileDialogResponse", AsyncRequestManager);
+
+    this.showOpenFolderDialog = this.router.registerManager<
+      ShowOpenFolderDialogRequest,
+      ShowOpenFolderDialogResponse
+    >(
+      "showOpenFolderDialog",
+      "showOpenFolderDialogResponse",
+      AsyncRequestManager
+    );
 
     this.toWebviewURI = this.router.registerManager<
       ToWebviewURIRequest,
@@ -100,8 +111,12 @@ class VSCodeManager {
   private vscode: VSCode | undefined;
 
   public readonly showOpenFileDialog: (
-    req: ShowOpenFileDialogRequestMessage["params"]
+    req: ShowOpenFileDialogRequest["params"]
   ) => Promise<ShowOpenFileDialogResponse["params"]>;
+
+  public readonly showOpenFolderDialog: (
+    req: ShowOpenFolderDialogRequest["params"]
+  ) => Promise<ShowOpenFolderDialogResponse["params"]>;
 
   public readonly toWebviewURI: (
     req: ToWebviewURIRequest["params"]

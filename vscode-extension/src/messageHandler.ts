@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { showOpenFileDialog } from "./requests/showOpenFileDialog";
 import { toWebViewURI } from "./requests/toWebViewURI";
 import * as fs from "fs";
+import { showOpenFolderDialog } from "./requests/showOpenFolderDialog";
 
 export async function handleMessage(
   document: vscode.TextDocument,
@@ -15,6 +16,10 @@ export async function handleMessage(
       break;
     case "showOpenFileDialog": {
       await showOpenFileDialog(document, webviewPanel, event);
+      break;
+    }
+    case "showOpenFolderDialog": {
+      await showOpenFolderDialog(document, webviewPanel, event);
       break;
     }
     case "exportGraphResponse":

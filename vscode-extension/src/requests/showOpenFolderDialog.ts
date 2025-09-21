@@ -1,16 +1,17 @@
-import { ShowOpenFileDialogRequest } from "../messages/messages";
 import * as vscode from "vscode";
 import { postMessage } from "../utils/utils";
+import { ShowOpenFolderDialogRequest } from "../messages/messages";
 
-export async function showOpenFileDialog(
+export async function showOpenFolderDialog(
   document: vscode.TextDocument,
   webviewPanel: vscode.WebviewPanel,
-  event: ShowOpenFileDialogRequest
+  event: ShowOpenFolderDialogRequest
 ) {
   const fileUris = await vscode.window.showOpenFileDialog({
     canSelectMany: false,
     openLabel: event.params.label,
-    filters: event.params.filters,
+    canSelectFiles: false,
+    canSelectFolders: true,
   });
 
   const relativePaths: string[] = [];
@@ -25,7 +26,7 @@ export async function showOpenFileDialog(
       documentWorkspaceFolder?.uri.toString()
     ) {
       vscode.window.showErrorMessage(
-        "Please select a file within the current workspace."
+        "Please select a folder within the current workspace."
       );
       continue;
     }
@@ -35,7 +36,7 @@ export async function showOpenFileDialog(
   }
 
   postMessage(webviewPanel, {
-    type: "showOpenFileDialogResponse",
+    type: "showOpenFolderDialogResponse",
     requestId: event.requestId,
     params: {
       relativePaths,

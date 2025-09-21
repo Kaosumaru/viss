@@ -32,7 +32,7 @@ export interface ToWebviewURIRequest extends EditorRequest {
   };
 }
 
-export interface ShowOpenFileDialogRequestMessage extends EditorRequest {
+export interface ShowOpenFileDialogRequest extends EditorRequest {
   type: "showOpenFileDialog";
 
   params: {
@@ -41,7 +41,7 @@ export interface ShowOpenFileDialogRequestMessage extends EditorRequest {
   };
 }
 
-export interface ShowOpenFolderDialogRequestMessage extends EditorRequest {
+export interface ShowOpenFolderDialogRequest extends EditorRequest {
   type: "showOpenFolderDialog";
 
   params: {
@@ -54,9 +54,9 @@ export type EditorToExtensionMessage =
   | RefreshContentMessage
   | SaveGraphMessage
   | ExportGraphResponseMessage
-  | ShowOpenFileDialogRequestMessage
+  | ShowOpenFileDialogRequest
   | ToWebviewURIRequest
-  | ShowOpenFolderDialogRequestMessage;
+  | ShowOpenFolderDialogRequest;
 
 export interface LoadGraphMessage {
   type: "loadGraph";
