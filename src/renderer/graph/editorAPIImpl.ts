@@ -12,18 +12,18 @@ import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
-import type { Compiler } from "@compiler/compiler";
+import { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
-    compiler: Compiler,
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
     onChanged?: OnGraphChanged
   ) {
+    const compiler = new Compiler();
     this.compilationHelper = new CompilationHelper(compiler);
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);

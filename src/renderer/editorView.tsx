@@ -1,6 +1,6 @@
 import { useRete } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./graph/editor";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
@@ -11,7 +11,6 @@ import {
   getNodesInSelectionArea,
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
-import { Compiler } from "@compiler/compiler";
 import { ShaderRenderer } from "./components/shaderOverlay/shaderRenderer";
 
 export interface EditorViewProps {
@@ -22,11 +21,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const shaderRendererRef = useRef<ShaderRenderer | null>(null);
   const editorRef = useRef<EditorAPI | null>(null);
-  const compiler = useMemo(() => {
-    const compiler = new Compiler();
-
-    return compiler;
-  }, []);
 
   const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
     x: number;
@@ -38,7 +32,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
       shaderRendererRef.current = new ShaderRenderer(canvasRef.current!);
 
       const editor = await createEditor(
-        compiler,
         container,
         shaderRendererRef.current,
         onChanged
@@ -47,7 +40,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       onChanged?.(editor);
       return editor;
     },
-    [onChanged, compiler]
+    [onChanged]
   );
 
   const [ref] = useRete(create);

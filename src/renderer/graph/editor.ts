@@ -20,13 +20,11 @@ import {
   selector,
   type SelectableAPI,
 } from "./extensions/selectable";
-import { Compiler } from "@compiler/compiler";
 import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
 export async function createEditor(
-  compiler: Compiler,
   container: HTMLElement,
   shaderRenderer: ShaderRenderer,
   onChanged?: OnGraphChanged
@@ -37,13 +35,7 @@ export async function createEditor(
     accumulating: accumulateOnCtrl(),
   });
 
-  const editorData = new EditorAPIImp(
-    compiler,
-    editor,
-    area,
-    selectable,
-    onChanged
-  );
+  const editorData = new EditorAPIImp(editor, area, selectable, onChanged);
 
   editorData.addUniformCallback(shaderRenderer);
 
