@@ -5,11 +5,15 @@ import type { Uniforms } from "./uniform";
 
 export interface Graph {
   version: number;
-  includes: GLSLInclude[];
+  includesPath: string;
   uniforms: Uniforms;
   nodes: Node[];
   connections: Connection[];
   // comments?: Comment[];
+}
+
+export interface IncludedFiles {
+  includes: GLSLInclude[];
 }
 
 export interface GLSLInclude {

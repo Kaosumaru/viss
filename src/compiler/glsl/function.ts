@@ -5,7 +5,7 @@ import type {
 } from "@shaderfrog/glsl-parser/ast";
 import { scalar, vector, type Type } from "./types/types";
 import { parse } from "@shaderfrog/glsl-parser";
-import type { Graph } from "@graph/graph";
+import type { IncludedFiles } from "@graph/graph";
 
 export interface FunctionDefinition {
   name: string;
@@ -24,9 +24,9 @@ export interface ParameterDefinition {
 }
 
 export function parseFunctionsFrom(
-  graph: Graph
+  files: IncludedFiles
 ): Record<string, FunctionDefinition> {
-  const functions: FunctionDefinition[] = graph.includes
+  const functions: FunctionDefinition[] = files.includes
     .map((include) => listFunctions(include.content))
     .flat();
 

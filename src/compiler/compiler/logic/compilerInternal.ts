@@ -8,8 +8,7 @@ import { getNode, type NodeType } from "../nodes/allNodes";
 import { CompileNodeContext } from "../compilerNodeContext";
 import type { NodeContext, NodeInfo } from "../nodes/compilerNode";
 import type { CompilationOptions } from "../compiler";
-import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
-import { getBuiltInFunctions } from "@glsl/builtInIncludes";
+import { type FunctionDefinition } from "@glsl/function";
 import { copyNodes } from "./copyNodes";
 import { pasteNodes } from "./pasteNodes";
 import type { Type } from "@glsl/types/types";
@@ -34,7 +33,7 @@ export class CompilerInternal {
     this.options = options;
     this.graph = {
       version: CompilerInternal.graphVersion,
-      includes: [],
+      includesPath: "",
       nodes: [],
       connections: [],
       uniforms: {},
@@ -416,13 +415,13 @@ export class CompilerInternal {
 
     this.graph = {
       version: CompilerInternal.graphVersion,
-      includes: getBuiltInFunctions(),
+      includesPath: "",
       nodes: [],
       connections: [],
       uniforms: {},
     };
 
-    this.nameToFunction = parseFunctionsFrom(this.graph);
+    this.nameToFunction = {};
   }
 
   getInputNode(

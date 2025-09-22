@@ -5,7 +5,6 @@ import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import type { OnGraphChanged } from "./editor";
 import type { Schemes, AreaExtra } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
-import { CompilationHelper } from "./utils/compileGraph";
 import type { FunctionDefinition } from "@glsl/function";
 import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
 import type { Parameters, ParameterValue } from "@graph/parameter";
@@ -15,6 +14,7 @@ import type { SelectableAPI } from "./extensions/selectable";
 import { Compiler } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
+import { compileNode } from "./utils/compileNode";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -24,7 +24,7 @@ export class EditorAPIImp implements EditorAPI {
     onChanged?: OnGraphChanged
   ) {
     const compiler = new Compiler();
-    this.compilationHelper = new CompilationHelper(compiler);
+    this.compiler = compiler;
     this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
     this.editor = editor;
@@ -41,7 +41,7 @@ export class EditorAPIImp implements EditorAPI {
         if (!nodeView) return context;
 
         this.applyDiff(
-          this.compiler().translateNode(
+          this.compiler.translateNode(
             context.data.id,
             nodeView.position.x,
             nodeView.position.y
@@ -57,25 +57,19 @@ export class EditorAPIImp implements EditorAPI {
       }
       if (context.type === "connectionremoved") {
         this.applyDiff(
-          this.compiler().removeConnection(
-            uiConnectionToConnection(context.data)
-          )
+          this.compiler.removeConnection(uiConnectionToConnection(context.data))
         );
       }
       if (context.type === "connectioncreate") {
         context.data.id = generateUIConnectionId(context.data);
         const connection = uiConnectionToConnection(context.data);
-        if (
-          !this.compilationHelper
-            .compiler()
-            .canConnect(connection.from, connection.to)
-        ) {
+        if (!this.compiler.canConnect(connection.from, connection.to)) {
           return;
         }
       }
       if (context.type === "connectioncreated") {
         this.applyDiff(
-          this.compiler().addConnection(uiConnectionToConnection(context.data))
+          this.compiler.addConnection(uiConnectionToConnection(context.data))
         );
       }
 
@@ -83,7 +77,7 @@ export class EditorAPIImp implements EditorAPI {
     });
 
     // TODO it's async
-    this.applyDiff(this.compiler().getGraphAsDiff());
+    this.applyDiff(this.compiler.getGraphAsDiff());
 
     this.extension.initialize();
   }
@@ -106,7 +100,7 @@ export class EditorAPIImp implements EditorAPI {
     }
 
     return this.applyDiff(
-      this.compiler().addNode({
+      this.compiler.addNode({
         nodeType,
         position: { x: x ?? 0, y: y ?? 0 },
         parameters: params ?? {},
@@ -130,20 +124,20 @@ export class EditorAPIImp implements EditorAPI {
   };
 
   uniforms: () => Uniforms = (): Uniforms => {
-    return this.compiler().getGraph().uniforms;
+    return this.compiler.getGraph().uniforms;
   };
 
   updateUniform: (uniform: Uniform) => Promise<void> = (uniform: Uniform) => {
     this.informAboutUniform(uniform);
-    return this.applyDiff(this.compiler().updateUniform(uniform));
+    return this.applyDiff(this.compiler.updateUniform(uniform));
   };
 
   updateUniformDefaultValue(name: string, defaultValue: ParameterValue) {
     const diff = this.applyDiff(
-      this.compiler().updateUniformDefaultValue(name, defaultValue)
+      this.compiler.updateUniformDefaultValue(name, defaultValue)
     );
 
-    const uniform = this.compiler().getGraph().uniforms[name];
+    const uniform = this.compiler.getGraph().uniforms[name];
     if (uniform) {
       this.informAboutUniform(uniform);
     }
@@ -152,21 +146,21 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   removeUniform: (uniformId: string) => Promise<void> = (uniformId: string) => {
-    return this.applyDiff(this.compiler().removeUniform(uniformId));
+    return this.applyDiff(this.compiler.removeUniform(uniformId));
   };
 
   async deleteNode(nodeId: string) {
-    return this.applyDiff(this.compiler().removeNode(nodeId));
+    return this.applyDiff(this.compiler.removeNode(nodeId));
   }
 
   async deleteNodes(nodeIds: string[]) {
     if (nodeIds.length === 0) return;
-    return this.applyDiff(this.compiler().removeNodes(nodeIds));
+    return this.applyDiff(this.compiler.removeNodes(nodeIds));
   }
 
   copyNodes(nodeIds: string[]): string {
     if (nodeIds.length === 0) return "";
-    const graph = this.compiler().copyNodes(nodeIds);
+    const graph = this.compiler.copyNodes(nodeIds);
     return JSON.stringify(graph);
   }
 
@@ -184,7 +178,7 @@ export class EditorAPIImp implements EditorAPI {
       offsetY = (offsetY - transform.y) / transform.k;
     }
     const graph = JSON.parse(json);
-    const diff = this.compiler().pasteNodes(graph, offsetX, offsetY);
+    const diff = this.compiler.pasteNodes(graph, offsetX, offsetY);
     await this.applyDiff(diff);
     this.selectNodes(
       diff.addedNodes?.map((node) => node.node.identifier) || []
@@ -192,11 +186,11 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   async clear() {
-    this.compiler().clearGraph();
+    this.compiler.clearGraph();
     this.deserializing = true;
     await this.editor.clear();
     this.deserializing = false;
-    this.extension.saveGraph(this.compiler().getGraph());
+    this.extension.saveGraph(this.compiler.getGraph());
   }
 
   async loadGraphJSON(graphJson: string): Promise<void> {
@@ -208,14 +202,14 @@ export class EditorAPIImp implements EditorAPI {
 
   async loadGraph(graph: Graph): Promise<void> {
     const noNodes = this.editor.getNodes().length === 0;
-    await this.applyDiff(this.compiler().loadGraph(graph), true);
+    await this.applyDiff(this.compiler.loadGraph(graph), true);
     if (noNodes) {
       AreaExtensions.zoomAt(this.area, this.editor.getNodes());
     }
   }
 
   saveGraph() {
-    return this.compiler().getGraph();
+    return this.compiler.getGraph();
   }
 
   getNode(nodeId: string): UICompilerNode | undefined {
@@ -224,7 +218,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   compileNode(nodeId?: string): string | undefined {
-    return this.compilationHelper.compileNode(nodeId);
+    return compileNode(this.compiler, nodeId);
   }
 
   selectNodes(nodeIds: string[]) {
@@ -253,7 +247,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   getCustomFunctions: () => FunctionDefinition[] = () => {
-    return this.compilationHelper.getCustomFunctions();
+    return this.compiler.getCustomFunctions();
   };
 
   getSelectedNodes(): string[] {
@@ -274,10 +268,6 @@ export class EditorAPIImp implements EditorAPI {
       node.previewControl.shader = this.compileNode(nodeId);
       this.area.update("control", node.previewControl.id);
     }
-  }
-
-  protected compiler() {
-    return this.compilationHelper.compiler();
   }
 
   protected async applyDiff(diff: GraphDiff, updateProperties = false) {
@@ -373,7 +363,7 @@ export class EditorAPIImp implements EditorAPI {
         (diff.translatedNodes?.size ?? 0);
 
       if (updatedJson > 0) {
-        this.extension.saveGraph(this.compiler().getGraph(), diff);
+        this.extension.saveGraph(this.compiler.getGraph(), diff);
       }
     } finally {
       this.deserializing = false;
@@ -381,7 +371,7 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   protected updateInputsOutputs(invalidatedNodeIds: Set<string>) {
-    const infos = this.compiler().getInfo(Array.from(invalidatedNodeIds));
+    const infos = this.compiler.getInfo(Array.from(invalidatedNodeIds));
     for (const info of infos) {
       const node = this.getNode(info.node.identifier);
       if (!node) continue;
@@ -405,9 +395,8 @@ export class EditorAPIImp implements EditorAPI {
     const node = new UICompilerNode(
       graphNode.nodeType as NodeType,
       (id, paramName, value) => {
-        this.applyDiff(this.compiler().updateParameter(id, paramName, value));
-      },
-      this.compilationHelper
+        this.applyDiff(this.compiler.updateParameter(id, paramName, value));
+      }
     );
     node.id = graphNode.identifier;
 
@@ -430,12 +419,12 @@ export class EditorAPIImp implements EditorAPI {
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;
-  private compilationHelper: CompilationHelper;
   private deserializing = false;
   private extension: EditorVSExtension;
   private keybindings: EditorKeybindings;
   private selectable: SelectableAPI;
   private uniformCallbacks: IUniformCallback[] = [];
+  private compiler: Compiler;
 }
 
 function uiConnectionToConnection(

@@ -7,7 +7,6 @@ import type {
 } from "@compiler/nodes/compilerNode";
 import type { Type } from "@glsl/types/types";
 import { ClassicPreset } from "rete";
-import type { CompilationHelper } from "../utils/compileGraph";
 import type { ParameterValue } from "@graph/parameter";
 import type { Parameters as GraphParameters } from "@graph/parameter";
 import {
@@ -47,13 +46,11 @@ export class UICompilerNode extends ClassicPreset.Node {
 
   constructor(
     nodeType: NodeType,
-    controlChangeCallback: ControlChangeCallback,
-    compilationHelper: CompilationHelper
+    controlChangeCallback: ControlChangeCallback
   ) {
     const compilerNode = getNode(nodeType);
     super(compilerNode.getLabel());
 
-    this.compilationHelper = compilationHelper;
     this.nodeType = nodeType;
     this.controlChangeCallback = controlChangeCallback;
   }
@@ -227,6 +224,4 @@ export class UICompilerNode extends ClassicPreset.Node {
       this.height += 145; // Add height for preview control
     }
   }
-
-  protected compilationHelper: CompilationHelper;
 }

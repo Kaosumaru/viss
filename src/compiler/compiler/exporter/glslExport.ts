@@ -2,11 +2,13 @@ import type { Compiler } from "@compiler/compiler";
 import type { Context, Expression, Variable } from "@compiler/context";
 import { convertToVector4 } from "@compiler/nodes/out/utils";
 import { typeToGlsl } from "@glsl/types/typeToString";
+import type { GLSLInclude } from "@graph/graph";
 
 export function exportGlsl(
   compiler: Compiler,
   ctx: Context,
-  expression: Expression
+  expression: Expression,
+  includeFiles: GLSLInclude[]
 ) {
   const vec4 = convertToVector4(expression);
 
@@ -31,7 +33,7 @@ ${uniforms}
 
 varying vec2 vUv;
 
-${graph.includes.map((include) => include.content).join("\n")}
+${includeFiles.map((include) => include.content).join("\n")}
 
 void main() {
 ${variables}
