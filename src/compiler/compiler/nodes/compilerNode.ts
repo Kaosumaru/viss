@@ -21,7 +21,9 @@ export type ParamExtractedValue<T> = Extract<
 */
 
 export type ParamExtractedValue<T extends ParameterValueType> =
-  T extends "number"
+  T extends "string"
+    ? string
+    : T extends "number"
     ? number
     : T extends "boolean"
     ? boolean

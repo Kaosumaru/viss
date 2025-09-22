@@ -39,10 +39,6 @@ export function parseFunctionsFrom(
 
 export function listFunctions(glsl: string): FunctionDefinition[] {
   const p = parse(glsl);
-  if (!p) {
-    throw new Error("Failed to parse GLSL code");
-  }
-
   const definitions: FunctionDefinition[] = [];
   let pragmas: string[] = [];
 
@@ -106,7 +102,7 @@ function parameterNodeToDefinition(
   return {
     name: node.identifier.identifier,
     mode: "in",
-    type: typeToType(node.specifier)!,
+    type: typeToType(node.specifier) ?? scalar("float"),
   };
 }
 
@@ -127,6 +123,7 @@ function typeToType(type: TypeSpecifierNode): Type | undefined {
     case "vec4":
       return vector("float", 4);
     default:
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       throw new Error(`Unknown type: ${type}`);
   }
 }

@@ -52,7 +52,7 @@ export class TextureHelper {
         texture: texture.texture,
       };
 
-      vscode.relativePathToURL(path).then((url) => {
+      void vscode.relativePathToURL(path).then((url) => {
         if (url) {
           texture.load(url);
         }

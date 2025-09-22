@@ -33,12 +33,14 @@ const TextureUniformItem: React.FC<UniformItemProps> = ({
         {name}{" "}
         <span style={{ color: "#aaa" }}>({typeToName(uniform.type)})</span>
       </Typography>
-      <Button onClick={handleClick}>Load</Button>
+      <Button onClick={() => void handleClick()}>Load</Button>
       <IconButton
         aria-label="delete"
         size="small"
         color="error"
-        onClick={() => onRemove(name)}
+        onClick={() => {
+          onRemove(name);
+        }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

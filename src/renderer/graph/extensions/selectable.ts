@@ -71,15 +71,17 @@ export class Selector<E extends SelectorEntity> {
   }
 
   unselectAll() {
-    [...Array.from(this.entities.values())].forEach((item) =>
-      this.remove(item)
-    );
+    [...Array.from(this.entities.values())].forEach((item) => {
+      this.remove(item);
+    });
   }
 
   translate(dx: number, dy: number) {
-    this.entities.forEach(
-      (item) => !this.isPicked(item) && item.translate(dx, dy)
-    );
+    this.entities.forEach((item) => {
+      if (!this.isPicked(item)) {
+        item.translate(dx, dy);
+      }
+    });
   }
 
   pick(entity: Pick<E, "label" | "id">) {
@@ -192,8 +194,8 @@ export function selectableNodes<T>(
   }
 
   area.addPipe((context) => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     // this is copied from rete example
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!context || typeof context !== "object" || !("type" in context))
       return context;
 

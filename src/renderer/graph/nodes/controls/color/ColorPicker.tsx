@@ -87,7 +87,9 @@ export function ColorPicker({
         <TextField
           label="HEX"
           value={rgbaToHex(color)}
-          onChange={(e) => handleHexChange(e.target.value)}
+          onChange={(e) => {
+            handleHexChange(e.target.value);
+          }}
           size="small"
           fullWidth
           sx={{ mb: 1 }}
@@ -97,7 +99,9 @@ export function ColorPicker({
       {/* Tabs for switching between color wheel and sliders */}
       <Tabs
         value={activeTab}
-        onChange={(_, newValue) => setActiveTab(newValue)}
+        onChange={(_, newValue) => {
+          setActiveTab(newValue as number);
+        }}
         sx={{
           mb: 2,
           minHeight: 32,

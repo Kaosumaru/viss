@@ -142,7 +142,8 @@ export class ShaderEntry {
   createProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     // Compile shader
     const compile = (type: number, source: string) => {
-      const shader = gl.createShader(type)!;
+      const shader = gl.createShader(type);
+      if (!shader) return null;
       gl.shaderSource(shader, source);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -156,7 +157,7 @@ export class ShaderEntry {
     const fragmentShader = compile(gl.FRAGMENT_SHADER, this.fragmentShaderSrc);
 
     const program = gl.createProgram();
-    if (!program || !vertexShader || !fragmentShader) {
+    if (!vertexShader || !fragmentShader) {
       console.error("Failed to create shader program", this.fragmentShaderSrc);
       return null;
     }
@@ -170,7 +171,7 @@ export class ShaderEntry {
     return program;
   }
 
-  setPosition(x: number, y: number, w: number, h: number): ShaderEntry {
+  setPosition(x: number, y: number, w: number, h: number): this {
     this.x = x;
     this.y = y;
     this.w = w;

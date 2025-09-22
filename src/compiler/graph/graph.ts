@@ -40,7 +40,7 @@ export interface GraphDiff {
 }
 
 export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
-  return diffs.reduce((acc, diff) => {
+  return diffs.reduce<GraphDiff>((acc, diff) => {
     acc.addedNodes = [...(acc.addedNodes || []), ...(diff.addedNodes || [])];
     acc.removedNodes = [
       ...(acc.removedNodes || []),
@@ -81,5 +81,5 @@ export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
           ])
         : undefined;
     return acc;
-  }, {} as GraphDiff);
+  }, {});
 }

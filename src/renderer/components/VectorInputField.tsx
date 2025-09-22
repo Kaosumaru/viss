@@ -43,7 +43,7 @@ export function VectorInputField({
         <Tooltip title="Use default value">
           <Checkbox
             checked={useDefault}
-            onChange={(e) => onUseDefaultChange(e.target.checked)}
+            onChange={(e) => { onUseDefaultChange(e.target.checked); }}
             size="small"
             sx={{
               color: "#aaa",

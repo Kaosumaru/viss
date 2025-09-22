@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-binary-expression */
 import { type RenderEmit, Presets } from "rete-react-plugin";
 import { Paper, Tooltip, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -108,7 +107,7 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
   const outputs = Object.entries(props.data.outputs);
   const controls = Object.entries(props.data.controls);
   const selected = props.data.selected || false;
-  const nodeData = props.data as Scheme["Node"] & NodeExtraData;
+  const nodeData = props.data;
   const errorMessage = nodeData.errorMessage;
 
   return (
@@ -147,7 +146,7 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
                     data-testid="input-socket"
                   />
                   {(!input.control || !input.showControl) && (
-                    <div className="input-title">{input?.label}</div>
+                    <div className="input-title">{input.label}</div>
                   )}
                   {input.control && input.showControl && (
                     <RefControl
@@ -168,9 +167,11 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
             ([key, output]) =>
               output && (
                 <div className="output" key={key}>
-                  {true /*!output?.control*/ && (
-                    <div className="output-title">{output?.label}</div>
-                  )}
+                  {
+                    /*!output?.control &&*/ <div className="output-title">
+                      {output.label}
+                    </div>
+                  }
                   {/*output?.control && (
                     <RefControl
                       key={key}

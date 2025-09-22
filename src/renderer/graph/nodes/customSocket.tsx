@@ -40,6 +40,7 @@ const Hoverable = styled.div`
   }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function CustomSocket<T extends Socket>(props: { data: T }) {
   const socketWithType = props.data as SocketWithType;
   const typeString = socketWithType.glslType

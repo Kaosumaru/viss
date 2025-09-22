@@ -34,7 +34,6 @@ export class ShaderRenderer
   }
 
   private handleResize(fillWindow: boolean) {
-    if (!this.gl) return () => {};
     const resize = () => {
       if (fillWindow) {
         this.canvas.width = window.innerWidth;
@@ -51,7 +50,6 @@ export class ShaderRenderer
   }
 
   private startRenderLoop() {
-    if (!this.gl) return () => {};
     const gl = this.gl;
     const canvas = this.canvas;
 

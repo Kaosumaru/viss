@@ -37,7 +37,7 @@ export class EditorKeybindings {
         if (selectedNodes.length > 0) {
           const graphJson = this.editor.copyNodes(selectedNodes);
           event.clipboardData?.setData("text/plain", graphJson);
-          this.editor.deleteNodes(selectedNodes);
+          void this.editor.deleteNodes(selectedNodes);
           event.preventDefault();
         }
       };
@@ -46,7 +46,7 @@ export class EditorKeybindings {
         if (graphJson) {
           const offsetX = this.mousePosition.x;
           const offsetY = this.mousePosition.y;
-          this.editor.pasteNodes(graphJson, "screen", offsetX, offsetY);
+          void this.editor.pasteNodes(graphJson, "screen", offsetX, offsetY);
           event.preventDefault();
         }
       };
@@ -83,7 +83,7 @@ export class EditorKeybindings {
     if (event.key === "Delete" || event.key === "Backspace") {
       const selectedNodes = this.editor.getSelectedNodes();
       if (selectedNodes.length > 0) {
-        this.editor.deleteNodes(selectedNodes);
+        void this.editor.deleteNodes(selectedNodes);
         event.preventDefault();
       }
     }

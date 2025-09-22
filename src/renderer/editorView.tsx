@@ -29,6 +29,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const create = useCallback(
     async (container: HTMLElement) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       shaderRendererRef.current = new ShaderRenderer(canvasRef.current!);
 
       const editor = await createEditor(
@@ -65,6 +66,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       let positionX = 200;
       let positionY = 200;
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!editorRef.current || !ref.current) return;
       const container = ref.current as HTMLElement;
 
@@ -90,7 +92,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
         };
       }
 
-      editorRef.current.createNode(
+      await editorRef.current.createNode(
         node,
         "screen",
         positionX,
@@ -102,7 +104,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   const handleNodeDelete = useCallback((nodeId: string) => {
-    editorRef.current?.deleteNode(nodeId);
+    void editorRef.current?.deleteNode(nodeId);
   }, []);
 
   const handleNodeTogglePreview = useCallback((nodeId: string) => {
@@ -135,6 +137,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const getNodesInArea = useCallback(
     (rect: SelectionRect): string[] => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!ref.current) return [];
       return getNodesInSelectionArea(rect, ref.current);
     },
@@ -143,7 +146,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const contextMenuProvider = (
     <MaterialContextMenuProvider
-      onNodeCreate={handleNodeCreate}
+      onNodeCreate={(node) => void handleNodeCreate(node)}
       onNodeDelete={handleNodeDelete}
       onNodeTogglePreview={handleNodeTogglePreview}
       onContextMenuOpen={setLastContextMenuPosition}

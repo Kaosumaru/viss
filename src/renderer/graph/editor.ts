@@ -24,7 +24,7 @@ import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRendere
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
-export async function createEditor(
+export function createEditor(
   container: HTMLElement,
   shaderRenderer: ShaderRenderer,
   onChanged?: OnGraphChanged
@@ -61,5 +61,5 @@ export async function createEditor(
   // await editorData.createNode("output", "screen");
   // AreaExtensions.zoomAt(area, editor.getNodes());
 
-  return editorData;
+  return Promise.resolve(editorData);
 }

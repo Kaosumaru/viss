@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import type { NumberValue } from "../../../compiler/graph/parameter";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
 import { NumberInputField } from "../NumberInputField";
 import type { UniformItemProps } from "./UniformItem";
@@ -15,7 +14,7 @@ const FloatUniformItem: React.FC<UniformItemProps> = ({
   // The value is stored in uniform.defaultValue?.value (if type is number)
   const value =
     uniform.defaultValue && uniform.defaultValue.type === "number"
-      ? (uniform.defaultValue as NumberValue).value
+      ? uniform.defaultValue.value
       : 0.0;
 
   const handleValueChange = (val: number) => {
@@ -41,7 +40,9 @@ const FloatUniformItem: React.FC<UniformItemProps> = ({
         aria-label="delete"
         size="small"
         color="error"
-        onClick={() => onRemove(name)}
+        onClick={() => {
+          onRemove(name);
+        }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

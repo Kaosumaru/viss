@@ -37,7 +37,7 @@ export class CustomUniform extends CompilerNode {
     }
 
     return {
-      name: uniformName ?? "Missing name",
+      name: uniformName,
       description: this.getDescription(),
       inputs: [],
       outputs: [{ name: "out", type: uniform.type }],

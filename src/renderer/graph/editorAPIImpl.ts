@@ -40,7 +40,7 @@ export class EditorAPIImp implements EditorAPI {
         const nodeView = this.area.nodeViews.get(context.data.id);
         if (!nodeView) return context;
 
-        this.applyDiff(
+        void this.applyDiff(
           this.compiler.translateNode(
             context.data.id,
             nodeView.position.x,
@@ -56,7 +56,7 @@ export class EditorAPIImp implements EditorAPI {
         return context;
       }
       if (context.type === "connectionremoved") {
-        this.applyDiff(
+        void this.applyDiff(
           this.compiler.removeConnection(uiConnectionToConnection(context.data))
         );
       }
@@ -68,7 +68,7 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
       if (context.type === "connectioncreated") {
-        this.applyDiff(
+        void this.applyDiff(
           this.compiler.addConnection(uiConnectionToConnection(context.data))
         );
       }
@@ -77,9 +77,9 @@ export class EditorAPIImp implements EditorAPI {
     });
 
     // TODO it's async
-    this.applyDiff(this.compiler.getGraphAsDiff());
+    void this.applyDiff(this.compiler.getGraphAsDiff());
 
-    this.extension.initialize();
+    void this.extension.initialize();
   }
 
   async createNode(
@@ -177,7 +177,8 @@ export class EditorAPIImp implements EditorAPI {
       offsetX = (offsetX - transform.x) / transform.k;
       offsetY = (offsetY - transform.y) / transform.k;
     }
-    const graph = JSON.parse(json);
+    // TODO accept invalid files
+    const graph = JSON.parse(json) as Graph;
     const diff = this.compiler.pasteNodes(graph, offsetX, offsetY);
     await this.applyDiff(diff);
     this.selectNodes(
@@ -197,14 +198,14 @@ export class EditorAPIImp implements EditorAPI {
     if (graphJson.trim() === "") {
       return this.clear();
     }
-    return this.loadGraph(JSON.parse(graphJson));
+    return this.loadGraph(JSON.parse(graphJson) as Graph);
   }
 
   async loadGraph(graph: Graph): Promise<void> {
     const noNodes = this.editor.getNodes().length === 0;
     await this.applyDiff(this.compiler.loadGraph(graph), true);
     if (noNodes) {
-      AreaExtensions.zoomAt(this.area, this.editor.getNodes());
+      void AreaExtensions.zoomAt(this.area, this.editor.getNodes());
     }
   }
 
@@ -266,7 +267,7 @@ export class EditorAPIImp implements EditorAPI {
     const node = this.getNode(nodeId);
     if (node?.previewControl) {
       node.previewControl.shader = this.compileNode(nodeId);
-      this.area.update("control", node.previewControl.id);
+      void this.area.update("control", node.previewControl.id);
     }
   }
 
@@ -313,7 +314,7 @@ export class EditorAPIImp implements EditorAPI {
           const uiConnection = this.editor.getConnection(id);
           if (uiConnection) {
             uiConnection.type = connection.type;
-            this.area.update("connection", uiConnection.id);
+            void this.area.update("connection", uiConnection.id);
             continue;
           }
           await this.editor.addConnection(
@@ -333,7 +334,7 @@ export class EditorAPIImp implements EditorAPI {
                 y: node.position.y,
               });
 
-              this.area.update("node", uiNode.id);
+              void this.area.update("node", uiNode.id);
             }
           } else {
             console.warn(`Node ${node.identifier} not found in editor`);
@@ -376,7 +377,7 @@ export class EditorAPIImp implements EditorAPI {
       const node = this.getNode(info.node.identifier);
       if (!node) continue;
       node.updateNode(info.instanceInfo, () => this.compileNode(node.id));
-      this.area.update("node", node.id);
+      void this.area.update("node", node.id);
     }
   }
 
@@ -395,7 +396,9 @@ export class EditorAPIImp implements EditorAPI {
     const node = new UICompilerNode(
       graphNode.nodeType as NodeType,
       (id, paramName, value) => {
-        this.applyDiff(this.compiler.updateParameter(id, paramName, value));
+        void this.applyDiff(
+          this.compiler.updateParameter(id, paramName, value)
+        );
       }
     );
     node.id = graphNode.identifier;
@@ -411,9 +414,9 @@ export class EditorAPIImp implements EditorAPI {
   }
 
   protected informAboutUniform(uniform: Uniform) {
-    this.uniformCallbacks.forEach((callback) =>
-      callback.updateUniform(uniform)
-    );
+    this.uniformCallbacks.forEach((callback) => {
+      callback.updateUniform(uniform);
+    });
   }
 
   private editor: NodeEditor<Schemes>;

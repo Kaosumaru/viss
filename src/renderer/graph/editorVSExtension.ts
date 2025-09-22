@@ -92,7 +92,7 @@ export class EditorVSExtension {
     }
     this.deserializing = true;
     try {
-      await this.editor.loadGraph(json as Graph);
+      await this.editor.loadGraph(json);
     } finally {
       this.deserializing = false;
     }

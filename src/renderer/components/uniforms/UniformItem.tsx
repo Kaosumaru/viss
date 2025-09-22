@@ -28,7 +28,7 @@ const UniformItem: React.FC<UniformItemProps> = ({
         aria-label="delete"
         size="small"
         color="error"
-        onClick={() => onRemove(name)}
+        onClick={() => { onRemove(name); }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

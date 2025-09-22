@@ -173,7 +173,7 @@ function uniformEntryFromVector(
     }
   } else {
     // Create a default array of zeros with the right size
-    value = Array(type.size).fill(0);
+    value = Array(type.size).fill(0) as number[];
   }
 
   return {

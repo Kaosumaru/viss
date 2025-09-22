@@ -1,6 +1,5 @@
 import { Box, Typography, IconButton, Checkbox } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import type { BooleanValue } from "../../../compiler/graph/parameter";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
 import type { UniformItemProps } from "./UniformItem";
 
@@ -13,7 +12,7 @@ const BoolUniformItem: React.FC<UniformItemProps> = ({
   // The value is stored in uniform.defaultValue?.value (if type is boolean)
   const value =
     uniform.defaultValue && uniform.defaultValue.type === "boolean"
-      ? (uniform.defaultValue as BooleanValue).value
+      ? uniform.defaultValue.value
       : false;
 
   const handleValueChange = (checked: boolean) => {
@@ -32,7 +31,9 @@ const BoolUniformItem: React.FC<UniformItemProps> = ({
       </Typography>
       <Checkbox
         checked={value}
-        onChange={(e) => handleValueChange(e.target.checked)}
+        onChange={(e) => {
+          handleValueChange(e.target.checked);
+        }}
         sx={{
           color: "#aaa",
           "&.Mui-checked": {
@@ -44,7 +45,9 @@ const BoolUniformItem: React.FC<UniformItemProps> = ({
         aria-label="delete"
         size="small"
         color="error"
-        onClick={() => onRemove(name)}
+        onClick={() => {
+          onRemove(name);
+        }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

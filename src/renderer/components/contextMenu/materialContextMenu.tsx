@@ -210,13 +210,17 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
           size="small"
           fullWidth
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            },
           }}
         />
       </SearchContainer>
@@ -224,7 +228,11 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
       <CategoryList>
         {filteredCategories.map((category) => (
           <Box key={category.name}>
-            <CategoryHeader onClick={() => toggleCategory(category.name)}>
+            <CategoryHeader
+              onClick={() => {
+                toggleCategory(category.name);
+              }}
+            >
               <CategoryIcon>{category.icon}</CategoryIcon>
               <ListItemText
                 primary={
@@ -262,7 +270,9 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
               {filterItems(category.items).map((item) => (
                 <NodeItem
                   key={item.name}
-                  onClick={() => handleNodeCreate(item)}
+                  onClick={() => {
+                    handleNodeCreate(item);
+                  }}
                 >
                   <ListItemText
                     primary={

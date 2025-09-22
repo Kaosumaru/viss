@@ -51,7 +51,7 @@ const BaseVectorUniformItem: React.FC<BaseVectorUniformItemProps> = ({
         aria-label="delete"
         size="small"
         color="error"
-        onClick={() => onRemove(name)}
+        onClick={() => { onRemove(name); }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

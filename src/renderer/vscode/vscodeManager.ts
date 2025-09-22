@@ -55,7 +55,7 @@ class VSCodeManager {
     const response = await this.toWebviewURI({
       relativepaths: [path],
     });
-    return response?.uris[0];
+    return response.uris[0];
   }
 
   setState(state: unknown) {
@@ -90,6 +90,7 @@ class VSCodeManager {
   private handleWindowMessage(event: MessageEvent) {
     console.log("Received message from webview:", event.data);
     const message = event.data as ExtensionToEditorMessage;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (message.type === undefined) {
       return;
     }
@@ -102,7 +103,9 @@ class VSCodeManager {
 
     const listeners = this.listeners[message.type];
     if (listeners) {
-      listeners.forEach((listener) => listener(message));
+      listeners.forEach((listener) => {
+        listener(message);
+      });
     } else {
       console.warn("No listeners for message type:", message.type);
     }
@@ -122,9 +125,9 @@ class VSCodeManager {
     req: ToWebviewURIRequest["params"]
   ) => Promise<ToWebviewURIResponse["params"]>;
 
-  private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) =>
-    this.postMessage(req)
-  );
+  private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) => {
+    this.postMessage(req);
+  });
 
   private listeners: {
     [K in ExtensionToEditorMessage["type"]]?: Array<(message: unknown) => void>;

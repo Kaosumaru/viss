@@ -53,7 +53,9 @@ export function createRenderer(
             })
           );
         },
-        unmount: () => root.unmount(),
+        unmount: () => {
+          root.unmount();
+        },
       };
     },
   });
@@ -80,23 +82,24 @@ export function createRenderer(
         },
         control(data) {
           if (data.payload instanceof BooleanControl) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // TODo why any is needed?
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             return CustomBooleanControl as any;
           }
           if (data.payload instanceof ColorControl) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             return CustomColorControl as any;
           }
           if (data.payload instanceof NumberControl) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             return CustomNumberControl as any;
           }
           if (data.payload instanceof PreviewControl) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             return CustomPreviewControl as any;
           }
           if (data.payload instanceof ClassicPreset.InputControl) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             return Presets.classic.Control as any;
           }
           return null;

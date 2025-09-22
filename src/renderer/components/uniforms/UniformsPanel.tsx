@@ -53,7 +53,7 @@ export const UniformsPanel: React.FC = () => {
   };
 
   const handleRemove = async (name: string) => {
-    await editorData?.removeUniform(name);
+    await editorData.removeUniform(name);
   };
 
   return (
@@ -73,6 +73,7 @@ export const UniformsPanel: React.FC = () => {
       <Stack spacing={1}>
         {Object.entries(uniforms).map(([name, uniform]) => {
           const Comp =
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             uniformComponents[
               uniform.visualizer?.id as keyof typeof uniformComponents
             ] || UniformItem;
@@ -81,9 +82,9 @@ export const UniformsPanel: React.FC = () => {
               key={name}
               name={name}
               uniform={uniform}
-              onChange={onChange}
-              onChangeValue={(value) => onChangeValue(name, value)}
-              onRemove={handleRemove}
+              onChange={(e) => void onChange(e)}
+              onChangeValue={(value) => void onChangeValue(name, value)}
+              onRemove={(name) => void handleRemove(name)}
             />
           );
         })}
@@ -94,7 +95,9 @@ export const UniformsPanel: React.FC = () => {
           variant="outlined"
           size="small"
           value={newName}
-          onChange={(e) => setNewName(e.target.value)}
+          onChange={(e) => {
+            setNewName(e.target.value);
+          }}
           sx={{
             flex: 2,
             bgcolor: "#111",
@@ -107,7 +110,9 @@ export const UniformsPanel: React.FC = () => {
           <Select
             value={selectedIndex}
             label="Type"
-            onChange={(e) => setSelectedIndex(Number(e.target.value))}
+            onChange={(e) => {
+              setSelectedIndex(Number(e.target.value));
+            }}
             sx={{ bgcolor: "#111", color: "#fff" }}
           >
             {uniformVisualizers.map((entry, idx) => (
@@ -120,7 +125,7 @@ export const UniformsPanel: React.FC = () => {
         <Button
           variant="contained"
           color="success"
-          onClick={handleAdd}
+          onClick={() => void handleAdd()}
           sx={{ height: 40 }}
         >
           Add

@@ -55,7 +55,7 @@ export const SelectionAreaDemo: React.FC = () => {
 
         <Button
           variant="contained"
-          onClick={() => setIsEnabled(!isEnabled)}
+          onClick={() => { setIsEnabled(!isEnabled); }}
           sx={{ mb: 2 }}
         >
           {isEnabled ? "Disable" : "Enable"} Selection

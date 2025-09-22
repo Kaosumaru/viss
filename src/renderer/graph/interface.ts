@@ -19,7 +19,7 @@ export interface EditorAPI {
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;
   destroy: () => void;
-  clear: () => void;
+  clear: () => Promise<void>;
   createNode: (
     nodeType: NodeType,
     space: "screen" | "absolute",

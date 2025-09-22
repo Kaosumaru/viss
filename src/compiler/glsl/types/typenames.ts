@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 export const allScalarTypeNames = ["bool", "int", "uint", "float"] as const;
 
 export type ScalarTypeName = (typeof allScalarTypeNames)[number];

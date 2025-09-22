@@ -80,7 +80,11 @@ export class AsyncRequestManager<
       } catch (err) {
         clearTimeout(timeoutId);
         this.pending.delete(id);
-        reject(err);
+        if (err instanceof Error) {
+          reject(err);
+        } else {
+          reject(new Error("Unknown error during request sending"));
+        }
       }
     });
   }
