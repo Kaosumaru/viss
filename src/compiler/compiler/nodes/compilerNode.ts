@@ -179,10 +179,6 @@ export abstract class CompilerNode {
     };
 
     for (const [name, { data, type, trivial }] of outputs) {
-      if (!type) {
-        throw new Error(`Output type for '${name}' is not defined`);
-      }
-
       let outExpression: Expression = {
         type: type,
         data,

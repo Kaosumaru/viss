@@ -434,7 +434,7 @@ export class CompilerInternal {
         const identifier = node.parameters["_identifier"];
         return (
           typeof identifier?.value === "string" &&
-          uniformIds.includes(identifier?.value)
+          uniformIds.includes(identifier.value)
         );
       })
       .map((node) => node.identifier);

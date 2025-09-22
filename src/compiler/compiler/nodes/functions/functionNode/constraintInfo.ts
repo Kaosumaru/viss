@@ -56,7 +56,6 @@ export function constraintToType(constraint: ConstraintInfo): Type {
     throw new Error("Constraint must have at least one type");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (types.length === 1 && types[0] !== undefined) {
     return types[0];
   }
@@ -75,7 +74,6 @@ export function constraintToComponentType(constraint: ConstraintInfo): Type {
     throw new Error("Constraint must have at least one type");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (types.length === 1 && types[0] !== undefined) {
     return types[0];
   }

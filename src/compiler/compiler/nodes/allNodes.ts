@@ -440,6 +440,7 @@ export const nodes = {
 export type NodeType = keyof typeof nodes;
 export function getNode(type: NodeType): CompilerNode {
   const node = nodes[type];
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!node) {
     throw new Error(`Node type "${type}" not found`);
   }

@@ -69,11 +69,14 @@ export abstract class BinaryOperator extends CompilerNode {
       };
     }
 
-    const inputType = (inA ?? inB)!.type;
+    const inputType = (inA ?? inB)?.type;
+    if (!inputType) {
+      throw new Error("Input type is undefined");
+    }
     const typeName = componentType(inputType);
     const genericIInputType = variantScalarVector(typeName);
 
-    const outputType = this.getOutputType(inA, inB)!;
+    const outputType = this.getOutputType(inA, inB);
 
     return {
       a: genericIInputType,

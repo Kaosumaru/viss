@@ -31,7 +31,9 @@ export function VectorInputField({
           <Box>
             <NumberInputField
               value={value}
-              onChange={(newValue) => handleChange(index, newValue)}
+              onChange={(newValue) => {
+                handleChange(index, newValue);
+              }}
               allowFloat={allowFloat}
             />
           </Box>
