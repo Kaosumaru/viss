@@ -58,6 +58,10 @@ export class EditorVSExtension {
         }
         return context;
       });
+    } else {
+      window.addEventListener("beforeunload", () => {
+        this.saveState();
+      });
     }
   }
 

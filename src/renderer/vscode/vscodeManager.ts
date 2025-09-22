@@ -59,10 +59,18 @@ class VSCodeManager {
   }
 
   setState(state: unknown) {
+    if (!this.isAvailable) {
+      localStorage.setItem("graphState", JSON.stringify(state));
+      return;
+    }
     this.vscode?.setState(state);
   }
 
   getState(): unknown {
+    if (!this.isAvailable) {
+      const state = localStorage.getItem("graphState");
+      return state ? JSON.parse(state) : undefined;
+    }
     return this.vscode?.getState();
   }
 

@@ -1,4 +1,4 @@
-import { Paper, Button } from "@mui/material";
+import { Paper, Button, Stack } from "@mui/material";
 import { ShaderCanvas } from "./shaderCanvas";
 import styled from "styled-components";
 import { useContext } from "react";
@@ -64,16 +64,24 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
     }
   };
 
+  const handleClearGraph = async () => {
+    if (!editorData) {
+      console.warn("No editor available");
+      return;
+    }
+    await editorData.clear();
+  };
+
   return (
     <FloatingPaper elevation={6}>
       {!__VSCODE_EXTENSION__ && (
-        <div
-          style={{
-            padding: "12px",
-            paddingBottom: "8px",
-            display: "flex",
-            gap: "0.5em",
-            flexShrink: 0,
+        <Stack
+          direction="row"
+          spacing={2}
+          padding={1}
+          sx={{
+            justifyContent: "space-around",
+            alignItems: "center",
           }}
         >
           <Button
@@ -84,7 +92,7 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
             disabled={!editorData}
             size="small"
           >
-            Save Graph
+            Save
           </Button>
           <Button
             variant="outlined"
@@ -94,9 +102,20 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
             disabled={!editorData}
             size="small"
           >
-            Load Graph
+            Load
           </Button>
-        </div>
+
+          <Button
+            variant="outlined"
+            onClick={() => {
+              void handleClearGraph();
+            }}
+            disabled={!editorData}
+            size="small"
+          >
+            Clear
+          </Button>
+        </Stack>
       )}
       <div
         style={{
