@@ -5,6 +5,7 @@ MVP
         - selecting files would be simplest for now - just a separate list of files after uniforms
 2. sample with three.js (best if we would use 2d AND 3d model)
 3. Writing a readme
+4. Color uniform
 
 Bugs
 1. Right clicking on a node clears the selection
