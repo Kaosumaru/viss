@@ -19,11 +19,6 @@ test("PreviewNode", () => {
 
   expect(c).toEqual({
     outputs: {
-      _preview: {
-        data: "vec4(vec3(1.0), 1.0)",
-        trivial: false,
-        type: vector("float", 4),
-      },
       out: {
         data: "1.0",
         trivial: true,
