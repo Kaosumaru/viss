@@ -33,7 +33,7 @@ export class CompilerInternal {
     this.options = options;
     this.graph = {
       version: CompilerInternal.graphVersion,
-      includesPath: "",
+      includes: [],
       nodes: [],
       connections: [],
       uniforms: {},
@@ -411,7 +411,7 @@ export class CompilerInternal {
 
     this.graph = {
       version: CompilerInternal.graphVersion,
-      includesPath: "",
+      includes: [],
       nodes: [],
       connections: [],
       uniforms: {},

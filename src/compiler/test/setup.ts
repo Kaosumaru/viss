@@ -32,7 +32,7 @@ export function setup<T extends Descriptors>(
   return {
     graph: {
       version: 1,
-      includesPath: "",
+      includes: [],
       nodes: Object.entries(desc).reduce<Node[]>((acc, [key, value]) => {
         acc.push({
           identifier: key,

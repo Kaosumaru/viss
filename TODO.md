@@ -13,6 +13,7 @@ Bugs
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode
 
+
 Next
 
 1. Loops validation

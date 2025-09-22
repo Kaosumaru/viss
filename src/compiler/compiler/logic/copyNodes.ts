@@ -8,7 +8,7 @@ export function copyNodes(
   const nodesToCopy = new Set<string>(nodeIds);
   const result: Graph = {
     version: CompilerInternal.graphVersion,
-    includesPath: "",
+    includes: [],
     nodes: [],
     connections: [],
     uniforms: {},

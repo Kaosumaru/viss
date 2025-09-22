@@ -5,7 +5,7 @@ import type { Uniforms } from "./uniform";
 
 export interface Graph {
   version: number;
-  includesPath: string;
+  includes: string[];
   uniforms: Uniforms;
   nodes: Node[];
   connections: Connection[];
