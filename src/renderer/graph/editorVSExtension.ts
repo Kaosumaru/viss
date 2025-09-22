@@ -17,7 +17,7 @@ export class EditorVSExtension {
 
     this.helper.addDispose(
       vscode.addMessageListener<LoadGraphMessage>("loadGraph", (message) => {
-        this.onLoadGraphRequest(message);
+        void this.onLoadGraphRequest(message);
       })
     );
 
@@ -38,7 +38,7 @@ export class EditorVSExtension {
   }
 
   public async initialize() {
-    const state = vscode.getState() as State;
+    const state = vscode.getState() as State | undefined;
 
     if (state) {
       await this.loadGraph(state.graph);

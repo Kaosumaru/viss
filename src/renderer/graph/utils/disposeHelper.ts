@@ -12,7 +12,9 @@ export class DisposeHelper {
   }
 
   dispose() {
-    this.disposables.forEach((dispose) => dispose());
+    this.disposables.forEach((dispose) => {
+      dispose();
+    });
     this.disposables = [];
   }
 }

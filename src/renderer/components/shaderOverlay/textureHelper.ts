@@ -36,7 +36,6 @@ export class TextureHelper {
   }
 
   loadTexture(id: string, path: string) {
-    if (!this.gl) return;
     let entry = this.textures.get(path);
     if (!entry) {
       const unit = this.freeTextures.pop();

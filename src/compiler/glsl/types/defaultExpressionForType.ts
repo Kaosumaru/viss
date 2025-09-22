@@ -52,11 +52,11 @@ function defaultExpressionForVector(vec: VectorType): Expression {
 }
 
 function defaultExpressionForVariant(variant: VariantType): Expression {
-  if (variant.types.length === 0) {
-    throw new Error("Cannot create default expression for empty variant type");
-  }
   // Use the first type in the variant as the default
   const firstType = variant.types[0];
+  if (firstType === undefined) {
+    throw new Error("Cannot create default expression for empty variant type");
+  }
   return defaultExpressionForType(firstType);
 }
 

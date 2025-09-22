@@ -12,14 +12,20 @@ export class ComposeVector extends CompilerNode {
     this.typename = typeToGlsl(this.type);
 
     for (let i = 0; i < this.type.size; i++) {
-      this.addInputWithParam(components[i], this.type.type);
+      this.addInputWithParam(components[i] ?? "<NO-INDEX>", this.type.type);
     }
   }
 
   override compile(node: NodeContext): Context {
     const data: string[] = [];
     for (let i = 0; i < this.type.size; i++) {
-      data.push(this.getInputOrParam(node, components[i], this.type.type));
+      data.push(
+        this.getInputOrParam(
+          node,
+          components[i] ?? "<NO-INDEX>",
+          this.type.type
+        )
+      );
     }
 
     return this.createOutput(node, {
@@ -29,7 +35,7 @@ export class ComposeVector extends CompilerNode {
   }
 
   override getLabel(): string {
-    return `${this.typename}`;
+    return this.typename;
   }
 
   override getDescription(): string {

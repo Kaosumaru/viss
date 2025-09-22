@@ -7,10 +7,6 @@ export function compileNode(
   nodeId?: string,
   outputPin?: string
 ): string | undefined {
-  if (!compiler) {
-    return undefined;
-  }
-
   if (!nodeId) {
     const graph = compiler.getGraph();
     const node = graph.nodes.find((n) => n.nodeType === "output");
@@ -41,6 +37,10 @@ function outputToGLSL(
   const outExpression = outputPin
     ? output.outputs[outputPin]
     : Object.values(output.outputs)[0];
+
+  if (!outExpression) {
+    throw new Error("Output pin not found in the compiled context");
+  }
 
   return exportGlsl(compiler, output, outExpression, []);
 }

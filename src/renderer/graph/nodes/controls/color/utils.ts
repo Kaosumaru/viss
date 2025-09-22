@@ -19,18 +19,18 @@ export function hexToRgba(hex: string): Color {
   if (cleanHex.length === 6) {
     // RGB format
     return [
-      parseInt(cleanHex.substr(0, 2), 16) / 255,
-      parseInt(cleanHex.substr(2, 2), 16) / 255,
-      parseInt(cleanHex.substr(4, 2), 16) / 255,
+      parseInt(cleanHex.substring(0, 2), 16) / 255,
+      parseInt(cleanHex.substring(2, 4), 16) / 255,
+      parseInt(cleanHex.substring(4, 6), 16) / 255,
       1.0,
     ];
   } else if (cleanHex.length === 8) {
     // RGBA format
     return [
-      parseInt(cleanHex.substr(0, 2), 16) / 255,
-      parseInt(cleanHex.substr(2, 2), 16) / 255,
-      parseInt(cleanHex.substr(4, 2), 16) / 255,
-      parseInt(cleanHex.substr(6, 2), 16) / 255,
+      parseInt(cleanHex.substring(0, 2), 16) / 255,
+      parseInt(cleanHex.substring(2, 4), 16) / 255,
+      parseInt(cleanHex.substring(4, 6), 16) / 255,
+      parseInt(cleanHex.substring(6, 8), 16) / 255,
     ];
   }
 

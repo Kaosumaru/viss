@@ -50,7 +50,7 @@ export function applyUniforms(
             gl.uniform4fv(location, value);
             break;
         }
-      } else if (type === "i") {
+      } else {
         switch (size) {
           case 1:
             gl.uniform1iv(location, value);
@@ -66,11 +66,13 @@ export function applyUniforms(
             break;
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (entry.value.id === "texture") {
       const { type, path } = entry.value;
       if (type === "2d") {
         const id = shaderRenderer.textureHelper.getTextureId(path);
         gl.uniform1i(location, id);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (type === "cube") {
         // TODO
       }

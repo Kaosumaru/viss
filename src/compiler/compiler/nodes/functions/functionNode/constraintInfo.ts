@@ -37,6 +37,7 @@ export function constraintToType(constraint: ConstraintInfo): Type {
     for (const type of constraint.constrainedType) {
       if (type.type === "scalar") {
         types.push(scalar(scalarType));
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (type.type === "vector") {
         if (type.size !== undefined) {
           types.push(vector(scalarType, type.size));
@@ -55,7 +56,8 @@ export function constraintToType(constraint: ConstraintInfo): Type {
     throw new Error("Constraint must have at least one type");
   }
 
-  if (types.length === 1) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (types.length === 1 && types[0] !== undefined) {
     return types[0];
   }
 
@@ -73,7 +75,8 @@ export function constraintToComponentType(constraint: ConstraintInfo): Type {
     throw new Error("Constraint must have at least one type");
   }
 
-  if (types.length === 1) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (types.length === 1 && types[0] !== undefined) {
     return types[0];
   }
 

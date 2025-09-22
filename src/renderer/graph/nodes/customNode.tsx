@@ -146,10 +146,10 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
                     payload={input.socket}
                     data-testid="input-socket"
                   />
-                  {input && (!input.control || !input.showControl) && (
+                  {(!input.control || !input.showControl) && (
                     <div className="input-title">{input?.label}</div>
                   )}
-                  {input?.control && input?.showControl && (
+                  {input.control && input.showControl && (
                     <RefControl
                       key={key}
                       name="input-control"

@@ -6,20 +6,30 @@ import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'dist',
+    'node_modules',
+    'vscode-extension',
+    '**/*.config.ts',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
       ecmaVersion: 2020,
       globals: globals.browser,
     },
     rules: {
+      "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn", // or "error"
         {
@@ -27,7 +37,7 @@ export default tseslint.config([
           "varsIgnorePattern": "^_",
           "caughtErrorsIgnorePattern": "^_"
         }
-    ]
+      ]
     }
   },
 ])

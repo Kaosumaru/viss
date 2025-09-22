@@ -93,10 +93,6 @@ export class CompilerInternal {
       return false;
     }
     const nodeClass = getNode(node.nodeType as NodeType);
-    if (!nodeClass) {
-      return false;
-    }
-
     const canCast = nodeClass.canImplicitlyCastInput();
 
     const compiledContext = this.compile(output.nodeId);
@@ -121,9 +117,6 @@ export class CompilerInternal {
 
     // initialize default values in node
     const nodeClass = getNode(newNode.nodeType as NodeType);
-    if (!nodeClass) {
-      throw new Error(`Node type "${newNode.nodeType}" not found`);
-    }
     newNode.parameters = {
       ...nodeClass.getDefaultParameters(),
       ...newNode.parameters,
@@ -150,9 +143,6 @@ export class CompilerInternal {
         );
       }
       const nodeClass = getNode(newNode.nodeType as NodeType);
-      if (!nodeClass) {
-        throw new Error(`Node type "${newNode.nodeType}" not found`);
-      }
 
       newNode.parameters = {
         ...nodeClass.getDefaultParameters(),
@@ -397,8 +387,14 @@ export class CompilerInternal {
     name: string,
     defaultValue: ParameterValue
   ): GraphDiff {
+    const existingUniform = this.graph.uniforms[name];
+
+    if (existingUniform === undefined) {
+      throw new Error(`Uniform with name ${name} does not exist`);
+    }
+
     this.graph.uniforms[name] = {
-      ...this.graph.uniforms[name],
+      ...existingUniform,
       defaultValue,
     };
     const invalidatedNodeIds = this.invalidateNodes(

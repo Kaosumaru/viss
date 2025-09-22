@@ -192,6 +192,8 @@ export function selectableNodes<T>(
   }
 
   area.addPipe((context) => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // this is copied from rete example
     if (!context || typeof context !== "object" || !("type" in context))
       return context;
 

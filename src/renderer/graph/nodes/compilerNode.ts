@@ -201,7 +201,9 @@ export class UICompilerNode extends ClassicPreset.Node {
       case "string":
         return new ClassicPreset.InputControl("text", {
           initial: param.defaultValue?.value || "",
-          change: (v) => callback({ type: "string", value: v as string }),
+          change: (v) => {
+            callback({ type: "string", value: v as string });
+          },
         });
       case "vector":
         throw new Error("Vector parameters are not supported as controls");

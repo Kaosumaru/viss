@@ -101,7 +101,7 @@ export class Compiler {
   }
 
   clearGraph() {
-    return this.graph.clearGraph();
+    this.graph.clearGraph();
   }
 
   protected graph: CompilerInternal;

@@ -11,10 +11,6 @@ export async function selectImage(): Promise<string | undefined> {
     filters: { images: ["png", "jpg", "jpeg"] },
   });
 
-  if (response) {
-    console.log("Selected file URI:", response.relativePaths[0]);
-    return response.relativePaths[0];
-  }
-
-  return undefined;
+  console.log("Selected file URI:", response.relativePaths[0]);
+  return response.relativePaths[0];
 }

@@ -64,11 +64,14 @@ export function loadGraphIntoCompiler(
     modifiedNodes.map((node) => node.identifier)
   );
 
-  if (invalidatedNodeIds.size > 0 && !diff.invalidatedNodeIds) {
-    diff.invalidatedNodeIds = new Set();
-  }
-  for (const node of invalidatedNodeIds) {
-    diff.invalidatedNodeIds!.add(node);
+  if (invalidatedNodeIds.size > 0) {
+    if (!diff.invalidatedNodeIds) {
+      diff.invalidatedNodeIds = new Set();
+    }
+
+    for (const node of invalidatedNodeIds) {
+      diff.invalidatedNodeIds.add(node);
+    }
   }
 
   for (const node of modifiedNodes) {

@@ -60,7 +60,7 @@ export function vector(type: ScalarTypeName, size: number): VectorType {
   if (size < 2 || size > 4) {
     throw new Error(`Invalid vector size: ${size}`);
   }
-  return _cachedScalars[type].vectors[size - 2];
+  return _cachedScalars[type].vectors[size - 2] as VectorType;
 }
 
 export function matrix(
@@ -68,7 +68,13 @@ export function matrix(
   rows: number,
   columns: number
 ): MatrixType {
-  return _cachedMatrix[+double][rows - 2][columns - 2];
+  const matrix = _cachedMatrix[+double]?.[rows - 2]?.[columns - 2];
+  if (!matrix) {
+    throw new Error(
+      `Invalid matrix dimensions: double=${double}, rows=${rows}, columns=${columns}`
+    );
+  }
+  return matrix;
 }
 
 export function variant(types: Type[]): VariantType {

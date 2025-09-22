@@ -75,8 +75,14 @@ export class GraphCache {
     const id = connectionToID(connection);
     this.connectionsCache.set(id, connection);
     const key = globalToSocketRef(connection.to);
+    const node = this.getNodeById(connection.from.nodeId);
+    if (!node) {
+      throw new Error(
+        `Node with ID ${connection.from.nodeId} not found in cache`
+      );
+    }
     this.getConnectedNode.set(key, {
-      node: this.getNodeById(connection.from.nodeId)!,
+      node,
       socketId: connection.from.socketId,
     });
 

@@ -78,7 +78,9 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
         >
           <Button
             variant="contained"
-            onClick={handleSaveGraph}
+            onClick={() => {
+              void handleSaveGraph();
+            }}
             disabled={!editorData}
             size="small"
           >
@@ -86,7 +88,9 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
           </Button>
           <Button
             variant="outlined"
-            onClick={handleLoadGraph}
+            onClick={() => {
+              void handleLoadGraph();
+            }}
             disabled={!editorData}
             size="small"
           >
