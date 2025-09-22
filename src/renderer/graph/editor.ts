@@ -58,6 +58,12 @@ export function createEditor(
     return !hasAnyConnection;
   });
 
+  // disable zoom on double click
+  area.addPipe((context) => {
+    if (context.type === "zoom" && context.data.source === "dblclick") return;
+    return context;
+  });
+
   // await editorData.createNode("output", "screen");
   // AreaExtensions.zoomAt(area, editor.getNodes());
 
