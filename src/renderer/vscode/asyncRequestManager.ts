@@ -69,7 +69,13 @@ export class AsyncRequestManager<
     return new Promise<Response["params"]>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error(`Request ${id} timed out after ${this.timeoutMs}ms`));
+        reject(
+          new Error(
+            `Request ${id} ${JSON.stringify(params)} timed out after ${
+              this.timeoutMs
+            }ms`
+          )
+        );
       }, this.timeoutMs);
 
       this.pending.set(id, { resolve, reject, timeoutId });
