@@ -7,9 +7,6 @@ MVP
 3. Writing a readme
 4. Color uniform
 
-Bugs
-1. Right clicking on a node clears the selection
-
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode
 

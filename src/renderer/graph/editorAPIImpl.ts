@@ -153,6 +153,15 @@ export class EditorAPIImp implements EditorAPI {
     return this.applyDiff(this.compiler.removeNode(nodeId));
   }
 
+  async deleteNodeFromContextMenu(nodeId: string) {
+    return this.applyDiff(this.compiler.removeNode(nodeId));
+  }
+
+  isNodeSelected(nodeId: string) {
+    const selectedNodes = this.getSelectedNodes();
+    return selectedNodes.includes(nodeId);
+  }
+
   async deleteNodes(nodeIds: string[]) {
     if (nodeIds.length === 0) return;
     return this.applyDiff(this.compiler.removeNodes(nodeIds));

@@ -213,10 +213,13 @@ export function selectableNodes<T>(
 
       if (core.isPicked({ id, label: "node" })) core.translate(dx, dy);
     } else if (context.type === "pointerdown") {
+      if (context.data.event.button !== 0) return;
       twitch = 0;
     } else if (context.type === "pointermove") {
+      if (context.data.event.button !== 0) return;
       if (twitch !== null) twitch++;
     } else if (context.type === "pointerup") {
+      if (context.data.event.button !== 0) return;
       if (twitch !== null && twitch < 4) {
         core.unselectAll();
       }

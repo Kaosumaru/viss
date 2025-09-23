@@ -30,6 +30,7 @@ export interface EditorAPI {
 
   addUniformCallback: (callback: IUniformCallback) => () => void;
 
+  isNodeSelected: (nodeId: string) => boolean;
   deleteNode: (nodeId: string) => Promise<void>;
   deleteNodes: (nodeIds: string[]) => Promise<void>;
 
