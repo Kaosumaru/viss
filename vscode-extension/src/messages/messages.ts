@@ -49,6 +49,14 @@ export interface ShowOpenFolderDialogRequest extends EditorRequest {
   };
 }
 
+export interface OpenFilesRequest extends EditorRequest {
+  type: "openFiles";
+
+  params: {
+    relativePaths: string[];
+  };
+}
+
 export type EditorToExtensionMessage =
   | AlertMessage
   | RefreshContentMessage
@@ -56,7 +64,8 @@ export type EditorToExtensionMessage =
   | ExportGraphResponseMessage
   | ShowOpenFileDialogRequest
   | ToWebviewURIRequest
-  | ShowOpenFolderDialogRequest;
+  | ShowOpenFolderDialogRequest
+  | OpenFilesRequest;
 
 export interface LoadGraphMessage {
   type: "loadGraph";
@@ -100,10 +109,18 @@ export interface ShowOpenFolderDialogResponse extends ExtensionResponse {
   };
 }
 
+export interface OpenFilesResponse extends ExtensionResponse {
+  type: "openFilesResponse";
+  params: {
+    contents: (string | null)[];
+  };
+}
+
 export type ExtensionToEditorMessage =
   | LoadGraphMessage
   | ExportGraphRequestMessage
   | ShowOpenFileDialogResponse
   | DisposeMessage
   | ToWebviewURIResponse
+  | OpenFilesResponse
   | ShowOpenFolderDialogResponse;

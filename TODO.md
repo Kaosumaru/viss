@@ -17,6 +17,7 @@ Next
 2. Portals
 3. Matrices
 4. Add all functions
+5. Add any errors as vscode diagnostics
 
 
 Global uniforms variables

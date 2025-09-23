@@ -36,3 +36,14 @@ export function getDocumentAsJson(document: vscode.TextDocument): unknown {
     );
   }
 }
+
+export function relativeToAbsolutePath(
+  document: vscode.TextDocument,
+  path: string
+) {
+  const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+  if (!workspaceFolder) {
+    return undefined;
+  }
+  return vscode.Uri.joinPath(workspaceFolder.uri, path);
+}

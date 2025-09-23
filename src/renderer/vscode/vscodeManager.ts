@@ -1,6 +1,8 @@
 import type {
   EditorToExtensionMessage,
   ExtensionToEditorMessage,
+  OpenFilesRequest,
+  OpenFilesResponse,
   ShowOpenFileDialogRequest,
   ShowOpenFileDialogResponse,
   ShowOpenFolderDialogRequest,
@@ -44,6 +46,11 @@ class VSCodeManager {
       ToWebviewURIRequest,
       ToWebviewURIResponse
     >("toWebviewURI", "toWebviewURIResponse", AsyncRequestManager);
+
+    this.openFiles = this.router.registerManager<
+      OpenFilesRequest,
+      OpenFilesResponse
+    >("openFiles", "openFilesResponse", AsyncRequestManager);
   }
 
   public readonly isAvailable = typeof acquireVsCodeApi === "function";
@@ -132,6 +139,10 @@ class VSCodeManager {
   public readonly toWebviewURI: (
     req: ToWebviewURIRequest["params"]
   ) => Promise<ToWebviewURIResponse["params"]>;
+
+  public readonly openFiles: (
+    req: OpenFilesRequest["params"]
+  ) => Promise<OpenFilesResponse["params"]>;
 
   private router = new AsyncRequestRouter<EditorToExtensionMessage>((req) => {
     this.postMessage(req);
