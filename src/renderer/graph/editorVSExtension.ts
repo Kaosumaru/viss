@@ -69,6 +69,18 @@ export class EditorVSExtension {
     this.saveState();
   }
 
+  public async getFileContents(paths: string[]): Promise<(string | null)[]> {
+    if (!vscode.isAvailable) {
+      return paths.map(() => null);
+    }
+
+    const response = await vscode.openFiles({
+      relativePaths: paths,
+    });
+
+    return response.contents;
+  }
+
   public saveGraph(graph: Graph, _diff?: GraphDiff) {
     if (!vscode.isAvailable || this.deserializing) {
       return;

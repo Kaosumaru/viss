@@ -11,7 +11,7 @@ import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
 import type { SelectableAPI } from "./extensions/selectable";
-import { Compiler } from "@compiler/compiler";
+import { Compiler, type CompilationOptions } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import { compileNode } from "./utils/compileNode";
@@ -23,10 +23,15 @@ export class EditorAPIImp implements EditorAPI {
     selectable: SelectableAPI,
     onChanged?: OnGraphChanged
   ) {
-    const compiler = new Compiler();
-    this.compiler = compiler;
-    this.keybindings = new EditorKeybindings(this, area);
     this.extension = new EditorVSExtension(this, area);
+    this.keybindings = new EditorKeybindings(this, area);
+    const options: CompilationOptions = {
+      includeResolver: (includePaths: string[]) => {
+        return this.extension.getFileContents(includePaths);
+      },
+    };
+    this.compiler = new Compiler(options);
+
     this.editor = editor;
     this.area = area;
     this.selectable = selectable;
@@ -188,7 +193,7 @@ export class EditorAPIImp implements EditorAPI {
     }
     // TODO accept invalid files
     const graph = JSON.parse(json) as Graph;
-    const diff = await this.compiler.pasteNodes(graph, offsetX, offsetY);
+    const diff = this.compiler.pasteNodes(graph, offsetX, offsetY);
     await this.applyDiff(diff);
     this.selectNodes(
       diff.addedNodes?.map((node) => node.node.identifier) || []
