@@ -4,10 +4,10 @@ import type { Connection } from "@graph/connection";
 import { type CompilerInternal } from "./compilerInternal";
 import { connectionToID } from "./graphCache";
 
-export function loadGraphIntoCompiler(
+export async function loadGraphIntoCompiler(
   this: CompilerInternal,
   otherGraph: Graph
-): GraphDiff {
+): Promise<GraphDiff> {
   this.graph.version = otherGraph.version;
 
   const otherNodes = new Map(
@@ -16,6 +16,14 @@ export function loadGraphIntoCompiler(
 
   const otherConnections = new Map(
     otherGraph.connections.map((conn) => [connectionToID(conn), conn])
+  );
+
+  const addedIncludes = otherGraph.includes.filter(
+    (include) => !this.graph.includes.includes(include)
+  );
+
+  const removedIncludes = this.graph.includes.filter(
+    (include) => !otherGraph.includes.includes(include)
   );
 
   const addedNodes = otherGraph.nodes.filter(
@@ -50,9 +58,14 @@ export function loadGraphIntoCompiler(
 
   let diff: GraphDiff = {};
 
-  diff = mergeGraphDiffs([diff, this.removeUniforms(removedUniforms)]);
   diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
   diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes, false)]);
+  diff = mergeGraphDiffs([diff, this.removeUniforms(removedUniforms)]);
+
+  diff = mergeGraphDiffs([diff, this.removeIncludes(removedIncludes)]);
+  const addedIncludesDiff = await this.addIncludes(addedIncludes);
+  diff = mergeGraphDiffs([diff, addedIncludesDiff]);
+
   diff = mergeGraphDiffs([diff, this.updateUniforms(modifiedUniforms)]);
   diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
   diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);

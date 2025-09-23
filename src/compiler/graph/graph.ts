@@ -35,6 +35,7 @@ export interface GraphDiff {
   nodesWithModifiedProperties?: Node[];
   invalidatedNodeIds?: Set<string>;
   updatedUniforms?: Uniforms;
+  updatedIncludes?: string[];
 
   warnings?: string[];
 }
@@ -42,6 +43,15 @@ export interface GraphDiff {
 export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
   return diffs.reduce<GraphDiff>((acc, diff) => {
     acc.addedNodes = [...(acc.addedNodes || []), ...(diff.addedNodes || [])];
+
+    if (acc.updatedIncludes || diff.updatedIncludes) {
+      const updatedIncludes = new Set([
+        ...(acc.updatedIncludes || []),
+        ...(diff.updatedIncludes || []),
+      ]);
+      acc.updatedIncludes = Array.from(updatedIncludes);
+    }
+
     acc.removedNodes = [
       ...(acc.removedNodes || []),
       ...(diff.removedNodes || []),

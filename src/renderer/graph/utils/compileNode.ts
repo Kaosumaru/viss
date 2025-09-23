@@ -42,5 +42,5 @@ function outputToGLSL(
     throw new Error("Output pin not found in the compiled context");
   }
 
-  return exportGlsl(compiler, output, outExpression, []);
+  return exportGlsl(compiler, output, outExpression);
 }

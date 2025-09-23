@@ -1,5 +1,10 @@
 import type { Connection } from "@graph/connection";
-import { type AddedNodeInfo, type Graph, type GraphDiff } from "@graph/graph";
+import {
+  type AddedNodeInfo,
+  type GLSLInclude,
+  type Graph,
+  type GraphDiff,
+} from "@graph/graph";
 import type { Node } from "@graph/node";
 import { v4 as uuidv4 } from "uuid";
 import type { Context } from "../context";
@@ -8,7 +13,7 @@ import { getNode, type NodeType } from "../nodes/allNodes";
 import { CompileNodeContext } from "../compilerNodeContext";
 import type { NodeContext, NodeInfo } from "../nodes/compilerNode";
 import type { CompilationOptions } from "../compiler";
-import { type FunctionDefinition } from "@glsl/function";
+import { parseFunctionsFrom, type FunctionDefinition } from "@glsl/function";
 import { copyNodes } from "./copyNodes";
 import { pasteNodes } from "./pasteNodes";
 import type { Type } from "@glsl/types/types";
@@ -321,7 +326,7 @@ export class CompilerInternal {
     };
   }
 
-  loadGraph(otherGraph: Graph): GraphDiff {
+  loadGraph(otherGraph: Graph): Promise<GraphDiff> {
     return loadGraphIntoCompiler.call(this, otherGraph);
   }
 
@@ -417,6 +422,7 @@ export class CompilerInternal {
       uniforms: {},
     };
 
+    this.glslIncludes = [];
     this.nameToFunction = {};
   }
 
@@ -425,6 +431,75 @@ export class CompilerInternal {
     inputSocketId: string
   ): InputConnection | undefined {
     return this.cache.getInputNode(inputNodeId, inputSocketId);
+  }
+
+  async addIncludes(includes: string[]): Promise<GraphDiff> {
+    // TODO
+    if (!this.options.includeResolver) return {};
+
+    includes = includes.filter(
+      (include) => !this.graph.includes.includes(include)
+    );
+
+    if (includes.length === 0) return {};
+
+    const includeContents = await this.options.includeResolver(includes);
+    this.graph.includes.push(...includes);
+
+    const newIncludes: GLSLInclude[] = [];
+    for (let i = 0; i < includes.length; i++) {
+      const include = includes[i];
+      const content = includeContents[i];
+      newIncludes.push({
+        name: include ?? "",
+        content: content ?? "",
+      });
+    }
+
+    const parsedFunctions = parseFunctionsFrom({ includes: newIncludes });
+
+    this.nameToFunction = {
+      ...this.nameToFunction,
+      ...parsedFunctions,
+    };
+
+    this.glslIncludes.push(...newIncludes);
+    return this.invalidateIncludesDiff();
+  }
+
+  reloadIncludes(): Promise<GraphDiff> {
+    const includes = this.graph.includes;
+    this.graph.includes = [];
+    this.nameToFunction = {};
+    return this.addIncludes(includes);
+  }
+
+  removeIncludes(includesToRemove: string[]): GraphDiff {
+    this.graph.includes = this.graph.includes.filter(
+      (include) => !includesToRemove.includes(include)
+    );
+
+    this.glslIncludes = this.glslIncludes.filter(
+      (include) => !includesToRemove.includes(include.name)
+    );
+
+    this.nameToFunction = parseFunctionsFrom({ includes: this.glslIncludes });
+    return this.invalidateIncludesDiff();
+  }
+
+  getIncludes(): GLSLInclude[] {
+    return this.glslIncludes;
+  }
+
+  protected invalidateIncludesDiff(): GraphDiff {
+    const nodeIds = this.cache
+      .allNodes()
+      .filter((node) => node.nodeType === "glslFunction")
+      .map((node) => node.identifier);
+    return {
+      invalidatedNodeIds: new Set(nodeIds),
+      updatedIncludes: this.graph.includes,
+    };
   }
 
   protected getNodeIdsWithUniforms(uniformIds: string[]): string[] {
@@ -529,4 +604,5 @@ export class CompilerInternal {
   protected cache: GraphCache = new GraphCache();
   protected cachedContexts: Map<string, Context> = new Map();
   protected nameToFunction: Record<string, FunctionDefinition> = {};
+  protected glslIncludes: GLSLInclude[] = [];
 }

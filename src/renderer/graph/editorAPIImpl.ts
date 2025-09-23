@@ -188,7 +188,7 @@ export class EditorAPIImp implements EditorAPI {
     }
     // TODO accept invalid files
     const graph = JSON.parse(json) as Graph;
-    const diff = this.compiler.pasteNodes(graph, offsetX, offsetY);
+    const diff = await this.compiler.pasteNodes(graph, offsetX, offsetY);
     await this.applyDiff(diff);
     this.selectNodes(
       diff.addedNodes?.map((node) => node.node.identifier) || []
@@ -212,7 +212,8 @@ export class EditorAPIImp implements EditorAPI {
 
   async loadGraph(graph: Graph): Promise<void> {
     const noNodes = this.editor.getNodes().length === 0;
-    await this.applyDiff(this.compiler.loadGraph(graph), true);
+    const diff = await this.compiler.loadGraph(graph);
+    await this.applyDiff(diff, true);
     if (noNodes) {
       void AreaExtensions.zoomAt(this.area, this.editor.getNodes());
     }

@@ -2,13 +2,11 @@ import type { Compiler } from "@compiler/compiler";
 import type { Context, Expression, Variable } from "@compiler/context";
 import { convertToVector4 } from "@compiler/nodes/out/utils";
 import { typeToGlsl } from "@glsl/types/typeToString";
-import type { GLSLInclude } from "@graph/graph";
 
 export function exportGlsl(
   compiler: Compiler,
   ctx: Context,
-  expression: Expression,
-  includeFiles: GLSLInclude[]
+  expression: Expression
 ) {
   const vec4 = convertToVector4(expression);
 
@@ -23,6 +21,8 @@ export function exportGlsl(
       return `uniform ${type} ${name};`;
     })
     .join("\n");
+
+  const includeFiles = compiler.getIncludes();
 
   const fragmentShader = `
 precision mediump float;

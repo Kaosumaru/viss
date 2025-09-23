@@ -1,15 +1,20 @@
 import type { Node } from "@graph/node";
 import type { Context } from "./context";
 import { CompilerInternal } from "./logic/compilerInternal";
-import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, GLSLInclude, Graph, GraphDiff } from "@graph/graph";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
 import type { SocketReference } from "@graph/socket";
 import type { Uniform } from "@graph/uniform";
 
+export type IncludeResolver = (
+  includeName: string[]
+) => Promise<(string | null)[]>;
+
 export interface CompilationOptions {
   noVariables?: boolean;
+  includeResolver?: IncludeResolver;
 }
 
 export class Compiler {
@@ -19,6 +24,10 @@ export class Compiler {
 
   public getCustomFunctions(): FunctionDefinition[] {
     return this.graph.getCustomFunctions();
+  }
+
+  public getIncludes(): GLSLInclude[] {
+    return this.graph.getIncludes();
   }
 
   compile(nodeId: string): Context {
@@ -92,7 +101,7 @@ export class Compiler {
     return this.graph.getGraph();
   }
 
-  loadGraph(graph: Graph): GraphDiff {
+  loadGraph(graph: Graph): Promise<GraphDiff> {
     return this.graph.loadGraph(graph);
   }
 
