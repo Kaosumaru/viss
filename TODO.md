@@ -1,11 +1,10 @@
 MVP
 
-1. loading glsl functions from file
-    - how this should work in vscode? Select folder, select file?
-        - selecting files would be simplest for now - just a separate list of files after uniforms
-2. sample with three.js (best if we would use 2d AND 3d model)
-3. Writing a readme
-4. Color uniform
+1. sample with three.js (best if we would use 2d AND 3d model)
+2. Writing a readme
+3. Color uniform
+4. Create some shaders at weekend
+5. Empty files are throwing exceptions, fix that
 
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode
