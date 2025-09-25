@@ -2,6 +2,12 @@
   "name": "vshader-editor",
   "displayName": "VShader Editor",
   "description": "A Visual Shader Editor extension for VS Code",
+  "author": "Kaosumaru",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kaosumaru/vshader.git"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.74.0"
@@ -44,7 +50,8 @@
     "build:extension": "tsc -p ./",
     "build:webapp": "cd .. && npm run build:vscode",
     "copy:dist": "npx copyfiles -u 1 \"dist/**/*\" \"vscode-extension/media/\"",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "package": "npx @vscode/vsce package"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",

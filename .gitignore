@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.vsix
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +25,4 @@ dist-ssr
 *.sw?
 vscode-extension/out/**/*
 vscode-extension/media/**/*
+package.json
