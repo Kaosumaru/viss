@@ -272,6 +272,18 @@ export class EditorAPIImp implements EditorAPI {
     return nodes.filter((node) => node.selected).map((node) => node.id);
   }
 
+  async addInclude(include: string): Promise<void> {
+    return this.applyDiff(await this.compiler.addInclude(include));
+  }
+
+  removeInclude(include: string): Promise<void> {
+    return this.applyDiff(this.compiler.removeInclude(include));
+  }
+
+  includes(): string[] {
+    return this.compiler.includes();
+  }
+
   protected recompilePreviewNodes(nodes: Set<string>) {
     for (const nodeId of nodes) {
       this.refreshShader(nodeId);

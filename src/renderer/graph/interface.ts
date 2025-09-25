@@ -50,6 +50,10 @@ export interface EditorAPI {
   updateUniform: (uniform: Uniform) => Promise<void>;
   removeUniform: (uniformId: string) => Promise<void>;
 
+  addInclude: (include: string) => Promise<void>;
+  removeInclude: (include: string) => Promise<void>;
+  includes: () => string[];
+
   compileNode: (nodeId?: string) => string | undefined;
   getCustomFunctions: () => FunctionDefinition[];
 }

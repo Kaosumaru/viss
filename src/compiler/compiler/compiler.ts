@@ -1,7 +1,12 @@
 import type { Node } from "@graph/node";
 import type { Context } from "./context";
 import { CompilerInternal } from "./logic/compilerInternal";
-import type { AddedNodeInfo, GLSLInclude, Graph, GraphDiff } from "@graph/graph";
+import type {
+  AddedNodeInfo,
+  GLSLInclude,
+  Graph,
+  GraphDiff,
+} from "@graph/graph";
 import { type FunctionDefinition } from "@glsl/function";
 import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
@@ -68,6 +73,18 @@ export class Compiler {
 
   public updateUniform(uniform: Uniform): GraphDiff {
     return this.graph.updateUniform(uniform);
+  }
+
+  addInclude(include: string): Promise<GraphDiff> {
+    return this.graph.addIncludes([include]);
+  }
+
+  removeInclude(include: string): GraphDiff {
+    return this.graph.removeIncludes([include]);
+  }
+
+  includes(): string[] {
+    return this.graph.getIncludes().map((inc) => inc.name);
   }
 
   public updateUniformDefaultValue(
