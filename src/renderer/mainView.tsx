@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { EditorView } from "./editorView";
 import { PropertyView } from "./propertyView";
 import { FloatingToolbar } from "./components/toolbar";
-import { UniformsPanel } from "./components/uniforms/UniformsPanel";
+import { TabbedSidebar } from "./components/sidebar";
 import { useCallback, useState } from "react";
 import type { OnGraphChanged } from "./graph/editor";
 import type { EditorAPI } from "./graph/interface";
@@ -59,7 +59,7 @@ void main() {
 export function MainView() {
   const [shader, setShader] = useState(fragmentShader); // Default color
   const [isPropertyViewVisible, setIsPropertyViewVisible] = useState(true);
-  const [isUniformsPanelVisible, setIsUniformsPanelVisible] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorAPI | undefined>(
     undefined
@@ -75,27 +75,27 @@ export function MainView() {
     setIsPropertyViewVisible((prev) => !prev);
   }, []);
 
-  const handleToggleUniformsPanel = useCallback(() => {
-    setIsUniformsPanelVisible((prev) => !prev);
+  const handleToggleSidebar = useCallback(() => {
+    setIsSidebarVisible((prev) => !prev);
   }, []);
 
   return (
     <EditorProvider editor={editorData}>
-      <Layout $sidebarVisible={isUniformsPanelVisible}>
+      <Layout $sidebarVisible={isSidebarVisible}>
         <Canvas>
           <EditorView onChanged={onChanged} />
           <FloatingToolbar
             isPropertyViewVisible={isPropertyViewVisible}
             onTogglePropertyView={handleTogglePropertyView}
-            isUniformsPanelVisible={isUniformsPanelVisible}
-            onToggleUniformsPanel={handleToggleUniformsPanel}
+            isSidebarVisible={isSidebarVisible}
+            onToggleSidebar={handleToggleSidebar}
           />
           <FloatingPropertyView $isVisible={isPropertyViewVisible}>
             <PropertyView fragmentShader={shader} />
           </FloatingPropertyView>
         </Canvas>
-        {isUniformsPanelVisible && (
-          <Sidebar>{editorData && <UniformsPanel />}</Sidebar>
+        {isSidebarVisible && (
+          <Sidebar>{editorData && <TabbedSidebar />}</Sidebar>
         )}
       </Layout>
     </EditorProvider>

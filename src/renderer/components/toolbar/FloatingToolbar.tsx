@@ -32,15 +32,15 @@ const ToolbarIconButton = styled(IconButton)`
 export interface FloatingToolbarProps {
   isPropertyViewVisible: boolean;
   onTogglePropertyView: () => void;
-  isUniformsPanelVisible: boolean;
-  onToggleUniformsPanel: () => void;
+  isSidebarVisible: boolean;
+  onToggleSidebar: () => void;
 }
 
 export function FloatingToolbar({
   isPropertyViewVisible,
   onTogglePropertyView,
-  isUniformsPanelVisible,
-  onToggleUniformsPanel,
+  isSidebarVisible,
+  onToggleSidebar,
 }: FloatingToolbarProps) {
   return (
     <ToolbarContainer elevation={3}>
@@ -54,12 +54,10 @@ export function FloatingToolbar({
         </ToolbarIconButton>
       </Tooltip>
       <Tooltip
-        title={
-          isUniformsPanelVisible ? "Hide Uniforms Panel" : "Show Uniforms Panel"
-        }
+        title={isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}
       >
-        <ToolbarIconButton onClick={onToggleUniformsPanel}>
-          {isUniformsPanelVisible ? <ViewSidebar /> : <ViewSidebarOutlined />}
+        <ToolbarIconButton onClick={onToggleSidebar}>
+          {isSidebarVisible ? <ViewSidebar /> : <ViewSidebarOutlined />}
         </ToolbarIconButton>
       </Tooltip>
     </ToolbarContainer>
