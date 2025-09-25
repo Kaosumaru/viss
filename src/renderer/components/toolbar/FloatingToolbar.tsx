@@ -53,9 +53,7 @@ export function FloatingToolbar({
           {isPropertyViewVisible ? <Visibility /> : <VisibilityOff />}
         </ToolbarIconButton>
       </Tooltip>
-      <Tooltip
-        title={isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}
-      >
+      <Tooltip title={isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}>
         <ToolbarIconButton onClick={onToggleSidebar}>
           {isSidebarVisible ? <ViewSidebar /> : <ViewSidebarOutlined />}
         </ToolbarIconButton>

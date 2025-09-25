@@ -1,1 +1,1 @@
-export { TabbedSidebar } from './TabbedSidebar';
+export { TabbedSidebar } from "./TabbedSidebar";

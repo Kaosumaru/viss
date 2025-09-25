@@ -50,7 +50,7 @@ export const TabbedSidebar: React.FC = () => {
         <StyledTab label="Uniforms" />
         <StyledTab label="Includes" />
       </StyledTabs>
-      
+
       <TabPanel>
         {activeTab === 0 && <UniformsPanel />}
         {activeTab === 1 && <IncludesPanel />}

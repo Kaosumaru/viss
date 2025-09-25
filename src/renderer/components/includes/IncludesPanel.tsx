@@ -56,7 +56,7 @@ export const IncludesPanel: React.FC = () => {
       <Typography variant="h6" gutterBottom>
         Included Files
       </Typography>
-      
+
       {includes.length === 0 ? (
         <Typography variant="body2" sx={{ color: "#aaa", mb: 2 }}>
           No includes added yet
@@ -136,7 +136,7 @@ export const IncludesPanel: React.FC = () => {
             onClick={() => void handleAdd()}
             disabled={!newIncludeName.trim()}
             startIcon={<AddIcon />}
-            sx={{ 
+            sx={{
               height: 40,
               minWidth: "auto",
               px: 2,
