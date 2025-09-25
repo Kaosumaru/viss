@@ -2,12 +2,12 @@ import { ShowOpenFileDialogRequest } from "../messages/messages";
 import * as vscode from "vscode";
 import { postMessage } from "../utils/utils";
 
-export async function showOpenFileDialog(
+export async function selectFile(
   document: vscode.TextDocument,
   webviewPanel: vscode.WebviewPanel,
   event: ShowOpenFileDialogRequest
 ) {
-  const fileUris = await vscode.window.showOpenFileDialog({
+  const fileUris = await vscode.window.showOpenDialog({
     canSelectMany: false,
     openLabel: event.params.label,
     filters: event.params.filters,

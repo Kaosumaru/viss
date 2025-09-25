@@ -1,9 +1,10 @@
 import { EditorToExtensionMessage } from "./messages/messages";
 import * as vscode from "vscode";
-import { showOpenFileDialog } from "./requests/showOpenFileDialog";
+import { selectFile } from "./requests/selectFile";
 import { toWebViewURI } from "./requests/toWebViewURI";
 import * as fs from "fs";
 import { showOpenFolderDialog } from "./requests/showOpenFolderDialog";
+import { openFiles } from "./requests/openFiles";
 
 export async function handleMessage(
   document: vscode.TextDocument,
@@ -15,7 +16,11 @@ export async function handleMessage(
       vscode.window.showErrorMessage(event.text);
       break;
     case "showOpenFileDialog": {
-      await showOpenFileDialog(document, webviewPanel, event);
+      await selectFile(document, webviewPanel, event);
+      break;
+    }
+    case "openFiles": {
+      await openFiles(document, webviewPanel, event);
       break;
     }
     case "showOpenFolderDialog": {

@@ -15,6 +15,7 @@ import { Compiler, type CompilationOptions } from "@compiler/compiler";
 import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import { compileNode } from "./utils/compileNode";
+import { selectInclude as selectIncludeFile } from "@renderer/vscode/selectIncludeFile";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -270,6 +271,13 @@ export class EditorAPIImp implements EditorAPI {
     // Get selected nodes from the editor
     const nodes = this.editor.getNodes();
     return nodes.filter((node) => node.selected).map((node) => node.id);
+  }
+
+  async addIncludeFromFile(): Promise<void> {
+    const path = await selectIncludeFile();
+    if (path) {
+      return this.applyDiff(await this.compiler.addInclude(path));
+    }
   }
 
   async addInclude(include: string): Promise<void> {

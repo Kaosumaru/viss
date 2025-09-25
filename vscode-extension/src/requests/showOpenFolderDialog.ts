@@ -7,7 +7,7 @@ export async function showOpenFolderDialog(
   webviewPanel: vscode.WebviewPanel,
   event: ShowOpenFolderDialogRequest
 ) {
-  const fileUris = await vscode.window.showOpenFileDialog({
+  const fileUris = await vscode.window.showOpenDialog({
     canSelectMany: false,
     openLabel: event.params.label,
     canSelectFiles: false,

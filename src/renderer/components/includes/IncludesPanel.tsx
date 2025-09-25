@@ -1,10 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Box,
   Typography,
   Button,
-  TextField,
-  Stack,
   Paper,
   List,
   ListItem,
@@ -17,29 +15,24 @@ import { EditorContext } from "@renderer/context/EditorContext";
 
 export const IncludesPanel: React.FC = () => {
   const editorData = useContext(EditorContext).editor;
-  const [newIncludeName, setNewIncludeName] = useState("");
+  const [includes, setIncludes] = React.useState<string[]>([]);
+
+  useEffect(() => {
+    setIncludes(editorData?.includes() ?? []);
+  }, [editorData]);
 
   if (!editorData) {
     return null;
   }
 
-  const includes = editorData.includes();
-
   const handleAdd = async () => {
-    if (newIncludeName.trim()) {
-      await editorData.addInclude(newIncludeName.trim());
-      setNewIncludeName("");
-    }
+    await editorData.addIncludeFromFile();
+    setIncludes(editorData.includes());
   };
 
   const handleRemove = async (includeName: string) => {
     await editorData.removeInclude(includeName);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      void handleAdd();
-    }
+    setIncludes(editorData.includes());
   };
 
   return (
@@ -101,50 +94,19 @@ export const IncludesPanel: React.FC = () => {
       )}
 
       <Box mt={3}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <TextField
-            label="Include Name"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={newIncludeName}
-            onChange={(e) => {
-              setNewIncludeName(e.target.value);
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="e.g., myInclude.glsl"
-            sx={{
-              bgcolor: "#111",
-              input: { color: "#fff" },
-              label: { color: "#aaa" },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#555",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#777",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#1976d2",
-                },
-              },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => void handleAdd()}
-            disabled={!newIncludeName.trim()}
-            startIcon={<AddIcon />}
-            sx={{
-              height: 40,
-              minWidth: "auto",
-              px: 2,
-            }}
-          >
-            Add
-          </Button>
-        </Stack>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => void handleAdd()}
+          startIcon={<AddIcon />}
+          sx={{
+            height: 40,
+            minWidth: "auto",
+            px: 2,
+          }}
+        >
+          Add
+        </Button>
       </Box>
     </Paper>
   );
