@@ -42,7 +42,7 @@ export async function handleMessage(
       break;
     }
 
-    // handled in vshaderEditorProvider
+    // handled in VisEditorProvider
     case "saveGraph":
       break;
     case "refreshContent":

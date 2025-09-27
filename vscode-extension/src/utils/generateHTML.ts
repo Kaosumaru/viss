@@ -10,7 +10,7 @@ export function generateHTML(webview: vscode.Webview, assetsUri: vscode.Uri) {
                 <meta charset="UTF-8">
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; font-src ${webview.cspSource};">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>VShader Editor</title>
+                <title>Vis Editor</title>
                 <link rel="stylesheet" crossorigin href="${assetsUri}/index-Gpo72nnT.css">
             </head>
             <body style="padding:0px">

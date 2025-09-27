@@ -1,12 +1,12 @@
 {
-  "name": "vshader-editor",
-  "displayName": "VShader Editor",
+  "name": "vis-editor",
+  "displayName": "Vis Editor",
   "description": "A Visual Shader Editor extension for VS Code",
   "author": "Kaosumaru",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kaosumaru/vshader.git"
+    "url": "https://github.com/Kaosumaru/vis.git"
   },
   "version": "0.0.1",
   "engines": {
@@ -19,25 +19,25 @@
   "contributes": {
     "commands": [
       {
-        "command": "vshader.openEditor",
-        "title": "Open VShader Editor"
+        "command": "vis.openEditor",
+        "title": "Open Vis Editor"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "vshader.openEditor",
-          "title": "VShader: Open Editor"
+          "command": "vis.openEditor",
+          "title": "Vis: Open Editor"
         }
       ]
     },
     "customEditors": [
       {
-        "viewType": "vshader.graphEditor",
+        "viewType": "vis.graphEditor",
         "displayName": "Shader Graph Editor",
         "selector": [
           {
-            "filenamePattern": "*.vshader"
+            "filenamePattern": "*.vis"
           }
         ],
         "priority": "default"
