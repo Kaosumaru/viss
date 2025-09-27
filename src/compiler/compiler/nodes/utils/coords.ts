@@ -15,7 +15,7 @@ class CoordsNode extends CompilerNode {
       "aspectRatio",
       "boolean",
       { type: "boolean", value: false },
-      "Correct Ratio"
+      "correct ratio"
     );
   }
   override compile(node: NodeContext): Context {
