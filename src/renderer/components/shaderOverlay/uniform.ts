@@ -165,7 +165,7 @@ function uniformEntryFromVector(
 ): UniformEntry {
   let value: number[];
 
-  if (defaultValue?.type === "vector") {
+  if (defaultValue?.type === "color" || defaultValue?.type === "vector") {
     value = defaultValue.value.slice(0, type.size);
     // Ensure we have enough values
     while (value.length < type.size) {
