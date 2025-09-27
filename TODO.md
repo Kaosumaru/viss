@@ -3,6 +3,12 @@ MVP
 1. sample with three.js (best if we would use 2d AND 3d model)
 2. Writing a readme
 3. Create some shaders at weekend
+4. Inifinite add node would be handy
+
+Bugs
+1. Dragging multiple nodes wont update all positions in the graph
+2. For some reason, some nodes are being disconnected after reopening (- node and uv)
+3. When we reload shader, nodes are refreshing one by one
 
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode

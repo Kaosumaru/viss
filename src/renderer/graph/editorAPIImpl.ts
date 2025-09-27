@@ -342,12 +342,12 @@ export class EditorAPIImp implements EditorAPI {
       }
 
       if (diff.addedNodes) {
-        for (const node of diff.addedNodes) {
-          await this.addNode(node);
-        }
+        const promises = diff.addedNodes.map((node) => this.addNode(node));
+        await Promise.all(promises);
       }
 
       if (diff.addedConnections) {
+        const promises: Promise<boolean>[] = [];
         for (const connection of diff.addedConnections) {
           const id = getUIConnectionId(connection);
           const uiConnection = this.editor.getConnection(id);
@@ -356,22 +356,26 @@ export class EditorAPIImp implements EditorAPI {
             void this.area.update("connection", uiConnection.id);
             continue;
           }
-          await this.editor.addConnection(
-            connectionToUIConnection(id, connection)
+          promises.push(
+            this.editor.addConnection(connectionToUIConnection(id, connection))
           );
         }
+        await Promise.all(promises);
       }
 
       if (diff.nodesWithModifiedProperties) {
+        const promises: Promise<unknown>[] = [];
         for (const node of diff.nodesWithModifiedProperties) {
           const uiNode = this.getNode(node.identifier);
           if (uiNode) {
             uiNode.updateControls(node.parameters);
             if (updateProperties) {
-              await this.area.translate(node.identifier, {
-                x: node.position.x,
-                y: node.position.y,
-              });
+              promises.push(
+                this.area.translate(node.identifier, {
+                  x: node.position.x,
+                  y: node.position.y,
+                })
+              );
 
               void this.area.update("node", uiNode.id);
             }
@@ -379,6 +383,7 @@ export class EditorAPIImp implements EditorAPI {
             console.warn(`Node ${node.identifier} not found in editor`);
           }
         }
+        await Promise.all(promises);
       }
 
       if (diff.invalidatedNodeIds) {
