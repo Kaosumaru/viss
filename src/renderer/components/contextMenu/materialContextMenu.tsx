@@ -87,19 +87,21 @@ const CategoryHeader = styled(ListItem)(() => ({
   },
 }));
 
-const NodeItem = styled(ListItem)<{ $isSelected?: boolean }>(({ $isSelected }) => ({
-  padding: "0px 10px",
-  cursor: "pointer",
-  borderLeft: "2px solid transparent",
-  backgroundColor: $isSelected ? "#414142" : "transparent",
-  "&:hover": {
-    backgroundColor: "#414142",
-    borderLeftColor: "#007acc",
-  },
-  ...$isSelected && {
-    borderLeftColor: "#007acc",
-  },
-}));
+const NodeItem = styled(ListItem)<{ $isSelected?: boolean }>(
+  ({ $isSelected }) => ({
+    padding: "0px 10px",
+    cursor: "pointer",
+    borderLeft: "2px solid transparent",
+    backgroundColor: $isSelected ? "#414142" : "transparent",
+    "&:hover": {
+      backgroundColor: "#414142",
+      borderLeftColor: "#007acc",
+    },
+    ...($isSelected && {
+      borderLeftColor: "#007acc",
+    }),
+  })
+);
 
 const CategoryIcon = styled(Box)(() => ({
   display: "flex",
@@ -143,10 +145,13 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
     setExpandedCategories(newExpanded);
   };
 
-  const handleNodeCreate = useCallback((item: MenuItem) => {
-    onNodeCreate(item);
-    onClose();
-  }, [onNodeCreate, onClose]);
+  const handleNodeCreate = useCallback(
+    (item: MenuItem) => {
+      onNodeCreate(item);
+      onClose();
+    },
+    [onNodeCreate, onClose]
+  );
 
   const filterItems = (items: MenuCategory["items"]) => {
     if (!searchTerm) return items;
