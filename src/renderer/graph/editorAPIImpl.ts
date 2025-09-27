@@ -42,15 +42,12 @@ export class EditorAPIImp implements EditorAPI {
       if (this.deserializing) {
         return context;
       }
-      if (context.type === "nodedragged") {
-        const nodeView = this.area.nodeViews.get(context.data.id);
-        if (!nodeView) return context;
-
+      if (context.type === "nodetranslated") {
         void this.applyDiff(
           this.compiler.translateNode(
             context.data.id,
-            nodeView.position.x,
-            nodeView.position.y
+            context.data.position.x,
+            context.data.position.y
           )
         );
       }
