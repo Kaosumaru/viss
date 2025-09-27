@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, IconButton, Popover } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { typeToName } from "../../../compiler/glsl/types/typeToString";
@@ -14,12 +14,13 @@ const ColorUniformItem: React.FC<UniformItemProps> = ({
   onRemove,
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [colorValue, setColorValue] = useState<Color>([1, 1, 1, 1]);
 
-  // The value is stored in uniform.defaultValue?.value (if type is color)
-  const colorValue: Color =
-    uniform.defaultValue && uniform.defaultValue.type === "color"
-      ? uniform.defaultValue.value
-      : [1, 1, 1, 1]; // Default white color
+  useEffect(() => {
+    if (uniform.defaultValue && uniform.defaultValue.type === "color") {
+      setColorValue(uniform.defaultValue.value);
+    }
+  }, [uniform.defaultValue]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -30,6 +31,7 @@ const ColorUniformItem: React.FC<UniformItemProps> = ({
   };
 
   const handleColorChange = (newColor: Color) => {
+    setColorValue(newColor);
     if (uniform.defaultValue && uniform.defaultValue.type === "color") {
       onChangeValue({ ...uniform.defaultValue, value: newColor });
     } else {
