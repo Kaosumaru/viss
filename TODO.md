@@ -2,9 +2,7 @@ MVP
 
 1. sample with three.js (best if we would use 2d AND 3d model)
 2. Writing a readme
-3. Color uniform
-4. Create some shaders at weekend
-5. Empty files are throwing exceptions, fix that
+3. Create some shaders at weekend
 
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode
