@@ -8,7 +8,7 @@ import { ReactPlugin, Presets } from "rete-react-plugin";
 import { getDOMSocketPosition } from "rete-render-utils";
 import type { Schemes, AreaExtra } from "./node";
 import { CustomBooleanControl } from "./nodes/controls/customBooleanControl";
-import { CustomColorControl } from "./nodes/controls/color/customColorControl";
+import { CustomColorControl } from "./nodes/controls/customColorControl";
 import { CustomNumberControl } from "./nodes/controls/customNumberControl";
 import { CustomPreviewControl } from "./nodes/controls/customPreviewControl";
 import { CustomConnection } from "./nodes/customConnection";

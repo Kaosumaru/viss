@@ -6,6 +6,7 @@ import Vec2UniformItem from "./Vec2UniformItem";
 import Vec3UniformItem from "./Vec3UniformItem";
 import Vec4UniformItem from "./Vec4UniformItem";
 import BoolUniformItem from "./BoolUniformItem";
+import ColorUniformItem from "./ColorUniformItem";
 import { sampler2D, scalar, vector, type Type } from "@glsl/types/types";
 import TextureUniformItem from "./TextureUniformItem";
 
@@ -54,6 +55,15 @@ export const uniformVisualizers: UniformVisualizerEntry[] = [
     },
   },
   {
+    name: "Color",
+    visualizer: { id: "color" },
+    type: vector("float", 4),
+    defaultValue: {
+      type: "color",
+      value: [1.0, 1.0, 1.0, 1.0],
+    },
+  },
+  {
     name: "Texture",
     visualizer: { id: "texture" },
     type: sampler2D(),
@@ -73,5 +83,6 @@ export const uniformComponents: Record<
   vec3: Vec3UniformItem,
   vec4: Vec4UniformItem,
   bool: BoolUniformItem,
+  color: ColorUniformItem,
   texture: TextureUniformItem,
 };

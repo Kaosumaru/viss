@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { Box, Popover } from "@mui/material";
 import type { Color } from "@graph/parameter";
-import { colorToCSS, rgbaToHex } from "./utils";
-import { ColorPicker } from "./ColorPicker";
-import type { ColorControl } from "../customParamControl";
+import {
+  colorToCSS,
+  rgbaToHex,
+} from "../../../components/visualizers/color/utils";
+import { ColorPicker } from "../../../components/visualizers/color/ColorPicker";
+import type { ColorControl } from "./customParamControl";
 
 export function CustomColorControl(props: { data: ColorControl }) {
   const control = props.data;
