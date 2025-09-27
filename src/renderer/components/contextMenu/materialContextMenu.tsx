@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Paper,
   TextField,
@@ -87,12 +87,16 @@ const CategoryHeader = styled(ListItem)(() => ({
   },
 }));
 
-const NodeItem = styled(ListItem)(() => ({
+const NodeItem = styled(ListItem)<{ $isSelected?: boolean }>(({ $isSelected }) => ({
   padding: "0px 10px",
   cursor: "pointer",
   borderLeft: "2px solid transparent",
+  backgroundColor: $isSelected ? "#414142" : "transparent",
   "&:hover": {
     backgroundColor: "#414142",
+    borderLeftColor: "#007acc",
+  },
+  ...$isSelected && {
     borderLeftColor: "#007acc",
   },
 }));
@@ -124,37 +128,10 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(menuElements.map((cat) => cat.name))
   );
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const menuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // Focus search input when menu opens
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-
-    // Handle click outside to close menu
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    // Handle escape key
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onClose]);
+  const selectedItemRef = useRef<HTMLLIElement>(null);
 
   const toggleCategory = (categoryName: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -166,10 +143,10 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
     setExpandedCategories(newExpanded);
   };
 
-  const handleNodeCreate = (item: MenuItem) => {
+  const handleNodeCreate = useCallback((item: MenuItem) => {
     onNodeCreate(item);
     onClose();
-  };
+  }, [onNodeCreate, onClose]);
 
   const filterItems = (items: MenuCategory["items"]) => {
     if (!searchTerm) return items;
@@ -192,6 +169,80 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
 
   const filteredCategories = getFilteredCategories();
 
+  // Get all visible items in a flat array for keyboard navigation
+  const getAllVisibleItems = () => {
+    const items: MenuItem[] = [];
+    filteredCategories.forEach((category) => {
+      if (expandedCategories.has(category.name)) {
+        items.push(...category.items);
+      }
+    });
+    return items;
+  };
+
+  const allVisibleItems = getAllVisibleItems();
+
+  // Reset selected index when search term changes or categories expand/collapse
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [searchTerm, expandedCategories]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedItemRef.current && selectedIndex >= 0) {
+      selectedItemRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    // Focus search input when menu opens
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+
+    // Handle click outside to close menu
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    // Handle escape key and arrow navigation
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setSelectedIndex((prev) => {
+          const maxIndex = allVisibleItems.length - 1;
+          return prev < maxIndex ? prev + 1 : prev;
+        });
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < allVisibleItems.length) {
+          const selectedItem = allVisibleItems[selectedIndex];
+          if (selectedItem) {
+            handleNodeCreate(selectedItem);
+          }
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose, allVisibleItems, handleNodeCreate, selectedIndex]);
+
   return (
     <ContextMenuContainer
       ref={menuRef}
@@ -212,6 +263,7 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
+            setSelectedIndex(-1); // Reset selection when search changes
           }}
           slotProps={{
             input: {
@@ -226,71 +278,84 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
       </SearchContainer>
 
       <CategoryList>
-        {filteredCategories.map((category) => (
-          <Box key={category.name}>
-            <CategoryHeader
-              onClick={() => {
-                toggleCategory(category.name);
-              }}
-            >
-              <CategoryIcon>{category.icon}</CategoryIcon>
-              <ListItemText
-                primary={
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <Typography variant="body2" fontWeight="bold">
-                      {category.name}
-                    </Typography>
-                    <Box display="flex" alignItems="center">
-                      <Chip
-                        label={category.items.length}
-                        size="small"
-                        sx={{
-                          backgroundColor: "#464647",
-                          color: "#cccccc",
-                          fontSize: "11px",
-                          height: "20px",
-                          marginRight: "8px",
-                        }}
-                      />
-                      {expandedCategories.has(category.name) ? (
-                        <ExpandLess fontSize="small" />
-                      ) : (
-                        <ExpandMore fontSize="small" />
-                      )}
+        {(() => {
+          let globalItemIndex = 0;
+          return filteredCategories.map((category) => (
+            <Box key={category.name}>
+              <CategoryHeader
+                onClick={() => {
+                  toggleCategory(category.name);
+                }}
+              >
+                <CategoryIcon>{category.icon}</CategoryIcon>
+                <ListItemText
+                  primary={
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Typography variant="body2" fontWeight="bold">
+                        {category.name}
+                      </Typography>
+                      <Box display="flex" alignItems="center">
+                        <Chip
+                          label={category.items.length}
+                          size="small"
+                          sx={{
+                            backgroundColor: "#464647",
+                            color: "#cccccc",
+                            fontSize: "11px",
+                            height: "20px",
+                            marginRight: "8px",
+                          }}
+                        />
+                        {expandedCategories.has(category.name) ? (
+                          <ExpandLess fontSize="small" />
+                        ) : (
+                          <ExpandMore fontSize="small" />
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                }
-              />
-            </CategoryHeader>
-            <Collapse in={expandedCategories.has(category.name)}>
-              {filterItems(category.items).map((item) => (
-                <NodeItem
-                  key={item.name}
-                  onClick={() => {
-                    handleNodeCreate(item);
-                  }}
-                >
-                  <ListItemText
-                    primary={
-                      <>
-                        <Typography variant="body2" color="#ffffff">
-                          {item.name}{" "}
-                          <Typography variant="caption" color="#cccccc">
-                            {item.description}
-                          </Typography>
-                        </Typography>
-                      </>
-                    }
-                  />
-                </NodeItem>
-              ))}
-            </Collapse>
-          </Box>
-        ))}
+                  }
+                />
+              </CategoryHeader>
+              <Collapse in={expandedCategories.has(category.name)}>
+                {expandedCategories.has(category.name) &&
+                  filterItems(category.items).map((item) => {
+                    const currentItemIndex = globalItemIndex++;
+                    const isSelected = selectedIndex === currentItemIndex;
+                    return (
+                      <NodeItem
+                        key={item.name}
+                        ref={isSelected ? selectedItemRef : null}
+                        $isSelected={isSelected}
+                        onClick={() => {
+                          handleNodeCreate(item);
+                        }}
+                        onMouseEnter={() => {
+                          setSelectedIndex(currentItemIndex);
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <>
+                              <Typography variant="body2" color="#ffffff">
+                                {item.name}{" "}
+                                <Typography variant="caption" color="#cccccc">
+                                  {item.description}
+                                </Typography>
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </NodeItem>
+                    );
+                  })}
+              </Collapse>
+            </Box>
+          ));
+        })()}
         {filteredCategories.length === 0 && (
           <Box p={2} textAlign="center">
             <Typography variant="body2" color="#888888">
