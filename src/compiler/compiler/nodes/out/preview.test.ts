@@ -2,8 +2,8 @@ import { scalar } from "@glsl/types/types";
 import { setup } from "@test/setup";
 import { expect, test } from "vitest";
 
-test("PreviewNode", () => {
-  const c = setup({
+test("PreviewNode", async () => {
+  const c = await setup({
     floatNode: {
       type: "float",
       params: {

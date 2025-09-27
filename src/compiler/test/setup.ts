@@ -23,7 +23,7 @@ interface Connector<KeyTypes extends string> {
     outputNode: KeyTypes,
     output?: string
   ): Connector<KeyTypes>;
-  compile(node: KeyTypes): Context;
+  compile(node: KeyTypes): Promise<Context>;
 }
 
 export function setup<T extends Descriptors>(
@@ -59,9 +59,9 @@ export function setup<T extends Descriptors>(
       });
       return this;
     },
-    compile(node) {
+    async compile(node) {
       const compiler = new Compiler({ noVariables: true });
-      compiler.loadGraph(this.graph);
+      await compiler.loadGraph(this.graph);
       return compiler.compile(node);
     },
   };
