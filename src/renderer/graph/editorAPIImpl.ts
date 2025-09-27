@@ -213,7 +213,11 @@ export class EditorAPIImp implements EditorAPI {
     if (graphJson.trim() === "") {
       return this.clear();
     }
-    return this.loadGraph(JSON.parse(graphJson) as Graph);
+
+    const partialGraph = JSON.parse(graphJson) as Partial<Graph>;
+    const graph = { ...Compiler.createEmptyGraph(), ...partialGraph };
+
+    return this.loadGraph(graph);
   }
 
   async loadGraph(graph: Graph): Promise<void> {

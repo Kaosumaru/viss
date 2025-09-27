@@ -36,14 +36,18 @@ export class CompilerInternal {
 
   constructor(options: CompilationOptions) {
     this.options = options;
-    this.graph = {
+    this.graph = CompilerInternal.createGraph();
+    this.clearGraph();
+  }
+
+  static createGraph(): Graph {
+    return {
       version: CompilerInternal.graphVersion,
       includes: [],
       nodes: [],
       connections: [],
       uniforms: {},
     };
-    this.clearGraph();
   }
 
   getNodeById(id: string): Node | undefined {
@@ -414,13 +418,7 @@ export class CompilerInternal {
     this.cache = new GraphCache();
     this.cachedContexts.clear();
 
-    this.graph = {
-      version: CompilerInternal.graphVersion,
-      includes: [],
-      nodes: [],
-      connections: [],
-      uniforms: {},
-    };
+    this.graph = CompilerInternal.createGraph();
 
     this.glslIncludes = [];
     this.nameToFunction = {};

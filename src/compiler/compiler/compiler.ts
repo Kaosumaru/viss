@@ -75,6 +75,10 @@ export class Compiler {
     return this.graph.updateUniform(uniform);
   }
 
+  static createEmptyGraph(): Graph {
+    return CompilerInternal.createGraph();
+  }
+
   addInclude(include: string): Promise<GraphDiff> {
     return this.graph.addIncludes([include]);
   }
