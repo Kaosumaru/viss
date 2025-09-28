@@ -88,6 +88,14 @@ export class CompilerInternal {
 
     const ctx = compilerNode.compile(nodeContext);
     this.cacheContext(node.identifier, ctx);
+
+    for (const [outputSocketId, outputSocket] of Object.entries(ctx.outputs)) {
+      this.cache.updateOutputSocketType(
+        node.identifier,
+        outputSocketId,
+        outputSocket.type
+      );
+    }
     return ctx;
   }
 
@@ -264,10 +272,10 @@ export class CompilerInternal {
       try {
         connection.type = this.getOutputType(connection.from);
       } catch (error) {
-        warnings.push(
-          `Failed to get output type for connection from ${connection.from.nodeId}: ${error}`
-        );
-        continue;
+        connection.type = {
+          id: "error",
+          message: `Failed to get type: ${error}`,
+        };
       }
 
       this.graph.connections.push(connection);

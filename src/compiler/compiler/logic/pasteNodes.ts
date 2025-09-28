@@ -44,6 +44,14 @@ export function pasteNodes(
     resultingDiff = mergeGraphDiffs([resultingDiff, diff]);
   });
 
+  // TODO optimize, first information about added nodes is invalid cause connections aren't yet set:
+  for (const addedNode of resultingDiff.addedNodes || []) {
+    const newInfo = compiler.getInfo([addedNode.node.identifier]);
+    if (newInfo[0]) {
+      addedNode.instanceInfo = newInfo[0].instanceInfo;
+    }
+  }
+
   return resultingDiff;
 }
 

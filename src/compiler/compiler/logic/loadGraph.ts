@@ -99,5 +99,10 @@ export async function loadGraphIntoCompiler(
     }
   }
 
+  // TODO optimize, first information about added nodes is invalid cause connections aren't yet set:
+  for (const addedNode of diff.addedNodes || []) {
+    addedNode.instanceInfo = this.getNodeInfo(addedNode.node).instanceInfo;
+  }
+
   return diff;
 }

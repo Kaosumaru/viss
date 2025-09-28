@@ -3,10 +3,11 @@ import type { Node } from "@graph/node";
 import type { SocketReference } from "@graph/socket";
 import type { InputConnection } from "./compilerInternal";
 import type { NodeInfo } from "@compiler/nodes/compilerNode";
+import type { Type } from "@glsl/types/types";
 
 interface NodeConnnectedSockets {
-  inputs: string[];
-  outputs: string[];
+  inputs: Map<string, Connection[]>;
+  outputs: Map<string, Connection[]>;
 }
 
 export class GraphCache {
@@ -48,7 +49,7 @@ export class GraphCache {
     const connectedSockets = this.connectedSockets.get(nodeId);
     if (!connectedSockets) return;
 
-    for (const inputSocketId of connectedSockets.inputs) {
+    for (const inputSocketId of Object.keys(connectedSockets.inputs)) {
       if (nodeInfo.inputs.some((i) => i.name === inputSocketId)) continue;
 
       nodeInfo.inputs.push({
@@ -59,7 +60,7 @@ export class GraphCache {
       });
     }
 
-    for (const outputSocketId of connectedSockets.outputs) {
+    for (const outputSocketId of Object.keys(connectedSockets.outputs)) {
       if (nodeInfo.outputs.some((o) => o.name === outputSocketId)) continue;
 
       nodeInfo.outputs.push({
@@ -68,6 +69,22 @@ export class GraphCache {
           id: "error",
         },
       });
+    }
+  }
+
+  // if type of socket changes, type of all connections from that socket must be updated
+  public updateOutputSocketType(
+    identifier: string,
+    outputSocketId: string,
+    type: Type
+  ) {
+    const connected = this.getConnectedSockets(identifier);
+    const connections = connected.outputs.get(outputSocketId);
+    if (!connections) return;
+    for (const connection of connections) {
+      if (connection.type !== type) {
+        connection.type = type;
+      }
     }
   }
 
@@ -87,10 +104,20 @@ export class GraphCache {
     });
 
     const fromNode = this.getConnectedSockets(connection.from.nodeId);
-    fromNode.outputs.push(connection.from.socketId);
+    const outputs = fromNode.outputs.get(connection.from.socketId);
+    if (outputs) {
+      outputs.push(connection);
+    } else {
+      fromNode.outputs.set(connection.from.socketId, [connection]);
+    }
 
     const toNode = this.getConnectedSockets(connection.to.nodeId);
-    toNode.inputs.push(connection.to.socketId);
+    const inputs = toNode.inputs.get(connection.to.socketId);
+    if (inputs) {
+      inputs.push(connection);
+    } else {
+      toNode.inputs.set(connection.to.socketId, [connection]);
+    }
   }
 
   public removeCachedConnection(connection: Connection) {
@@ -101,12 +128,29 @@ export class GraphCache {
 
     const fromNode = this.getConnectedSockets(connection.from.nodeId);
     const toNode = this.getConnectedSockets(connection.to.nodeId);
+
     // remove only the first occurrence (in case of multiple connections to the same socket)
-    fromNode.outputs.splice(
-      fromNode.outputs.indexOf(connection.from.socketId),
-      1
-    );
-    toNode.inputs.splice(toNode.inputs.indexOf(connection.to.socketId), 1);
+    const fromOutputs = fromNode.outputs.get(connection.from.socketId);
+    if (fromOutputs) {
+      const index = fromOutputs.indexOf(connection);
+      if (index !== -1) {
+        fromOutputs.splice(index, 1);
+      }
+      if (fromOutputs.length === 0) {
+        fromNode.outputs.delete(connection.from.socketId);
+      }
+    }
+
+    const toInputs = toNode.inputs.get(connection.to.socketId);
+    if (toInputs) {
+      const index = toInputs.indexOf(connection);
+      if (index !== -1) {
+        toInputs.splice(index, 1);
+      }
+      if (toInputs.length === 0) {
+        toNode.inputs.delete(connection.to.socketId);
+      }
+    }
 
     this.deleteConnectedSocketsIfEmpty(connection.from.nodeId);
     this.deleteConnectedSocketsIfEmpty(connection.to.nodeId);
@@ -117,8 +161,8 @@ export class GraphCache {
     if (result) return result;
 
     const newConnectedSockets: NodeConnnectedSockets = {
-      inputs: [],
-      outputs: [],
+      inputs: new Map(),
+      outputs: new Map(),
     };
     this.connectedSockets.set(nodeId, newConnectedSockets);
     return newConnectedSockets;
@@ -128,8 +172,8 @@ export class GraphCache {
     const connected = this.connectedSockets.get(nodeId);
     if (
       connected &&
-      connected.inputs.length === 0 &&
-      connected.outputs.length === 0
+      connected.inputs.size === 0 &&
+      connected.outputs.size === 0
     ) {
       this.connectedSockets.delete(nodeId);
     }

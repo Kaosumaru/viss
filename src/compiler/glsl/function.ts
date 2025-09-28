@@ -1,6 +1,7 @@
 import type {
   FunctionPrototypeNode,
   ParameterDeclarationNode,
+  Program,
   TypeSpecifierNode,
 } from "@shaderfrog/glsl-parser/ast";
 import { scalar, vector, type Type } from "./types/types";
@@ -38,11 +39,20 @@ export function parseFunctionsFrom(
 }
 
 export function listFunctions(glsl: string): FunctionDefinition[] {
-  const p = parse(glsl);
+  let program: Program | undefined;
+
+  try {
+    program = parse(glsl);
+  } catch (e) {
+    // TODO report this to user
+    console.warn("Failed to parse GLSL for functions", e);
+    return [];
+  }
+
   const definitions: FunctionDefinition[] = [];
   let pragmas: string[] = [];
 
-  for (const statement of p.program) {
+  for (const statement of program.program) {
     switch (statement.type) {
       case "function": {
         if (pragmas.includes("export")) {

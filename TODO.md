@@ -39,6 +39,7 @@ Optimization
 8. Editor is reimporting glsl on translation to editor, we could only refresh it when it gets dirty
 9. Look at params getParamValue - why specialization needed?
 10. Some constants/literals could be internally compiled as uniforms, so we don't need to recompile whole shader to change them
+11. When loading graph, we are getting node info twice per node
 
 Check
 1. If we don't need to inherit from rete socket
