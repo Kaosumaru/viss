@@ -8,17 +8,17 @@ import { postMessage } from "./utils/utils";
 import { generateHTML } from "./utils/generateHTML";
 import { handleMessage } from "./messageHandler";
 
-export class VisEditorProvider implements vscode.CustomTextEditorProvider {
+export class VissEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
-    const provider = new VisEditorProvider(context);
+    const provider = new VissEditorProvider(context);
     const providerRegistration = vscode.window.registerCustomEditorProvider(
-      VisEditorProvider.viewType,
+      VissEditorProvider.viewType,
       provider
     );
     return providerRegistration;
   }
 
-  private static readonly viewType = "vis.graphEditor";
+  private static readonly viewType = "viss.graphEditor";
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 

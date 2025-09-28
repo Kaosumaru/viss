@@ -1,4 +1,4 @@
-# Visz
+# Viss
 
 A shader editor plugin for VS Code
 

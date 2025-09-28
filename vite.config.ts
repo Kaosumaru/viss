@@ -4,7 +4,7 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === "production" ? "/vis/" : "/",
+  base: mode === "production" ? "/viss/" : "/",
   build: buildOptions(mode),
   define: defineOptions(mode),
   resolve: {

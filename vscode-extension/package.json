@@ -1,6 +1,6 @@
 {
-  "name": "vis-editor",
-  "displayName": "Vis Editor",
+  "name": "viss-editor",
+  "displayName": "Viss Editor",
   "description": "A Visual Shader Editor extension for VS Code",
   "author": "Kaosumaru",
   "license": "MIT",
@@ -17,27 +17,13 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vis.openEditor",
-        "title": "Open Vis Editor"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "vis.openEditor",
-          "title": "Vis: Open Editor"
-        }
-      ]
-    },
     "customEditors": [
       {
-        "viewType": "vis.graphEditor",
+        "viewType": "viss.graphEditor",
         "displayName": "Shader Graph Editor",
         "selector": [
           {
-            "filenamePattern": "*.vis"
+            "filenamePattern": "*.viss"
           }
         ],
         "priority": "default"
