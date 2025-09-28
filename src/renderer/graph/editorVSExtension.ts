@@ -34,7 +34,6 @@ export class EditorVSExtension {
     this.helper.addDispose(
       vscode.addMessageListener("dispose", () => {
         this.saveGraph(true);
-        this.saveState();
       })
     );
   }
@@ -62,13 +61,14 @@ export class EditorVSExtension {
       });
     } else {
       window.addEventListener("beforeunload", () => {
+        this.saveEmitter.flush();
         this.saveState();
       });
     }
   }
 
   public destroy() {
-    this.saveState();
+    this.saveEmitter.flush();
   }
 
   public async getFileContents(paths: string[]): Promise<(string | null)[]> {
@@ -100,6 +100,7 @@ export class EditorVSExtension {
       return;
     }
 
+    this.saveState();
     vscode.postMessage({
       type: "saveGraph",
       json: this.editor.saveGraph(),
@@ -124,6 +125,7 @@ export class EditorVSExtension {
     this.deserializing = true;
     try {
       await this.editor.loadGraph(json);
+      this.saveState();
     } finally {
       this.deserializing = false;
     }
@@ -133,6 +135,7 @@ export class EditorVSExtension {
     this.loadRequestId = message.requestId;
     try {
       await this.loadGraph(message.json as Graph);
+      this.saveState();
     } finally {
       this.loadRequestId = undefined;
     }

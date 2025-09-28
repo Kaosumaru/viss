@@ -68,9 +68,11 @@ export class VisEditorProvider implements vscode.CustomTextEditorProvider {
 
     // Make sure we get rid of the listeners when our editor is closed.
     webviewPanel.onDidDispose(() => {
-      postMessage(webviewPanel, { type: "dispose" });
       changeDocumentSubscription.dispose();
       saveDocumentSubscription.dispose();
+
+      // this won't work because the webview is already disposed
+      // postMessage(webviewPanel, { type: "dispose" });
     });
 
     // Receive message from the webview.
