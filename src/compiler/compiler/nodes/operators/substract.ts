@@ -6,7 +6,7 @@ class SubstractNode extends BinaryOperator {
   }
 
   override getDescription(): string {
-    return "Addition";
+    return "Substract";
   }
 }
 
