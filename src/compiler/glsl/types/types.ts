@@ -29,6 +29,7 @@ export interface Sampler2DType {
 
 export interface ErrorType {
   id: "error";
+  message?: string;
 }
 
 export type Type =

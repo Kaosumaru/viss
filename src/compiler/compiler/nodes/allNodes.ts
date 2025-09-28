@@ -33,6 +33,8 @@ import {
 import { TestOutputSwitcher } from "./test/testOutputSwitcher";
 import { CustomUniform } from "./basic/customUniform";
 import { Texture2D } from "./texture/texture2D";
+import { negate } from "./operators/negate";
+import { oneMinusNode } from "./operators/oneMinusInput";
 
 export interface NodeCategory {
   id: string;
@@ -82,6 +84,8 @@ const operators = createCategory({
     substract,
     divide,
     multiply,
+    negate,
+    oneMinusNode,
   },
 });
 
