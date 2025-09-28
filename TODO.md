@@ -6,12 +6,11 @@ MVP
 4. Inifinite add node would be handy
 
 Bugs
-1. Dragging multiple nodes wont update all positions in the graph
-2. For some reason, some nodes are being disconnected after reopening (- node and uv)
-3. When we reload shader, nodes are refreshing one by one
+1. For some reason, some nodes are being disconnected after reopening (- node and uv)
 
 Small bugs
 1. Weird issue with shaders blinking while saving in VSCode
+2. When we reload shader, nodes are refreshing one by one
 
 
 Next

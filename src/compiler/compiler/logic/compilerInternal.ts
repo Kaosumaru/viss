@@ -206,7 +206,7 @@ export class CompilerInternal {
     return {
       removedNodes,
       removedConnections,
-      invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds),
+      invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds, true),
     };
   }
 
@@ -557,7 +557,10 @@ export class CompilerInternal {
     }
   }
 
-  protected invalidateNodes(nodeIds: string[]): Set<string> {
+  protected invalidateNodes(
+    nodeIds: string[],
+    ignoreMissing = false
+  ): Set<string> {
     const invalidatedNodeIds: Set<string> = new Set();
     const visitedNodes: Set<string> = new Set();
     const nodesToCheck: string[] = nodeIds;
@@ -566,8 +569,10 @@ export class CompilerInternal {
       if (!currentNodeId) continue;
 
       const node = this.cache.getNodeById(currentNodeId);
-      if (!node)
+      if (!node) {
+        if (ignoreMissing) continue;
         throw new Error(`Node with id ${currentNodeId} not found in graph`);
+      }
 
       // mark the node as dirty
       this.cachedContexts.delete(node.identifier);
