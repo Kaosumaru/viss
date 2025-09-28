@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { ViszEditorProvider } from "./viszEditorProvider";
+import { VissEditorProvider } from "./vissEditorProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-  context.subscriptions.push(ViszEditorProvider.register(context));
+  context.subscriptions.push(VissEditorProvider.register(context));
 }
 
 export function deactivate() {}
