@@ -3,6 +3,7 @@
   "displayName": "Viss Editor",
   "description": "A Visual Shader Editor extension for VS Code",
   "author": "Kaosumaru",
+  "publisher": "kaosumaru",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -37,7 +38,8 @@
     "build:webapp": "cd .. && npm run build:vscode",
     "copy:dist": "npx copyfiles -u 1 \"dist/**/*\" \"vscode-extension/media/\"",
     "watch": "tsc -watch -p ./",
-    "package": "npx @vscode/vsce package"
+    "package": "npx @vscode/vsce package",
+    "publish": "npx @vscode/vsce publish"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
