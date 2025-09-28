@@ -203,7 +203,7 @@ export class EditorAPIImp implements EditorAPI {
     this.deserializing = true;
     await this.editor.clear();
     this.deserializing = false;
-    this.extension.saveGraph(this.compiler.getGraph());
+    this.extension.saveGraph(true);
   }
 
   async loadGraphJSON(graphJson: string): Promise<void> {
@@ -405,7 +405,7 @@ export class EditorAPIImp implements EditorAPI {
         (diff.translatedNodes?.size ?? 0);
 
       if (updatedJson > 0) {
-        this.extension.saveGraph(this.compiler.getGraph(), diff);
+        this.extension.saveGraph();
       }
     } finally {
       this.deserializing = false;

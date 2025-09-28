@@ -5,10 +5,11 @@ import type {
   ExportGraphRequestMessage,
   LoadGraphMessage,
 } from "../../../vscode-extension/src/messages/messages";
-import type { Graph, GraphDiff } from "@graph/graph";
+import type { Graph } from "@graph/graph";
 import type { Transform } from "rete-area-plugin/_types/area";
 import { vscode } from "@renderer/vscode/vscodeManager";
 import { DisposeHelper } from "./utils/disposeHelper";
+import { FrameEmitter } from "./utils/frameEmitter";
 
 export class EditorVSExtension {
   constructor(editor: EditorAPI, area: AreaPlugin<Schemes, AreaExtra>) {
@@ -32,6 +33,7 @@ export class EditorVSExtension {
 
     this.helper.addDispose(
       vscode.addMessageListener("dispose", () => {
+        this.saveGraph(true);
         this.saveState();
       })
     );
@@ -81,14 +83,26 @@ export class EditorVSExtension {
     return response.contents;
   }
 
-  public saveGraph(graph: Graph, _diff?: GraphDiff) {
+  public saveGraph(immediate = false) {
+    if (!vscode.isAvailable || this.deserializing) {
+      return;
+    }
+    if (immediate) {
+      this.saveEmitter.cancel();
+      this.internalSaveGraph();
+      return;
+    }
+    this.saveEmitter.emit();
+  }
+
+  internalSaveGraph() {
     if (!vscode.isAvailable || this.deserializing) {
       return;
     }
 
     vscode.postMessage({
       type: "saveGraph",
-      json: graph,
+      json: this.editor.saveGraph(),
       requestId: this.loadRequestId,
     });
   }
@@ -106,6 +120,7 @@ export class EditorVSExtension {
       console.warn("Already deserializing, ignoring loadGraph message");
       return;
     }
+    this.saveEmitter.cancel();
     this.deserializing = true;
     try {
       await this.editor.loadGraph(json);
@@ -136,6 +151,9 @@ export class EditorVSExtension {
   private helper = new DisposeHelper();
   private editor: EditorAPI;
   private area: AreaPlugin<Schemes, AreaExtra>;
+  private saveEmitter = new FrameEmitter(() => {
+    this.internalSaveGraph();
+  }, 10);
 }
 
 interface State {
