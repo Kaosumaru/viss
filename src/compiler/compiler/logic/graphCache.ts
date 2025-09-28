@@ -49,7 +49,7 @@ export class GraphCache {
     const connectedSockets = this.connectedSockets.get(nodeId);
     if (!connectedSockets) return;
 
-    for (const inputSocketId of Object.keys(connectedSockets.inputs)) {
+    for (const inputSocketId of connectedSockets.inputs.keys()) {
       if (nodeInfo.inputs.some((i) => i.name === inputSocketId)) continue;
 
       nodeInfo.inputs.push({
@@ -60,7 +60,7 @@ export class GraphCache {
       });
     }
 
-    for (const outputSocketId of Object.keys(connectedSockets.outputs)) {
+    for (const outputSocketId of connectedSockets.outputs.keys()) {
       if (nodeInfo.outputs.some((o) => o.name === outputSocketId)) continue;
 
       nodeInfo.outputs.push({
