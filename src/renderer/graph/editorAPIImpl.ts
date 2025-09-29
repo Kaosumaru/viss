@@ -330,7 +330,11 @@ export class EditorAPIImp implements EditorAPI {
           }
           promises.push(this.editor.removeConnection(id));
         }
-        await Promise.all(promises);
+        // TODO awaiting on empty array causes race with informations from rete
+        // and we cannot assign new connection to an input properly
+        if (promises.length !== 0) {
+          await Promise.all(promises);
+        }
       }
 
       if (diff.removedNodes) {
@@ -338,7 +342,9 @@ export class EditorAPIImp implements EditorAPI {
         for (const node of diff.removedNodes) {
           promises.push(this.editor.removeNode(node.identifier));
         }
-        await Promise.all(promises);
+        if (promises.length !== 0) {
+          await Promise.all(promises);
+        }
       }
 
       if (diff.updatedUniforms) {
@@ -349,7 +355,9 @@ export class EditorAPIImp implements EditorAPI {
 
       if (diff.addedNodes) {
         const promises = diff.addedNodes.map((node) => this.addNode(node));
-        await Promise.all(promises);
+        if (promises.length !== 0) {
+          await Promise.all(promises);
+        }
       }
 
       if (diff.addedConnections) {
@@ -366,7 +374,9 @@ export class EditorAPIImp implements EditorAPI {
             this.editor.addConnection(connectionToUIConnection(id, connection))
           );
         }
-        await Promise.all(promises);
+        if (promises.length !== 0) {
+          await Promise.all(promises);
+        }
       }
 
       if (diff.nodesWithModifiedProperties) {
@@ -389,7 +399,10 @@ export class EditorAPIImp implements EditorAPI {
             console.warn(`Node ${node.identifier} not found in editor`);
           }
         }
-        await Promise.all(promises);
+
+        if (promises.length !== 0) {
+          await Promise.all(promises);
+        }
       }
 
       if (diff.invalidatedNodeIds) {
