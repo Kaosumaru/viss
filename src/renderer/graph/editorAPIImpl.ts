@@ -316,20 +316,24 @@ export class EditorAPIImp implements EditorAPI {
       this.deserializing = true;
       // todo operations on editor UI are asynchronous
       if (diff.removedConnections) {
+        const promises: Promise<boolean>[] = [];
         for (const connection of diff.removedConnections) {
           const id = getUIConnectionId(connection);
           if (!this.editor.getConnection(id)) {
             console.warn(`Connection ${id} not found in editor`);
             continue;
           }
-          await this.editor.removeConnection(id);
+          promises.push(this.editor.removeConnection(id));
         }
+        await Promise.all(promises);
       }
 
       if (diff.removedNodes) {
+        const promises: Promise<boolean>[] = [];
         for (const node of diff.removedNodes) {
-          await this.editor.removeNode(node.identifier);
+          promises.push(this.editor.removeNode(node.identifier));
         }
+        await Promise.all(promises);
       }
 
       if (diff.updatedUniforms) {
@@ -344,13 +348,13 @@ export class EditorAPIImp implements EditorAPI {
       }
 
       if (diff.addedConnections) {
-        const promises: Promise<boolean>[] = [];
+        const promises: Promise<unknown>[] = [];
         for (const connection of diff.addedConnections) {
           const id = getUIConnectionId(connection);
           const uiConnection = this.editor.getConnection(id);
           if (uiConnection) {
             uiConnection.type = connection.type;
-            void this.area.update("connection", uiConnection.id);
+            promises.push(this.area.update("connection", uiConnection.id));
             continue;
           }
           promises.push(
@@ -374,7 +378,7 @@ export class EditorAPIImp implements EditorAPI {
                 })
               );
 
-              void this.area.update("node", uiNode.id);
+              promises.push(this.area.update("node", uiNode.id));
             }
           } else {
             console.warn(`Node ${node.identifier} not found in editor`);
