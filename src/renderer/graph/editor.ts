@@ -1,5 +1,5 @@
 import { NodeEditor } from "rete";
-import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
+import { AreaPlugin, AreaExtensions, Drag } from "rete-area-plugin";
 import {
   ConnectionPlugin,
   Presets as ConnectionPresets,
@@ -52,6 +52,17 @@ export function createEditor(
   area.use(connection);
   area.use(render);
   area.use(arrange);
+
+  area.area.setDragHandler(
+    new Drag({
+      down: (e) => {
+        if (e.pointerType === "mouse" && e.button !== 2) return false;
+
+        return true;
+      },
+      move: () => true,
+    })
+  );
 
   // AreaExtensions.simpleNodesOrder(area); TODO breaks the boolean control
   AreaExtensions.showInputControl<Schemes>(area, ({ hasAnyConnection }) => {

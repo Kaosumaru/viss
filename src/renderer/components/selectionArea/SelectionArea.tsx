@@ -31,13 +31,17 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
 
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      // Only handle middle mouse button (button 1)
-      if (event.button !== 1 || disabled) {
+      // Only handle left mouse button (button 0)
+      if (event.button !== 0 || disabled) {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
+      const target = event.target as Element;
+      const nodeElement = target.closest("[data-node-id]");
+      if (nodeElement) {
+        // Clicked on a node, do not start selection
+        return;
+      }
 
       const container = containerRef.current;
       if (!container) return;
