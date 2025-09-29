@@ -68,8 +68,11 @@ export const uniformVisualizers: UniformVisualizerEntry[] = [
     visualizer: { id: "texture" },
     type: sampler2D(),
     defaultValue: {
-      type: "string",
-      value: "",
+      type: "path",
+      value: {
+        path: "",
+        kind: "workspace",
+      },
     },
   },
 ];

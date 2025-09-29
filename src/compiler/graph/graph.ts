@@ -5,11 +5,25 @@ import type { Uniforms } from "./uniform";
 
 export interface Graph {
   version: number;
-  includes: string[];
+  includes: FilePath[];
   uniforms: Uniforms;
   nodes: Node[];
   connections: Connection[];
   // comments?: Comment[];
+}
+
+export function arePathsEqual(a: FilePath, b: FilePath): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return a.path === b.path && a.kind === b.kind;
+}
+
+export function pathToUUID(path: FilePath): string {
+  return `${path.kind}::${path.path}`;
+}
+
+export interface FilePath {
+  path: string;
+  kind: "workspace";
 }
 
 export interface IncludedFiles {
@@ -18,6 +32,7 @@ export interface IncludedFiles {
 
 export interface GLSLInclude {
   name: string;
+  path: FilePath;
   content: string;
 }
 
@@ -43,14 +58,6 @@ export interface GraphDiff {
 export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
   return diffs.reduce<GraphDiff>((acc, diff) => {
     acc.addedNodes = [...(acc.addedNodes || []), ...(diff.addedNodes || [])];
-
-    if (acc.updatedIncludes || diff.updatedIncludes) {
-      const updatedIncludes = new Set([
-        ...(acc.updatedIncludes || []),
-        ...(diff.updatedIncludes || []),
-      ]);
-      acc.updatedIncludes = Array.from(updatedIncludes);
-    }
 
     acc.removedNodes = [
       ...(acc.removedNodes || []),

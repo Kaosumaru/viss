@@ -3,6 +3,7 @@ import type { Context } from "./context";
 import { CompilerInternal } from "./logic/compilerInternal";
 import type {
   AddedNodeInfo,
+  FilePath,
   GLSLInclude,
   Graph,
   GraphDiff,
@@ -14,7 +15,7 @@ import type { SocketReference } from "@graph/socket";
 import type { Uniform } from "@graph/uniform";
 
 export type IncludeResolver = (
-  includeName: string[]
+  includeName: FilePath[]
 ) => Promise<(string | null)[]>;
 
 export interface CompilationOptions {
@@ -79,16 +80,16 @@ export class Compiler {
     return CompilerInternal.createGraph();
   }
 
-  addInclude(include: string): Promise<GraphDiff> {
+  addInclude(include: FilePath): Promise<GraphDiff> {
     return this.graph.addIncludes([include]);
   }
 
-  removeInclude(include: string): GraphDiff {
+  removeInclude(include: FilePath): GraphDiff {
     return this.graph.removeIncludes([include]);
   }
 
-  includes(): string[] {
-    return this.graph.getIncludes().map((inc) => inc.name);
+  includes(): FilePath[] {
+    return this.graph.getIncludes().map((inc) => inc.path);
   }
 
   public updateUniformDefaultValue(

@@ -25,6 +25,10 @@ export function getBuiltInFunctions(): GLSLInclude[] {
     {
       name: "sampleInclude",
       content: sampleInclude,
+      path: {
+        kind: "workspace",
+        path: "path/to/sampleInclude.glsl",
+      },
     },
   ];
 }

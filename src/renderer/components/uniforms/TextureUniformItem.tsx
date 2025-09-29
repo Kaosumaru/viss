@@ -17,12 +17,15 @@ const TextureUniformItem: React.FC<UniformItemProps> = ({
   const handleClick = async () => {
     if (
       uniform.defaultValue &&
-      uniform.defaultValue.type === "string" &&
+      uniform.defaultValue.type === "path" &&
       editor
     ) {
       const imgUrl = await selectImage();
       if (imgUrl) {
-        onChangeValue({ ...uniform.defaultValue, value: imgUrl });
+        onChangeValue({
+          ...uniform.defaultValue,
+          value: { path: imgUrl, kind: "workspace" },
+        });
       }
     }
   };

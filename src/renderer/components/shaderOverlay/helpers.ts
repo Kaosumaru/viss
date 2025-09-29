@@ -90,7 +90,7 @@ export function getTexturePath(uniform: Uniform | undefined) {
     uniform &&
     uniform.type.id === "sampler2D" &&
     uniform.defaultValue &&
-    uniform.defaultValue.type === "string"
+    uniform.defaultValue.type === "path"
   ) {
     return uniform.defaultValue.value;
   }

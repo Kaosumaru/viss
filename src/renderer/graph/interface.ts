@@ -1,6 +1,6 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { FunctionDefinition } from "@glsl/function";
-import type { Graph } from "@graph/graph";
+import type { FilePath, Graph } from "@graph/graph";
 import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
@@ -51,9 +51,9 @@ export interface EditorAPI {
   removeUniform: (uniformId: string) => Promise<void>;
 
   addIncludeFromFile: () => Promise<void>;
-  addInclude: (include: string) => Promise<void>;
-  removeInclude: (include: string) => Promise<void>;
-  includes: () => string[];
+  addInclude: (include: FilePath) => Promise<void>;
+  removeInclude: (include: FilePath) => Promise<void>;
+  includes: () => FilePath[];
 
   compileNode: (nodeId?: string) => string | undefined;
   getCustomFunctions: () => FunctionDefinition[];

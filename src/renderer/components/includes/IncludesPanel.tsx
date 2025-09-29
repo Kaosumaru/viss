@@ -12,10 +12,11 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { EditorContext } from "@renderer/context/EditorContext";
+import type { FilePath } from "@graph/graph";
 
 export const IncludesPanel: React.FC = () => {
   const editorData = useContext(EditorContext).editor;
-  const [includes, setIncludes] = React.useState<string[]>([]);
+  const [includes, setIncludes] = React.useState<FilePath[]>([]);
 
   useEffect(() => {
     setIncludes(editorData?.includes() ?? []);
@@ -30,8 +31,8 @@ export const IncludesPanel: React.FC = () => {
     setIncludes(editorData.includes());
   };
 
-  const handleRemove = async (includeName: string) => {
-    await editorData.removeInclude(includeName);
+  const handleRemove = async (include: FilePath) => {
+    await editorData.removeInclude(include);
     setIncludes(editorData.includes());
   };
 
@@ -56,9 +57,9 @@ export const IncludesPanel: React.FC = () => {
         </Typography>
       ) : (
         <List sx={{ mb: 2 }}>
-          {includes.map((includeName) => (
+          {includes.map((include) => (
             <ListItem
-              key={includeName}
+              key={include.path}
               sx={{
                 px: 0,
                 py: 1,
@@ -73,7 +74,7 @@ export const IncludesPanel: React.FC = () => {
                   aria-label="delete"
                   size="small"
                   color="error"
-                  onClick={() => void handleRemove(includeName)}
+                  onClick={() => void handleRemove(include)}
                   sx={{ color: "#ff6b6b" }}
                 >
                   <DeleteIcon fontSize="small" />
@@ -81,7 +82,7 @@ export const IncludesPanel: React.FC = () => {
               }
             >
               <ListItemText
-                primary={includeName}
+                primary={include.path}
                 slotProps={{
                   primary: {
                     sx: { color: "#fff", fontSize: "0.875rem" },

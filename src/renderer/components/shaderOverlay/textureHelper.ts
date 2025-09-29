@@ -1,5 +1,6 @@
 import { vscode } from "@renderer/vscode/vscodeManager";
 import { loadTexture } from "./helpers";
+import { pathToUUID, type FilePath } from "@graph/graph";
 
 export type GetTexturePath = (
   relativePath: string
@@ -10,16 +11,16 @@ export class TextureHelper {
     this.gl = gl;
   }
 
-  getTextureId(path: string): number {
-    const entry = this.textures.get(path);
+  getTextureId(path: FilePath): number {
+    const entry = this.textures.get(pathToUUID(path));
     if (entry) {
       return entry.uniformUnit;
     }
     return -1;
   }
 
-  unloadTexture(id: string, path: string) {
-    const entry = this.textures.get(path);
+  unloadTexture(id: string, path: FilePath) {
+    const entry = this.textures.get(pathToUUID(path));
     if (!entry) {
       return;
     }
@@ -32,11 +33,11 @@ export class TextureHelper {
     const unit = entry.uniformUnit;
     this.freeTextures.unshift(unit);
 
-    this.textures.delete(path);
+    this.textures.delete(pathToUUID(path));
   }
 
-  loadTexture(id: string, path: string) {
-    let entry = this.textures.get(path);
+  loadTexture(id: string, path: FilePath) {
+    let entry = this.textures.get(pathToUUID(path));
     if (!entry) {
       const unit = this.freeTextures.pop();
       if (unit === undefined) {
@@ -52,12 +53,12 @@ export class TextureHelper {
         texture: texture.texture,
       };
 
-      void vscode.relativePathToURL(path).then((url) => {
+      void vscode.relativePathToURL(path.path).then((url) => {
         if (url) {
           texture.load(url);
         }
       });
-      this.textures.set(path, entry);
+      this.textures.set(pathToUUID(path), entry);
     }
 
     entry.uniforms.add(id);

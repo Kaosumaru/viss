@@ -1,3 +1,5 @@
+import type { FilePath } from "./graph";
+
 export interface NumberValue {
   type: "number";
   value: number;
@@ -11,6 +13,11 @@ export interface BooleanValue {
 export interface StringValue {
   type: "string";
   value: string;
+}
+
+export interface PathValue {
+  type: "path";
+  value: FilePath;
 }
 
 export type Color = [number, number, number, number]; // RGBA format
@@ -29,7 +36,8 @@ export type ParameterValue =
   | BooleanValue
   | StringValue
   | ColorValue
-  | VectorValue;
+  | VectorValue
+  | PathValue;
 
 export type ParameterValueType = ParameterValue["type"];
 

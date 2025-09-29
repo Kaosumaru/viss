@@ -2,6 +2,7 @@ import type { ScalarType, VectorType } from "@glsl/types/types";
 import type { ParameterValue } from "@graph/parameter";
 import type { Uniform } from "@graph/uniform";
 import type { ShaderRenderer } from "./shaderRenderer";
+import type { FilePath } from "@graph/graph";
 
 export type UniformsEntries = Record<string, UniformEntry>;
 
@@ -20,7 +21,7 @@ export interface VectorValue {
 export interface TextureValue {
   id: "texture";
   type: "2d" | "cube";
-  path: string;
+  path: FilePath;
 }
 
 export function applyUniforms(
@@ -106,11 +107,21 @@ export function uniformEntryFromUniform(uniform: Uniform): UniformEntry {
   throw new Error("Unsupported uniform type");
 }
 
+function pathFromParameterValue(value: ParameterValue | undefined): FilePath {
+  if (value?.type === "path") {
+    return value.value;
+  }
+  if (value?.type === "string") {
+    return { path: value.value, kind: "workspace" };
+  }
+  return { path: "", kind: "workspace" };
+}
+
 function uniformEntryFromTexture(
   name: string,
   defaultValue?: ParameterValue
 ): UniformEntry {
-  const value = defaultValue?.type === "string" ? defaultValue.value : "";
+  const value = pathFromParameterValue(defaultValue);
 
   return {
     name,

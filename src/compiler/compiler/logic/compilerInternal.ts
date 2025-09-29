@@ -1,6 +1,8 @@
 import type { Connection } from "@graph/connection";
 import {
+  arePathsEqual,
   type AddedNodeInfo,
+  type FilePath,
   type GLSLInclude,
   type Graph,
   type GraphDiff,
@@ -439,12 +441,12 @@ export class CompilerInternal {
     return this.cache.getInputNode(inputNodeId, inputSocketId);
   }
 
-  async addIncludes(includes: string[]): Promise<GraphDiff> {
+  async addIncludes(includes: FilePath[]): Promise<GraphDiff> {
     // TODO
     if (!this.options.includeResolver) return {};
 
     includes = includes.filter(
-      (include) => !this.graph.includes.includes(include)
+      (include) => !this.graph.includes.some((i) => arePathsEqual(i, include))
     );
 
     if (includes.length === 0) return {};
@@ -456,8 +458,12 @@ export class CompilerInternal {
     for (let i = 0; i < includes.length; i++) {
       const include = includes[i];
       const content = includeContents[i];
+      if (include === undefined || content === undefined) {
+        continue;
+      }
       newIncludes.push({
-        name: include ?? "",
+        name: include.path,
+        path: include,
         content: content ?? "",
       });
     }
@@ -480,13 +486,13 @@ export class CompilerInternal {
     return this.addIncludes(includes);
   }
 
-  removeIncludes(includesToRemove: string[]): GraphDiff {
+  removeIncludes(includesToRemove: FilePath[]): GraphDiff {
     this.graph.includes = this.graph.includes.filter(
-      (include) => !includesToRemove.includes(include)
+      (include) => !includesToRemove.some((i) => arePathsEqual(i, include))
     );
 
     this.glslIncludes = this.glslIncludes.filter(
-      (include) => !includesToRemove.includes(include.name)
+      (include) => !includesToRemove.some((i) => arePathsEqual(i, include.path))
     );
 
     this.nameToFunction = parseFunctionsFrom({ includes: this.glslIncludes });
@@ -504,7 +510,6 @@ export class CompilerInternal {
       .map((node) => node.identifier);
     return {
       invalidatedNodeIds: new Set(nodeIds),
-      updatedIncludes: this.graph.includes,
     };
   }
 

@@ -5,7 +5,7 @@ import type {
   ExportGraphRequestMessage,
   LoadGraphMessage,
 } from "../../../vscode-extension/src/messages/messages";
-import type { Graph } from "@graph/graph";
+import type { FilePath, Graph } from "@graph/graph";
 import type { Transform } from "rete-area-plugin/_types/area";
 import { vscode } from "@renderer/vscode/vscodeManager";
 import { DisposeHelper } from "./utils/disposeHelper";
@@ -71,13 +71,13 @@ export class EditorVSExtension {
     this.saveEmitter.flush();
   }
 
-  public async getFileContents(paths: string[]): Promise<(string | null)[]> {
+  public async getFileContents(paths: FilePath[]): Promise<(string | null)[]> {
     if (!vscode.isAvailable) {
       return paths.map(() => null);
     }
 
     const response = await vscode.openFiles({
-      relativePaths: paths,
+      relativePaths: paths.map((p) => p.path),
     });
 
     return response.contents;

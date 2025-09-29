@@ -6,7 +6,7 @@ import type { OnGraphChanged } from "./editor";
 import type { Schemes, AreaExtra } from "./node";
 import { UICompilerNode } from "./nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
-import type { AddedNodeInfo, Graph, GraphDiff } from "@graph/graph";
+import type { AddedNodeInfo, FilePath, Graph, GraphDiff } from "@graph/graph";
 import type { Parameters, ParameterValue } from "@graph/parameter";
 import type { Connection } from "@graph/connection";
 import { EditorKeybindings } from "./editorKeybindings";
@@ -27,7 +27,7 @@ export class EditorAPIImp implements EditorAPI {
     this.extension = new EditorVSExtension(this, area);
     this.keybindings = new EditorKeybindings(this, area);
     const options: CompilationOptions = {
-      includeResolver: (includePaths: string[]) => {
+      includeResolver: (includePaths: FilePath[]) => {
         return this.extension.getFileContents(includePaths);
       },
     };
@@ -277,19 +277,24 @@ export class EditorAPIImp implements EditorAPI {
   async addIncludeFromFile(): Promise<void> {
     const path = await selectIncludeFile();
     if (path) {
-      return this.applyDiff(await this.compiler.addInclude(path));
+      return this.applyDiff(
+        await this.compiler.addInclude({
+          kind: "workspace",
+          path,
+        })
+      );
     }
   }
 
-  async addInclude(include: string): Promise<void> {
+  async addInclude(include: FilePath): Promise<void> {
     return this.applyDiff(await this.compiler.addInclude(include));
   }
 
-  removeInclude(include: string): Promise<void> {
+  removeInclude(include: FilePath): Promise<void> {
     return this.applyDiff(this.compiler.removeInclude(include));
   }
 
-  includes(): string[] {
+  includes(): FilePath[] {
     return this.compiler.includes();
   }
 

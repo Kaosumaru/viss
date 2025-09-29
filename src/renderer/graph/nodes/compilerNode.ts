@@ -205,6 +205,8 @@ export class UICompilerNode extends ClassicPreset.Node {
             callback({ type: "string", value: v as string });
           },
         });
+      case "path":
+        throw new Error("File parameters are not supported as controls");
       case "vector":
         throw new Error("Vector parameters are not supported as controls");
     }
