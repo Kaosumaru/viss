@@ -10,10 +10,10 @@ You can preview online version on https://kaosumaru.github.io/viss/
 ## How to use the extension
 
 1. Install extension
-2. Create a .vis file and open it
+2. Create a .viss file and open it
 3. Right click to open context menu and add output node
 4. Add and connect nodes, right click them to open context menu
-5. When you save the graph, the `<file>.vis.glsl` output will be created automatically
+5. When you save the graph, the `<file>.viss.glsl` output will be created automatically
 
 ## Examples
 
