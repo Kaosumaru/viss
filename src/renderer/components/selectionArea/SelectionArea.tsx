@@ -43,6 +43,8 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
         return;
       }
 
+      event.preventDefault();
+
       const container = containerRef.current;
       if (!container) return;
 
@@ -96,11 +98,8 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
       setIsSelecting(false);
       onSelectionComplete?.(selection);
 
-      // Clear selection after a short delay to show completion
-      setTimeout(() => {
-        setSelection(null);
-        onSelectionChange?.(null);
-      }, 100);
+      setSelection(null);
+      onSelectionChange?.(null);
     },
     [isSelecting, selection, onSelectionComplete, onSelectionChange]
   );
