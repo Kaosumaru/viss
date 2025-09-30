@@ -4,6 +4,9 @@ A shader editor extension for VS Code
 
 ![preview](./images/image1.png)
 
+You can preview online version on https://kaosumaru.github.io/viss/
+(online version don't have texture & includes support yet)
+
 ## How to use the extension
 
 1. Install extension
