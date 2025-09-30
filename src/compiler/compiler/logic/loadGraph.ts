@@ -1,4 +1,9 @@
-import { type Graph, type GraphDiff, mergeGraphDiffs } from "@graph/graph";
+import {
+  arePathsEqual,
+  type Graph,
+  type GraphDiff,
+  mergeGraphDiffs,
+} from "@graph/graph";
 import deepEqual from "deep-equal";
 import type { Connection } from "@graph/connection";
 import { type CompilerInternal } from "./compilerInternal";
@@ -19,11 +24,11 @@ export async function loadGraphIntoCompiler(
   );
 
   const addedIncludes = otherGraph.includes.filter(
-    (include) => !this.graph.includes.includes(include)
+    (include) => !this.graph.includes.some((i) => arePathsEqual(i, include))
   );
 
   const removedIncludes = this.graph.includes.filter(
-    (include) => !otherGraph.includes.includes(include)
+    (include) => !otherGraph.includes.some((i) => arePathsEqual(i, include))
   );
 
   const addedNodes = otherGraph.nodes.filter(
