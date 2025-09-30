@@ -106,6 +106,11 @@ const functions = createCategory({
       "Absolute value",
       signature(template(), [["in", template()]], genFIDType)
     ),
+    sqrt: new FunctionNode(
+      "sqrt",
+      "Square root",
+      signature(template(), [["in", template()]], genFType)
+    ),
     sign: new FunctionNode(
       "sign",
       "Sign of a value",
