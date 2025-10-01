@@ -1,6 +1,8 @@
 name: Publish extension
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -29,4 +31,4 @@ jobs:
       - name: Publish Extension
         run: |
           cd vscode-extension
-          npx @vscode/vsce publish -p ${{ secrets.VSCODE_TOKEN }} --baseContentUrl https://github.com/Kaosumaru/viss/raw/HEAD/
+          npx @vscode/vsce publish -p ${{ secrets.VSCODE_TOKEN }} --baseContentUrl https://github.com/Kaosumaru/viss/raw/HEAD/ --skip-duplicate
