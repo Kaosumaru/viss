@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci --force
-          cd extension
+          cd vscode-extension
           npm ci --force
 
       - name: Login to VSCE
@@ -33,5 +33,5 @@ jobs:
 
       - name: Publish Extension
         run: |
-          cd extension
+          cd vscode-extension
           npx @vscode/vsce publish -p ${{ secrets.VSCODE_TOKEN }} --baseContentUrl
