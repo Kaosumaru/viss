@@ -26,11 +26,6 @@ jobs:
           cd vscode-extension
           npm ci --force
 
-      - name: Login to VSCE
-        run: npx @vscode/vsce login kaosumaru
-        env:
-          VSCE_PAT: ${{ secrets.VSCODE_TOKEN }}
-
       - name: Publish Extension
         run: |
           cd vscode-extension
