@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { MaterialContextMenu } from "./materialContextMenu";
 import { NodeContextMenu } from "./nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
 import type { MenuItem } from "./interface";
 import type { Uniforms } from "@graph/uniform";
+import emitter, { type ConnectionDropperEvent } from "@renderer/graph/emitter";
 
 interface ContextMenuState {
   visible: boolean;
@@ -53,6 +54,22 @@ export const MaterialContextMenuProvider: React.FC<
     startPosition: { x: 0, y: 0 },
     target: null,
   });
+
+  useEffect(() => {
+    const handler = (_event: ConnectionDropperEvent) => {
+      const position = { x: 0, y: 0 };
+      setContextMenuState({
+        visible: true,
+        position,
+        type: "canvas",
+      });
+      onContextMenuOpen?.(position);
+    };
+    emitter.on("connectionDroppedOnEmpty", handler);
+    return () => {
+      emitter.off("connectionDroppedOnEmpty", handler);
+    };
+  }, [onContextMenuOpen]);
 
   const handleMouseDown = useCallback((event: React.MouseEvent) => {
     // Only handle right mouse button

@@ -21,6 +21,7 @@ import {
   type SelectableAPI,
 } from "./extensions/selectable";
 import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
+import emitter from "./emitter";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -67,6 +68,18 @@ export function createEditor(
   // AreaExtensions.simpleNodesOrder(area); TODO breaks the boolean control
   AreaExtensions.showInputControl<Schemes>(area, ({ hasAnyConnection }) => {
     return !hasAnyConnection;
+  });
+
+  connection.addPipe((context) => {
+    if (context.type === "connectiondrop") {
+      const d = context.data;
+      if (!d.created) {
+        emitter.emit("connectionDroppedOnEmpty", {
+          from: { nodeId: d.initial.nodeId, socketId: d.initial.key },
+        });
+      }
+    }
+    return context;
   });
 
   // disable zoom on double click
