@@ -4,8 +4,11 @@ import {
   VisibilityOff,
   ViewSidebar,
   ViewSidebarOutlined,
+  CenterFocusStrong,
 } from "@mui/icons-material";
 import styled from "styled-components";
+import { useContext } from "react";
+import { EditorContext } from "@renderer/context/EditorContext";
 
 const ToolbarContainer = styled(Paper)`
   position: absolute;
@@ -42,6 +45,16 @@ export function FloatingToolbar({
   isSidebarVisible,
   onToggleSidebar,
 }: FloatingToolbarProps) {
+  const editorData = useContext(EditorContext).editor;
+
+  const handleCenterView = () => {
+    if (!editorData) {
+      console.warn("No editor available");
+      return;
+    }
+    void editorData.centerView();
+  };
+
   return (
     <ToolbarContainer elevation={3}>
       <Tooltip
@@ -56,6 +69,11 @@ export function FloatingToolbar({
       <Tooltip title={isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}>
         <ToolbarIconButton onClick={onToggleSidebar}>
           {isSidebarVisible ? <ViewSidebar /> : <ViewSidebarOutlined />}
+        </ToolbarIconButton>
+      </Tooltip>
+      <Tooltip title="Center View">
+        <ToolbarIconButton onClick={handleCenterView} disabled={!editorData}>
+          <CenterFocusStrong />
         </ToolbarIconButton>
       </Tooltip>
     </ToolbarContainer>
