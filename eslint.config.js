@@ -11,6 +11,7 @@ export default tseslint.config([
     'node_modules',
     'vscode-extension',
     '**/*.config.ts',
+    'src/renderer/graph/extensions/connection/**/*'
   ]),
   {
     files: ['**/*.{ts,tsx}'],

@@ -3,7 +3,7 @@ import { AreaPlugin, AreaExtensions, Drag } from "rete-area-plugin";
 import {
   ConnectionPlugin,
   Presets as ConnectionPresets,
-} from "rete-connection-plugin";
+} from "./extensions/connection";
 import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
