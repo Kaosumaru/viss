@@ -45,13 +45,13 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
     }
   }
 
-  drop(
+  async drop(
     context: Context<ClassicScheme, K>,
     socket: SocketData | null = null,
     created = false
-  ): void {
+  ): Promise<void> {
     if (this.initial) {
-      void context.scope.emit({
+      await context.scope.emit({
         type: "connectiondrop",
         data: { initial: this.initial, socket, created },
       });
@@ -85,13 +85,13 @@ class Idle<Schemes extends ClassicScheme, K extends any[]> extends State<
     }
   }
 
-  drop(
+  async drop(
     context: Context<Schemes, K>,
     socket: SocketData | null = null,
     created = false
-  ): void {
+  ): Promise<void> {
     if (this.initial) {
-      void context.scope.emit({
+      await context.scope.emit({
         type: "connectiondrop",
         data: { initial: this.initial, socket, created },
       });
@@ -125,7 +125,7 @@ export class BidirectFlow<Schemes extends ClassicScheme, K extends any[]>
   }
 
   public drop(context: Context<Schemes, K>) {
-    this.currentState.drop(context);
+    return this.currentState.drop(context);
   }
 
   public switchTo(state: State<Schemes, K>): void {

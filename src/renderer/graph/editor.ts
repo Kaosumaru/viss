@@ -89,7 +89,7 @@ export function createEditor(
   });
 
   // await editorData.createNode("output", "screen");
-  // AreaExtensions.zoomAt(area, editor.getNodes());
+  //void AreaExtensions.zoomAt(area, editor.getNodes());
 
   return Promise.resolve(editorData);
 }

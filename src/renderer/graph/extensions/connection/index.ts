@@ -62,6 +62,7 @@ export class ConnectionPlugin<
   private currentFlow: Flow<Schemes, any[]> | null = null;
   private preudoconnection = createPseudoconnection({ isPseudo: true });
   private socketsCache = new Map<Element, SocketData>();
+  private shouldUpdate = true;
 
   constructor() {
     super("connection");
@@ -87,7 +88,7 @@ export class ConnectionPlugin<
   update() {
     if (!this.currentFlow) return;
     const socket = this.currentFlow.getPickedSocket();
-
+    if (!this.shouldUpdate) return;
     if (socket) {
       this.preudoconnection.render(
         this.areaPlugin,
@@ -101,7 +102,7 @@ export class ConnectionPlugin<
    * Drop pseudo-connection if exists
    * @emits connectiondrop
    */
-  drop() {
+  async drop() {
     const flowContext = {
       editor: this.editor,
       scope: this,
@@ -109,7 +110,8 @@ export class ConnectionPlugin<
     };
 
     if (this.currentFlow) {
-      this.currentFlow.drop(flowContext);
+      this.shouldUpdate = false;
+      await this.currentFlow.drop(flowContext);
       this.preudoconnection.unmount(this.areaPlugin);
       this.currentFlow = null;
     }
@@ -135,10 +137,12 @@ export class ConnectionPlugin<
           { socket: pickedSocket, event: type },
           flowContext
         );
+        this.shouldUpdate = true;
         this.preudoconnection.mount(this.areaPlugin);
       }
     } else if (this.currentFlow) {
-      this.currentFlow.drop(flowContext);
+      this.shouldUpdate = false;
+      await this.currentFlow.drop(flowContext);
     }
     if (this.currentFlow && !this.currentFlow.getPickedSocket()) {
       this.preudoconnection.unmount(this.areaPlugin);

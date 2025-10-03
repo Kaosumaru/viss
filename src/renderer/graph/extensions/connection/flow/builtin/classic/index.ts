@@ -46,13 +46,13 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
     }
   }
 
-  drop(
+  async drop(
     context: Context<Schemes, K>,
     socket: SocketData | null = null,
     created = false
-  ): void {
+  ): Promise<void> {
     if (this.initial) {
-      void context.scope.emit({
+      await context.scope.emit({
         type: "connectiondrop",
         data: { initial: this.initial, socket, created },
       });
@@ -147,13 +147,13 @@ class PickedExisting<
     }
   }
 
-  drop(
+  async drop(
     context: Context<Schemes, K>,
     socket: SocketData | null = null,
     created = false
-  ): void {
+  ): Promise<void> {
     if (this.initial) {
-      void context.scope.emit({
+      await context.scope.emit({
         type: "connectiondrop",
         data: { initial: this.initial, socket, created },
       });
@@ -203,13 +203,13 @@ class Idle<Schemes extends ClassicScheme, K extends any[]> extends State<
     }
   }
 
-  drop(
+  async drop(
     context: Context<Schemes, K>,
     socket: SocketData | null = null,
     created = false
-  ): void {
+  ): Promise<void> {
     if (this.initial) {
-      void context.scope.emit({
+      await context.scope.emit({
         type: "connectiondrop",
         data: { initial: this.initial, socket, created },
       });
@@ -248,7 +248,7 @@ export class ClassicFlow<Schemes extends ClassicScheme, K extends any[]>
     this.currentState = state;
   }
 
-  public drop(context: Context<Schemes, K>) {
-    this.currentState.drop(context);
+  public drop(context: Context<Schemes, K>): Promise<void> {
+    return this.currentState.drop(context);
   }
 }
