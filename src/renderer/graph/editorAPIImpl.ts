@@ -85,6 +85,10 @@ export class EditorAPIImp implements EditorAPI {
     void this.extension.initialize();
   }
 
+  centerView(): Promise<void> {
+    return AreaExtensions.zoomAt(this.area, this.editor.getNodes());
+  }
+
   async createNode(
     nodeType: NodeType,
     space: "screen" | "absolute",

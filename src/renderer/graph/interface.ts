@@ -10,6 +10,7 @@ export interface IUniformCallback {
 }
 
 export interface EditorAPI {
+  centerView: () => Promise<void>;
   updateUniformDefaultValue(
     name: string,
     defaultValue: ParameterValue
