@@ -54,12 +54,12 @@ export class EditorAPIImp implements EditorAPI {
       return context;
     });
 
-    editor.addPipe((context) => {
+    editor.addPipe(async (context) => {
       if (this.deserializing) {
         return context;
       }
       if (context.type === "connectionremoved") {
-        void this.applyDiff(
+        await this.applyDiff(
           this.compiler.removeConnection(uiConnectionToConnection(context.data))
         );
       }
@@ -71,7 +71,7 @@ export class EditorAPIImp implements EditorAPI {
         }
       }
       if (context.type === "connectioncreated") {
-        void this.applyDiff(
+        await this.applyDiff(
           this.compiler.addConnection(uiConnectionToConnection(context.data))
         );
       }

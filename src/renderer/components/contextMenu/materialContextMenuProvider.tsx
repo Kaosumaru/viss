@@ -43,6 +43,7 @@ export const MaterialContextMenuProvider: React.FC<
   customFunctions,
   uniforms,
 }) => {
+  const resolveRef = useRef<(v: unknown) => void>(null);
   const [contextMenuState, setContextMenuState] = useState<ContextMenuState>({
     visible: false,
     position: { x: 0, y: 0 },
@@ -56,7 +57,7 @@ export const MaterialContextMenuProvider: React.FC<
   });
 
   useEffect(() => {
-    const handler = (_event: ConnectionDropperEvent) => {
+    const handler = async (_event: ConnectionDropperEvent) => {
       const position = { x: 0, y: 0 };
       setContextMenuState({
         visible: true,
@@ -64,12 +65,24 @@ export const MaterialContextMenuProvider: React.FC<
         type: "canvas",
       });
       onContextMenuOpen?.(position);
+      const openPromise = new Promise((resolve) => {
+        resolveRef.current = resolve;
+      });
+
+      await openPromise;
     };
     emitter.on("connectionDroppedOnEmpty", handler);
     return () => {
       emitter.off("connectionDroppedOnEmpty", handler);
     };
   }, [onContextMenuOpen]);
+
+  useEffect(() => {
+    if (!contextMenuState.visible && resolveRef.current) {
+      resolveRef.current(true);
+      resolveRef.current = null;
+    }
+  }, [contextMenuState.visible]);
 
   const handleMouseDown = useCallback((event: React.MouseEvent) => {
     // Only handle right mouse button

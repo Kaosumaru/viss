@@ -103,7 +103,6 @@ class VSCodeManager {
   }
 
   private handleWindowMessage(event: MessageEvent) {
-    console.log("Received message from webview:", event.data);
     const message = event.data as ExtensionToEditorMessage;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (message.type === undefined) {

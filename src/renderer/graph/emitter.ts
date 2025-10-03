@@ -1,4 +1,4 @@
-import mitt from "mitt";
+import Emittery from "emittery";
 
 export interface ConnectionDropperEvent {
   from: {
@@ -11,6 +11,6 @@ type Events = {
   connectionDroppedOnEmpty: ConnectionDropperEvent;
 };
 
-const emitter = mitt<Events>();
+const emitter = new Emittery<Events>();
 
 export default emitter;

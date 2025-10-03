@@ -70,11 +70,11 @@ export function createEditor(
     return !hasAnyConnection;
   });
 
-  connection.addPipe((context) => {
+  connection.addPipe(async (context) => {
     if (context.type === "connectiondrop") {
       const d = context.data;
       if (!d.created) {
-        emitter.emit("connectionDroppedOnEmpty", {
+        await emitter.emit("connectionDroppedOnEmpty", {
           from: { nodeId: d.initial.nodeId, socketId: d.initial.key },
         });
       }
