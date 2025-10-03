@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { type ClassicScheme, type SocketData } from "../../types";
+import {
+  type ClassicScheme,
+  type Position,
+  type SocketData,
+} from "../../types";
 import { type Context, Flow, type PickParams } from "../base";
 import {
   makeConnection as defaultMakeConnection,
@@ -39,21 +43,22 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
     context: Context<Schemes, K>
   ): Promise<void> {
     if (this.params.makeConnection(this.initial, socket, context)) {
-      this.drop(context, socket, true);
+      this.drop(context, undefined, socket, true);
     } else if (!this.params.pickByClick) {
-      this.drop(context, socket);
+      this.drop(context, undefined, socket);
     }
   }
 
   async drop(
     context: Context<ClassicScheme, K>,
+    position?: Position,
     socket: SocketData | null = null,
     created = false
   ): Promise<void> {
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created },
+        data: { initial: this.initial, socket, created, position },
       });
     }
     this.context.switchTo(new Idle<Schemes, K>(this.params));
@@ -87,13 +92,14 @@ class Idle<Schemes extends ClassicScheme, K extends any[]> extends State<
 
   async drop(
     context: Context<Schemes, K>,
+    position?: Position,
     socket: SocketData | null = null,
     created = false
   ): Promise<void> {
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created },
+        data: { initial: this.initial, socket, created, position },
       });
     }
     delete this.initial;
@@ -124,8 +130,8 @@ export class BidirectFlow<Schemes extends ClassicScheme, K extends any[]>
     return this.currentState.initial;
   }
 
-  public drop(context: Context<Schemes, K>) {
-    return this.currentState.drop(context);
+  public drop(context: Context<Schemes, K>, position?: Position) {
+    return this.currentState.drop(context, position);
   }
 
   public switchTo(state: State<Schemes, K>): void {

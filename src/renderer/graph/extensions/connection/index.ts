@@ -142,7 +142,10 @@ export class ConnectionPlugin<
       }
     } else if (this.currentFlow) {
       this.shouldUpdate = false;
-      await this.currentFlow.drop(flowContext);
+      await this.currentFlow.drop(flowContext, {
+        x: event.clientX,
+        y: event.clientY,
+      });
     }
     if (this.currentFlow && !this.currentFlow.getPickedSocket()) {
       this.preudoconnection.unmount(this.areaPlugin);

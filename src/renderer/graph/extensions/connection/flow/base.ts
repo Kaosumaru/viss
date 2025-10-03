@@ -1,6 +1,6 @@
 import { type BaseSchemes, NodeEditor, Scope } from "rete";
 
-import { type Connection, type SocketData } from "../types";
+import { type Connection, type Position, type SocketData } from "../types";
 
 export type Context<Schemes extends BaseSchemes, K extends any[]> = {
   editor: NodeEditor<Schemes>;
@@ -16,5 +16,5 @@ export abstract class Flow<Schemes extends BaseSchemes, K extends any[]> {
     context: Context<Schemes, K>
   ): Promise<void>;
   public abstract getPickedSocket(): SocketData | undefined;
-  public abstract drop(context: Context<Schemes, K>): void;
+  public abstract drop(context: Context<Schemes, K>, position?: Position): void;
 }

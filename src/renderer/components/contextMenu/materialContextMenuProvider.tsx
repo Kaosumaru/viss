@@ -57,8 +57,8 @@ export const MaterialContextMenuProvider: React.FC<
   });
 
   useEffect(() => {
-    const handler = async (_event: ConnectionDropperEvent) => {
-      const position = { x: 0, y: 0 };
+    const handler = async (event: ConnectionDropperEvent) => {
+      const position = event.position;
       setContextMenuState({
         visible: true,
         position,

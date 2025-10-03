@@ -1,6 +1,6 @@
 import { getUID } from "rete";
 
-import { type ClassicScheme, type SocketData } from "../types";
+import { type ClassicScheme, type Position, type SocketData } from "../types";
 import { type Context, type PickParams } from "./base";
 
 export interface StateContext<Schemes extends ClassicScheme, K extends any[]> {
@@ -20,7 +20,7 @@ export abstract class State<Schemes extends ClassicScheme, K extends any[]> {
     params: PickParams,
     context: Context<Schemes, K>
   ): Promise<void>;
-  abstract drop(context: Context<Schemes, K>): Promise<void>;
+  abstract drop(context: Context<Schemes, K>, position?: Position): Promise<void>;
 }
 
 export function getSourceTarget(initial: SocketData, socket: SocketData) {

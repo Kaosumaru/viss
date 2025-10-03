@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/require-await */
 
-import { type ClassicScheme, type SocketData } from "../../../types";
+import {
+  type ClassicScheme,
+  type Position,
+  type SocketData,
+} from "../../../types";
 import { type Context, Flow, type PickParams } from "../../base";
 import {
   canMakeConnection as defaultCanMakeConnection,
@@ -42,19 +46,20 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
       syncConnections([this.initial, socket], context.editor).commit();
       const created = this.params.makeConnection(this.initial, socket, context);
 
-      this.drop(context, created ? socket : null, created);
+      this.drop(context, undefined, created ? socket : null, created);
     }
   }
 
   async drop(
     context: Context<Schemes, K>,
+    position?: Position,
     socket: SocketData | null = null,
     created = false
   ): Promise<void> {
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created },
+        data: { initial: this.initial, socket, created, position },
       });
     }
     this.context.switchTo(new Idle(this.params));
@@ -130,7 +135,7 @@ class PickedExisting<
         );
         const droppedSocket = created ? socket : null;
 
-        this.drop(context, droppedSocket, created);
+        this.drop(context, undefined, droppedSocket, created);
       }
     } else if (event === "down") {
       if (this.initial) {
@@ -142,20 +147,21 @@ class PickedExisting<
         );
         const droppedSocket = created ? null : socket;
 
-        this.drop(context, droppedSocket, created);
+        this.drop(context, undefined, droppedSocket, created);
       }
     }
   }
 
   async drop(
     context: Context<Schemes, K>,
+    position?: Position,
     socket: SocketData | null = null,
     created = false
   ): Promise<void> {
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created },
+        data: { initial: this.initial, socket, created, position },
       });
     }
     this.context.switchTo(new Idle<Schemes, K>(this.params));
@@ -205,13 +211,14 @@ class Idle<Schemes extends ClassicScheme, K extends any[]> extends State<
 
   async drop(
     context: Context<Schemes, K>,
+    position?: Position,
     socket: SocketData | null = null,
     created = false
   ): Promise<void> {
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created },
+        data: { initial: this.initial, socket, created, position },
       });
     }
     delete this.initial;
@@ -248,7 +255,10 @@ export class ClassicFlow<Schemes extends ClassicScheme, K extends any[]>
     this.currentState = state;
   }
 
-  public drop(context: Context<Schemes, K>): Promise<void> {
-    return this.currentState.drop(context);
+  public drop(
+    context: Context<Schemes, K>,
+    position?: Position
+  ): Promise<void> {
+    return this.currentState.drop(context, position);
   }
 }

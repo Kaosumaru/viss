@@ -22,6 +22,7 @@ import {
 } from "./extensions/selectable";
 import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 import emitter from "./emitter";
+import type { Position } from "@graph/position";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -74,8 +75,10 @@ export function createEditor(
     if (context.type === "connectiondrop") {
       const d = context.data;
       if (!d.created) {
+        const defaultPosition: Position = { x: 0, y: 0 };
         await emitter.emit("connectionDroppedOnEmpty", {
           from: { nodeId: d.initial.nodeId, socketId: d.initial.key },
+          position: d.position ?? defaultPosition,
         });
       }
     }
