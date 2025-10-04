@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { EditorView } from "./editorView";
-import { PropertyView } from "./propertyView";
+import { PreviewView } from "./previewView";
 import { FloatingToolbar } from "./components/toolbar";
 import { TabbedSidebar } from "./components/sidebar";
 import { useCallback, useState } from "react";
@@ -36,7 +36,7 @@ const Sidebar = styled.div`
   min-width: 0;
 `;
 
-const FloatingPropertyView = styled.div<{ $isVisible: boolean; $isFullscreen: boolean }>`
+const FloatingPreviewView = styled.div<{ $isVisible: boolean; $isFullscreen: boolean }>`
   position: absolute;
   bottom: ${(props) => (props.$isFullscreen ? "0" : "16px")};
   right: ${(props) => (props.$isFullscreen ? "0" : "16px")};
@@ -62,8 +62,8 @@ void main() {
 
 export function MainView() {
   const [shader, setShader] = useState(fragmentShader); // Default color
-  const [isPropertyViewVisible, setIsPropertyViewVisible] = useState(true);
-  const [isPropertyViewFullscreen, setIsPropertyViewFullscreen] = useState(false);
+  const [isPreviewViewVisible, setIsPreviewViewVisible] = useState(true);
+  const [isPreviewViewFullscreen, setIsPreviewViewFullscreen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorAPI | undefined>(
@@ -76,16 +76,16 @@ export function MainView() {
     setShader(newShader ? newShader : defaultColor);
   }, []);
 
-  const handleTogglePropertyView = useCallback(() => {
-    setIsPropertyViewVisible((prev) => !prev);
+  const handleTogglePreviewView = useCallback(() => {
+    setIsPreviewViewVisible((prev) => !prev);
   }, []);
 
   const handleToggleSidebar = useCallback(() => {
     setIsSidebarVisible((prev) => !prev);
   }, []);
 
-  const handleTogglePropertyViewFullscreen = useCallback(() => {
-    setIsPropertyViewFullscreen((prev) => !prev);
+  const handleTogglePreviewViewFullscreen = useCallback(() => {
+    setIsPreviewViewFullscreen((prev) => !prev);
   }, []);
 
   return (
@@ -94,18 +94,18 @@ export function MainView() {
         <Canvas>
           <EditorView onChanged={onChanged} />
           <FloatingToolbar
-            isPropertyViewVisible={isPropertyViewVisible}
-            onTogglePropertyView={handleTogglePropertyView}
+            isPreviewViewVisible={isPreviewViewVisible}
+            onTogglePreviewView={handleTogglePreviewView}
             isSidebarVisible={isSidebarVisible}
             onToggleSidebar={handleToggleSidebar}
           />
-          <FloatingPropertyView $isVisible={isPropertyViewVisible} $isFullscreen={isPropertyViewFullscreen}>
-            <PropertyView 
+          <FloatingPreviewView $isVisible={isPreviewViewVisible} $isFullscreen={isPreviewViewFullscreen}>
+            <PreviewView 
               fragmentShader={shader} 
-              onToggleFullscreen={handleTogglePropertyViewFullscreen}
-              isFullscreen={isPropertyViewFullscreen}
+              onToggleFullscreen={handleTogglePreviewViewFullscreen}
+              isFullscreen={isPreviewViewFullscreen}
             />
-          </FloatingPropertyView>
+          </FloatingPreviewView>
         </Canvas>
         {isSidebarVisible && (
           <Sidebar>{editorData && <TabbedSidebar />}</Sidebar>
