@@ -5,13 +5,18 @@ import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
 import type { MenuItem } from "./interface";
 import type { Uniforms } from "@graph/uniform";
-import emitter, { type ConnectionDropperEvent } from "@renderer/graph/emitter";
+import emitter, {
+  type ConnectionDropperEvent,
+  type SocketRef,
+} from "@renderer/graph/emitter";
+import type { Position } from "@graph/position";
 
 interface ContextMenuState {
   visible: boolean;
   position: { x: number; y: number };
   type: "canvas" | "node";
   nodeId?: string;
+  socketRef?: SocketRef;
 }
 
 interface MouseDownState {
@@ -22,7 +27,11 @@ interface MouseDownState {
 
 interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
-  onNodeCreate?: (node: MenuItem) => void;
+  onNodeCreate?: (
+    item: MenuItem,
+    position: Position,
+    socketRef?: SocketRef
+  ) => void;
   onNodeDelete?: (nodeId: string) => void;
   onNodeTogglePreview?: (nodeId: string) => void;
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
@@ -63,6 +72,7 @@ export const MaterialContextMenuProvider: React.FC<
         visible: true,
         position,
         type: "canvas",
+        socketRef: event.from,
       });
       onContextMenuOpen?.(position);
       const openPromise = new Promise((resolve) => {
@@ -163,9 +173,9 @@ export const MaterialContextMenuProvider: React.FC<
   }, []);
 
   const handleNodeCreate = useCallback(
-    (item: MenuItem) => {
+    (item: MenuItem, position: Position, socketRef?: SocketRef) => {
       if (onNodeCreate) {
-        onNodeCreate(item);
+        onNodeCreate(item, position, socketRef);
       }
       hideContextMenu();
     },
@@ -211,6 +221,7 @@ export const MaterialContextMenuProvider: React.FC<
           position={contextMenuState.position}
           onClose={hideContextMenu}
           onNodeCreate={handleNodeCreate}
+          socketRef={contextMenuState.socketRef}
           customFunctions={customFunctions}
           uniforms={uniforms}
         />

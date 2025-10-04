@@ -21,6 +21,8 @@ import type { MenuCategory, MenuItem } from "./interface";
 import { getMenuElements } from "./menuElements";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniforms } from "@graph/uniform";
+import type { SocketRef } from "@renderer/graph/emitter";
+import type { Position } from "rete-react-plugin";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -113,9 +115,14 @@ const CategoryIcon = styled(Box)(() => ({
 interface MaterialContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
-  onNodeCreate: (item: MenuItem) => void;
+  onNodeCreate: (
+    item: MenuItem,
+    position: Position,
+    socketRef?: SocketRef
+  ) => void;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
+  socketRef?: SocketRef;
 }
 
 export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
@@ -124,6 +131,7 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   onNodeCreate,
   customFunctions,
   uniforms,
+  socketRef,
 }) => {
   const menuElements = getMenuElements(customFunctions, uniforms);
   const [searchTerm, setSearchTerm] = useState("");
@@ -147,10 +155,10 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
 
   const handleNodeCreate = useCallback(
     (item: MenuItem) => {
-      onNodeCreate(item);
+      onNodeCreate(item, position, socketRef);
       onClose();
     },
-    [onNodeCreate, onClose]
+    [onNodeCreate, position, socketRef, onClose]
   );
 
   const filterItems = (items: MenuCategory["items"]) => {

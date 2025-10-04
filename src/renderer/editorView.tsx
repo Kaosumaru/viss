@@ -1,6 +1,6 @@
-import { useRete } from "rete-react-plugin";
+import { useRete, type Position } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./graph/editor";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
@@ -12,6 +12,7 @@ import {
 } from "./components/selectionArea";
 import type { SelectionRect } from "./components/selectionArea";
 import { ShaderRenderer } from "./components/shaderOverlay/shaderRenderer";
+import type { SocketRef } from "./graph/emitter";
 
 export interface EditorViewProps {
   onChanged?: OnGraphChanged;
@@ -21,11 +22,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const shaderRendererRef = useRef<ShaderRenderer | null>(null);
   const editorRef = useRef<EditorAPI | null>(null);
-
-  const [lastContextMenuPosition, setLastContextMenuPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
 
   const create = useCallback(
     async (container: HTMLElement) => {
@@ -61,7 +57,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   }, []);
 
   const handleNodeCreate = useCallback(
-    async (item: MenuItem) => {
+    async (item: MenuItem, position: Position, socketRef?: SocketRef) => {
       const node = item.nodeType;
       let positionX = 200;
       let positionY = 200;
@@ -70,16 +66,9 @@ export function EditorView({ onChanged }: EditorViewProps) {
       if (!editorRef.current || !ref.current) return;
       const container = ref.current as HTMLElement;
 
-      if (lastContextMenuPosition) {
-        // Convert screen coordinates to area coordinates relative to the container
-        const rect = container.getBoundingClientRect();
-        positionX = lastContextMenuPosition.x - rect.left;
-        positionY = lastContextMenuPosition.y - rect.top;
-      } else {
-        const rect = container.getBoundingClientRect();
-        positionX = rect.width / 2;
-        positionY = rect.height / 2;
-      }
+      const rect = container.getBoundingClientRect();
+      positionX = position.x - rect.left;
+      positionY = position.y - rect.top;
 
       let params: Parameters | undefined;
 
@@ -100,7 +89,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
         params
       );
     },
-    [lastContextMenuPosition, ref]
+    [ref]
   );
 
   const handleNodeDeleteFromContextMenu = useCallback((nodeId: string) => {
@@ -152,10 +141,11 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const contextMenuProvider = (
     <MaterialContextMenuProvider
-      onNodeCreate={(node) => void handleNodeCreate(node)}
+      onNodeCreate={(node, position, socketRef) =>
+        void handleNodeCreate(node, position, socketRef)
+      }
       onNodeDelete={handleNodeDeleteFromContextMenu}
       onNodeTogglePreview={handleNodeTogglePreview}
-      onContextMenuOpen={setLastContextMenuPosition}
       getNodeById={getNodeById}
       customFunctions={getCustomFunctions()}
       uniforms={getUniforms()}

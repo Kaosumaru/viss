@@ -1,11 +1,13 @@
 import type { Position } from "@graph/position";
 import Emittery from "emittery";
 
+export interface SocketRef {
+  nodeId: string;
+  socketId: string;
+}
+
 export interface ConnectionDropperEvent {
-  from: {
-    nodeId: string;
-    socketId: string;
-  };
+  from: SocketRef;
   position: Position;
 }
 
