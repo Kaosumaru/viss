@@ -46,7 +46,7 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
       syncConnections([this.initial, socket], context.editor).commit();
       const created = this.params.makeConnection(this.initial, socket, context);
 
-      this.drop(context, undefined, created ? socket : null, created);
+      await this.drop(context, undefined, created ? socket : null, created);
     }
   }
 
@@ -135,7 +135,7 @@ class PickedExisting<
         );
         const droppedSocket = created ? socket : null;
 
-        this.drop(context, undefined, droppedSocket, created);
+        await this.drop(context, undefined, droppedSocket, created);
       }
     } else if (event === "down") {
       if (this.initial) {
@@ -147,7 +147,7 @@ class PickedExisting<
         );
         const droppedSocket = created ? null : socket;
 
-        this.drop(context, undefined, droppedSocket, created);
+        await this.drop(context, undefined, droppedSocket, created);
       }
     }
   }

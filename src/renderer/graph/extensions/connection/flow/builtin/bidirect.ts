@@ -43,9 +43,9 @@ class Picked<Schemes extends ClassicScheme, K extends any[]> extends State<
     context: Context<Schemes, K>
   ): Promise<void> {
     if (this.params.makeConnection(this.initial, socket, context)) {
-      this.drop(context, undefined, socket, true);
+      await this.drop(context, undefined, socket, true);
     } else if (!this.params.pickByClick) {
-      this.drop(context, undefined, socket);
+      await this.drop(context, undefined, socket);
     }
   }
 
@@ -85,7 +85,7 @@ class Idle<Schemes extends ClassicScheme, K extends any[]> extends State<
       ) {
         this.context.switchTo(new Picked(socket, this.params));
       } else {
-        this.drop(context);
+        await this.drop(context);
       }
     }
   }
