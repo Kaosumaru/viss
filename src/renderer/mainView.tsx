@@ -103,6 +103,7 @@ export function MainView() {
             <PropertyView 
               fragmentShader={shader} 
               onToggleFullscreen={handleTogglePropertyViewFullscreen}
+              isFullscreen={isPropertyViewFullscreen}
             />
           </FloatingPropertyView>
         </Canvas>

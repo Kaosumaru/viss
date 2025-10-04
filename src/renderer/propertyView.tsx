@@ -31,9 +31,10 @@ void main() {
 export interface PropertyViewProps {
   fragmentShader: string;
   onToggleFullscreen: () => void;
+  isFullscreen: boolean;
 }
 
-export function PropertyView({ fragmentShader: shader, onToggleFullscreen }: PropertyViewProps) {
+export function PropertyView({ fragmentShader: shader, onToggleFullscreen, isFullscreen }: PropertyViewProps) {
   const editorData = useContext(EditorContext).editor;
   const handleSaveGraph = async () => {
     if (!editorData) {
@@ -133,9 +134,16 @@ export function PropertyView({ fragmentShader: shader, onToggleFullscreen }: Pro
           padding: "12px",
           paddingTop: __VSCODE_EXTENSION__ ? "12px" : "0px",
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />
+        <ShaderCanvas 
+          vertexShader={vertexShader} 
+          fragmentShader={shader} 
+          isFullscreen={isFullscreen}
+        />
       </div>
     </FloatingPaper>
   );
