@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import {
   Paper,
   List,
@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { UICompilerNode } from "../../graph/nodes/compilerNode";
+import { EditorContext } from "@renderer/context/EditorContext";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -58,17 +59,14 @@ interface NodeContextMenuProps {
   position: { x: number; y: number };
   node: UICompilerNode;
   onClose: () => void;
-  onDeleteNode: (node: UICompilerNode) => void;
-  onTogglePreview: (node: UICompilerNode) => void;
 }
 
 export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
   position,
   node,
   onClose,
-  onDeleteNode,
-  onTogglePreview,
 }) => {
+  const editor = useContext(EditorContext).editor;
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,12 +94,18 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
   }, [onClose]);
 
   const handleDeleteClick = () => {
-    onDeleteNode(node);
+    if (!editor) return;
+    if (!editor.isNodeSelected(node.id)) {
+      void editor.deleteNode(node.id);
+    } else {
+      const selectedNodes = editor.getSelectedNodes();
+      void editor.deleteNodes(selectedNodes);
+    }
     onClose();
   };
 
   const handleTogglePreviewClick = () => {
-    onTogglePreview(node);
+    editor?.getNode(node.id)?.togglePreview();
     onClose();
   };
 

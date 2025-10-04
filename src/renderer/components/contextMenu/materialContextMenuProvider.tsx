@@ -25,9 +25,6 @@ interface MouseDownState {
 
 interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
-  onNodeDelete?: (nodeId: string) => void;
-  onNodeTogglePreview?: (nodeId: string) => void;
-  onContextMenuOpen?: (position: { x: number; y: number }) => void;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
@@ -35,15 +32,7 @@ interface MaterialContextMenuProviderProps {
 
 export const MaterialContextMenuProvider: React.FC<
   MaterialContextMenuProviderProps
-> = ({
-  children,
-  onNodeDelete,
-  onNodeTogglePreview,
-  onContextMenuOpen,
-  getNodeById,
-  customFunctions,
-  uniforms,
-}) => {
+> = ({ children, getNodeById, customFunctions, uniforms }) => {
   const resolveRef = useRef<(v: unknown) => void>(null);
   const [contextMenuState, setContextMenuState] = useState<ContextMenuState>({
     visible: false,
@@ -66,7 +55,6 @@ export const MaterialContextMenuProvider: React.FC<
         type: "canvas",
         socketRef: event.from,
       });
-      onContextMenuOpen?.(position);
       const openPromise = new Promise((resolve) => {
         resolveRef.current = resolve;
       });
@@ -77,7 +65,7 @@ export const MaterialContextMenuProvider: React.FC<
     return () => {
       emitter.off("connectionDroppedOnEmpty", handler);
     };
-  }, [onContextMenuOpen]);
+  }, []);
 
   useEffect(() => {
     if (!contextMenuState.visible && resolveRef.current) {
@@ -97,63 +85,59 @@ export const MaterialContextMenuProvider: React.FC<
     }
   }, []);
 
-  const handleMouseUp = useCallback(
-    (event: React.MouseEvent) => {
-      // Only handle right mouse button
-      if (event.button === 2 && mouseDownState.current.isRightMouseDown) {
-        const endPosition = { x: event.clientX, y: event.clientY };
-        const startPosition = mouseDownState.current.startPosition;
+  const handleMouseUp = useCallback((event: React.MouseEvent) => {
+    // Only handle right mouse button
+    if (event.button === 2 && mouseDownState.current.isRightMouseDown) {
+      const endPosition = { x: event.clientX, y: event.clientY };
+      const startPosition = mouseDownState.current.startPosition;
 
-        // Calculate distance moved
-        const deltaX = endPosition.x - startPosition.x;
-        const deltaY = endPosition.y - startPosition.y;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      // Calculate distance moved
+      const deltaX = endPosition.x - startPosition.x;
+      const deltaY = endPosition.y - startPosition.y;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        // Only show context menu if movement is less than 5 pixels
-        if (distance < 5) {
-          const target = mouseDownState.current.target;
-          const nodeElement = target?.closest("[data-node-id]");
-          const isOnSocket = target?.closest(".rete-socket");
-          const isOnConnection = target?.closest(".rete-connection");
+      // Only show context menu if movement is less than 5 pixels
+      if (distance < 5) {
+        const target = mouseDownState.current.target;
+        const nodeElement = target?.closest("[data-node-id]");
+        const isOnSocket = target?.closest(".rete-socket");
+        const isOnConnection = target?.closest(".rete-connection");
 
-          // Don't show context menu on sockets or connections
-          if (!isOnSocket && !isOnConnection) {
-            event.preventDefault();
-            event.stopPropagation();
+        // Don't show context menu on sockets or connections
+        if (!isOnSocket && !isOnConnection) {
+          event.preventDefault();
+          event.stopPropagation();
 
-            if (nodeElement) {
-              // Right-clicked on a node - show node context menu
-              const nodeId =
-                nodeElement.getAttribute("data-node-id") ||
-                nodeElement.getAttribute("data-testid") ||
-                nodeElement.id;
+          if (nodeElement) {
+            // Right-clicked on a node - show node context menu
+            const nodeId =
+              nodeElement.getAttribute("data-node-id") ||
+              nodeElement.getAttribute("data-testid") ||
+              nodeElement.id;
 
-              if (nodeId) {
-                setContextMenuState({
-                  visible: true,
-                  position: endPosition,
-                  type: "node",
-                  nodeId,
-                });
-              }
-            } else {
-              // Right-clicked on canvas - show canvas context menu
+            if (nodeId) {
               setContextMenuState({
                 visible: true,
                 position: endPosition,
-                type: "canvas",
+                type: "node",
+                nodeId,
               });
-              onContextMenuOpen?.(endPosition);
             }
+          } else {
+            // Right-clicked on canvas - show canvas context menu
+            setContextMenuState({
+              visible: true,
+              position: endPosition,
+              type: "canvas",
+            });
           }
         }
-
-        // Reset mouse down state
-        mouseDownState.current.isRightMouseDown = false;
       }
-    },
-    [onContextMenuOpen]
-  );
+
+      // Reset mouse down state
+      mouseDownState.current.isRightMouseDown = false;
+    }
+  }, []);
 
   const handleContextMenu = useCallback((event: React.MouseEvent) => {
     // Prevent the default context menu from showing
@@ -163,26 +147,6 @@ export const MaterialContextMenuProvider: React.FC<
   const hideContextMenu = useCallback(() => {
     setContextMenuState((prev) => ({ ...prev, visible: false }));
   }, []);
-
-  const handleNodeDelete = useCallback(
-    (node: UICompilerNode) => {
-      if (onNodeDelete) {
-        onNodeDelete(node.id);
-      }
-      hideContextMenu();
-    },
-    [onNodeDelete, hideContextMenu]
-  );
-
-  const handleNodeTogglePreview = useCallback(
-    (node: UICompilerNode) => {
-      if (onNodeTogglePreview) {
-        onNodeTogglePreview(node.id);
-      }
-      hideContextMenu();
-    },
-    [onNodeTogglePreview, hideContextMenu]
-  );
 
   // Get the actual node for the context menu
   const selectedNode =
@@ -214,8 +178,6 @@ export const MaterialContextMenuProvider: React.FC<
             position={contextMenuState.position}
             node={selectedNode}
             onClose={hideContextMenu}
-            onDeleteNode={handleNodeDelete}
-            onTogglePreview={handleNodeTogglePreview}
           />
         )}
     </div>

@@ -53,23 +53,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
     };
   }, []);
 
-  const handleNodeDeleteFromContextMenu = useCallback((nodeId: string) => {
-    if (!editorRef.current) return;
-    if (!editorRef.current.isNodeSelected(nodeId)) {
-      void editorRef.current.deleteNode(nodeId);
-    } else {
-      const selectedNodes = editorRef.current.getSelectedNodes();
-      void editorRef.current.deleteNodes(selectedNodes);
-    }
-  }, []);
-
-  const handleNodeTogglePreview = useCallback((nodeId: string) => {
-    const node = editorRef.current?.getNode(nodeId);
-    if (node) {
-      node.togglePreview();
-    }
-  }, []);
-
   const getCustomFunctions = useCallback(() => {
     return editorRef.current?.getCustomFunctions() || [];
   }, []);
@@ -102,8 +85,6 @@ export function EditorView({ onChanged }: EditorViewProps) {
 
   const contextMenuProvider = (
     <MaterialContextMenuProvider
-      onNodeDelete={handleNodeDeleteFromContextMenu}
-      onNodeTogglePreview={handleNodeTogglePreview}
       getNodeById={getNodeById}
       customFunctions={getCustomFunctions()}
       uniforms={getUniforms()}
