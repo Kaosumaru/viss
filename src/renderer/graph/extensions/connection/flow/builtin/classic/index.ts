@@ -161,7 +161,13 @@ class PickedExisting<
     if (this.initial) {
       await context.scope.emit({
         type: "connectiondrop",
-        data: { initial: this.initial, socket, created, position },
+        data: {
+          initial: this.initial,
+          socket,
+          created,
+          position,
+          existing: true,
+        },
       });
     }
     this.context.switchTo(new Idle<Schemes, K>(this.params));

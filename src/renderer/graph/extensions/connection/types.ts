@@ -34,6 +34,7 @@ export type Connection =
         initial: SocketData;
         socket: SocketData | null;
         created: boolean;
+        existing?: boolean;
         position?: Position; // position is only available if created is false (dropped on empty space)
       };
     };

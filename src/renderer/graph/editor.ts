@@ -74,7 +74,7 @@ export function createEditor(
   connection.addPipe(async (context) => {
     if (context.type === "connectiondrop") {
       const d = context.data;
-      if (!d.created) {
+      if (!d.created && !d.existing) {
         const defaultPosition: Position = { x: 0, y: 0 };
         await emitter.emit("connectionDroppedOnEmpty", {
           from: { nodeId: d.initial.nodeId, socketId: d.initial.key },
