@@ -22,27 +22,30 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
   const shaderEntryRef = useRef<ShaderEntry | null>(null);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      renderer.current = new ShaderRenderer(canvasRef.current, false);
-      shaderEntryRef.current = renderer.current.addEntry();
-      
-      const size = isFullscreen && containerRef.current 
-        ? Math.min(containerRef.current.clientWidth, containerRef.current.clientHeight)
-        : previewSize;
-      
-      renderer.current.updateEntryPosition(
-        shaderEntryRef.current,
-        0,
-        0,
-        size,
-        size
-      );
-    }
+    if (!canvasRef.current) return;
+    renderer.current = new ShaderRenderer(canvasRef.current, false);
+    shaderEntryRef.current = renderer.current.addEntry();
     return () => {
       renderer.current?.dispose();
       renderer.current = null;
     };
-  }, [isFullscreen]);
+  }, [canvasRef]);
+
+  useEffect(() => {
+    if (!canvasRef.current) {
+      return;
+    }
+
+    if (!shaderEntryRef.current) return;
+
+    renderer.current?.updateEntryPosition(
+      shaderEntryRef.current,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+  }, [isFullscreen, containerRef]);
 
   useEffect(() => {
     if (editorData && renderer.current) {
@@ -64,58 +67,65 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
 
   // Update canvas size when fullscreen state changes or window resizes
   useEffect(() => {
-    if (!isFullscreen || !canvasRef.current || !containerRef.current || !renderer.current || !shaderEntryRef.current) {
+    if (
+      !isFullscreen ||
+      !canvasRef.current ||
+      !containerRef.current ||
+      !renderer.current ||
+      !shaderEntryRef.current
+    ) {
       return;
     }
 
     const updateSize = () => {
-      if (containerRef.current && canvasRef.current && renderer.current && shaderEntryRef.current) {
-        const size = Math.min(
-          containerRef.current.clientWidth - 24, // Account for padding
-          containerRef.current.clientHeight - 24
-        );
-        
-        canvasRef.current.width = size;
-        canvasRef.current.height = size;
-        
+      if (
+        containerRef.current &&
+        canvasRef.current &&
+        renderer.current &&
+        shaderEntryRef.current
+      ) {
         renderer.current.updateEntryPosition(
           shaderEntryRef.current,
           0,
           0,
-          size,
-          size
+          canvasRef.current.width,
+          canvasRef.current.height
         );
       }
     };
 
     updateSize();
-    window.addEventListener('resize', updateSize);
-    
-    return () => {
-      window.removeEventListener('resize', updateSize);
-    };
-  }, [isFullscreen]);
+    window.addEventListener("resize", updateSize);
 
-  const canvasSize = isFullscreen ? '100%' : `${previewSize}px`;
+    return () => {
+      window.removeEventListener("resize", updateSize);
+    };
+  }, [isFullscreen, containerRef]);
+
+  const canvasSize = isFullscreen ? "100%" : `${previewSize}px`;
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      style={{ 
+      style={{
         width: canvasSize,
         height: canvasSize,
-        maxWidth: '100%',
-        maxHeight: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        maxWidth: "100%",
+        maxHeight: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <canvas
         ref={canvasRef}
-        width={previewSize}
-        height={previewSize}
-        style={{ display: "block", pointerEvents: "none", maxWidth: '100%', maxHeight: '100%' }}
+        style={{
+          display: "block",
+
+          pointerEvents: "none",
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
       />
     </div>
   );
