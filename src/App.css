@@ -42,13 +42,17 @@ body {
 .background {
   /* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAAG1BMVEUVFRUWFhYkJCQlJSUzMzMmJiY0NDQxMTEyMjIQl+acAAAAXklEQVR4AWKAA0HyAAOTkrIxCDiHQkAqifSgMWDUgFEDRg1g7wCCFhcgcEsjB4wGIqCdOhYAAAAAGORvPYw9CXQ2AQCADwAAgA8AAIAPAACADwAAgA8AAIAPfgAAAASSCCi35k/7bwAAAABJRU5ErkJggg==); */
 
+  --grid-line-thickness: 1.5px;
+  --major-grid-size: 200px;
+  --minor-grid-size: 25px;
+
   background-color: #3D3D3D;
   opacity: 1;
   background-image:
-    linear-gradient(#0f0f0f 1.5px, transparent 1.5px),
-    linear-gradient(90deg, #0f0f0f 1.5px, transparent 1.5px),
-    linear-gradient(#333333 1.5px, transparent 1.5px),
-    linear-gradient(90deg, #333333 1.5px, #3D3D3D 1.5px);
-  background-size: 200px 200px, 200px 200px, 25px 25px, 25px 25px;
-  background-position: -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px;
+    linear-gradient(#0f0f0f var(--grid-line-thickness), transparent var(--grid-line-thickness)),
+    linear-gradient(90deg, #0f0f0f var(--grid-line-thickness), transparent var(--grid-line-thickness)),
+    linear-gradient(#333333 var(--grid-line-thickness), transparent var(--grid-line-thickness)),
+    linear-gradient(90deg, #333333 var(--grid-line-thickness), #3D3D3D var(--grid-line-thickness));
+  background-size: var(--major-grid-size) var(--major-grid-size), var(--major-grid-size) var(--major-grid-size), var(--minor-grid-size) var(--minor-grid-size), var(--minor-grid-size) var(--minor-grid-size);
+  background-position: calc(-1 * var(--grid-line-thickness)) calc(-1 * var(--grid-line-thickness)), calc(-1 * var(--grid-line-thickness)) calc(-1 * var(--grid-line-thickness)), calc(-1 * var(--grid-line-thickness)) calc(-1 * var(--grid-line-thickness)), calc(-1 * var(--grid-line-thickness)) calc(-1 * var(--grid-line-thickness));
 }
