@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
 import type { ShaderEntryContextType } from "renderer/components/shaderOverlay/ShaderEntryContext";
 import { ClassicPreset } from "rete";
 import { ReactPlugin, Presets } from "rete-react-plugin";
@@ -43,7 +42,6 @@ export function createRenderer(
             React.createElement(ThemeProvider, {
               theme: darkTheme,
               children: [
-                React.createElement(CssBaseline, { key: "css-baseline" }),
                 React.createElement(ShaderEntryProvider, {
                   key: "shader-provider",
                   context: overlayContext,
