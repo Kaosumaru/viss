@@ -36,11 +36,15 @@ const Sidebar = styled.div`
   min-width: 0;
 `;
 
-const FloatingPropertyView = styled.div<{ $isVisible: boolean }>`
+const FloatingPropertyView = styled.div<{ $isVisible: boolean; $isFullscreen: boolean }>`
   position: absolute;
-  bottom: 16px;
-  right: 16px;
-  z-index: 998;
+  bottom: ${(props) => (props.$isFullscreen ? "0" : "16px")};
+  right: ${(props) => (props.$isFullscreen ? "0" : "16px")};
+  top: ${(props) => (props.$isFullscreen ? "0" : "auto")};
+  left: ${(props) => (props.$isFullscreen ? "0" : "auto")};
+  width: ${(props) => (props.$isFullscreen ? "100%" : "auto")};
+  height: ${(props) => (props.$isFullscreen ? "100%" : "auto")};
+  z-index: ${(props) => (props.$isFullscreen ? "999" : "998")};
   display: ${(props) => (props.$isVisible ? "block" : "none")};
   pointer-events: ${(props) => (props.$isVisible ? "auto" : "none")};
 `;
@@ -59,6 +63,7 @@ void main() {
 export function MainView() {
   const [shader, setShader] = useState(fragmentShader); // Default color
   const [isPropertyViewVisible, setIsPropertyViewVisible] = useState(true);
+  const [isPropertyViewFullscreen, setIsPropertyViewFullscreen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorAPI | undefined>(
@@ -79,6 +84,10 @@ export function MainView() {
     setIsSidebarVisible((prev) => !prev);
   }, []);
 
+  const handleTogglePropertyViewFullscreen = useCallback(() => {
+    setIsPropertyViewFullscreen((prev) => !prev);
+  }, []);
+
   return (
     <EditorProvider editor={editorData}>
       <Layout $sidebarVisible={isSidebarVisible}>
@@ -90,8 +99,12 @@ export function MainView() {
             isSidebarVisible={isSidebarVisible}
             onToggleSidebar={handleToggleSidebar}
           />
-          <FloatingPropertyView $isVisible={isPropertyViewVisible}>
-            <PropertyView fragmentShader={shader} />
+          <FloatingPropertyView $isVisible={isPropertyViewVisible} $isFullscreen={isPropertyViewFullscreen}>
+            <PropertyView 
+              fragmentShader={shader} 
+              onToggleFullscreen={handleTogglePropertyViewFullscreen}
+              isFullscreen={isPropertyViewFullscreen}
+            />
           </FloatingPropertyView>
         </Canvas>
         {isSidebarVisible && (
