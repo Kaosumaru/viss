@@ -55,32 +55,6 @@ export function createEditor(
   area.use(render);
   area.use(arrange);
 
-  // Update background grid based on zoom level
-  const updateBackgroundGrid = (zoom: number) => {
-    const backgroundElement = container.querySelector(
-      ".background"
-    ) as HTMLElement;
-    // When zoom is less than 0.5 (zoomed out), use thicker lines
-    const lineThickness = 1.5 / (zoom * 1.1);
-
-    backgroundElement.style.setProperty(
-      "--grid-line-thickness",
-      `${lineThickness}px`
-    );
-  };
-
-  // Listen for zoom changes
-  area.addPipe((context) => {
-    if (context.type === "zoomed") {
-      const currentTransform = area.area.transform;
-      updateBackgroundGrid(currentTransform.k);
-    }
-    return context;
-  });
-
-  // Set initial grid state
-  updateBackgroundGrid(1.0);
-
   area.area.setDragHandler(
     new Drag({
       down: (e) => {
