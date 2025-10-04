@@ -3,13 +3,11 @@ import { MaterialContextMenu } from "./materialContextMenu";
 import { NodeContextMenu } from "./nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
-import type { MenuItem } from "./interface";
 import type { Uniforms } from "@graph/uniform";
 import emitter, {
   type ConnectionDropperEvent,
   type SocketRef,
 } from "@renderer/graph/emitter";
-import type { Position } from "@graph/position";
 
 interface ContextMenuState {
   visible: boolean;
@@ -27,11 +25,6 @@ interface MouseDownState {
 
 interface MaterialContextMenuProviderProps {
   children: React.ReactNode;
-  onNodeCreate?: (
-    item: MenuItem,
-    position: Position,
-    socketRef?: SocketRef
-  ) => void;
   onNodeDelete?: (nodeId: string) => void;
   onNodeTogglePreview?: (nodeId: string) => void;
   onContextMenuOpen?: (position: { x: number; y: number }) => void;
@@ -44,7 +37,6 @@ export const MaterialContextMenuProvider: React.FC<
   MaterialContextMenuProviderProps
 > = ({
   children,
-  onNodeCreate,
   onNodeDelete,
   onNodeTogglePreview,
   onContextMenuOpen,
@@ -172,16 +164,6 @@ export const MaterialContextMenuProvider: React.FC<
     setContextMenuState((prev) => ({ ...prev, visible: false }));
   }, []);
 
-  const handleNodeCreate = useCallback(
-    (item: MenuItem, position: Position, socketRef?: SocketRef) => {
-      if (onNodeCreate) {
-        onNodeCreate(item, position, socketRef);
-      }
-      hideContextMenu();
-    },
-    [onNodeCreate, hideContextMenu]
-  );
-
   const handleNodeDelete = useCallback(
     (node: UICompilerNode) => {
       if (onNodeDelete) {
@@ -220,7 +202,6 @@ export const MaterialContextMenuProvider: React.FC<
         <MaterialContextMenu
           position={contextMenuState.position}
           onClose={hideContextMenu}
-          onNodeCreate={handleNodeCreate}
           socketRef={contextMenuState.socketRef}
           customFunctions={customFunctions}
           uniforms={uniforms}

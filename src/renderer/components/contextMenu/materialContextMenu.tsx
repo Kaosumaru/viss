@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import {
   Paper,
   TextField,
@@ -22,7 +28,8 @@ import { getMenuElements } from "./menuElements";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniforms } from "@graph/uniform";
 import type { SocketRef } from "@renderer/graph/emitter";
-import type { Position } from "rete-react-plugin";
+import { EditorContext } from "@renderer/context/EditorContext";
+import { createNode } from "./createNode";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -115,11 +122,6 @@ const CategoryIcon = styled(Box)(() => ({
 interface MaterialContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
-  onNodeCreate: (
-    item: MenuItem,
-    position: Position,
-    socketRef?: SocketRef
-  ) => void;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
   socketRef?: SocketRef;
@@ -128,11 +130,11 @@ interface MaterialContextMenuProps {
 export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
   position,
   onClose,
-  onNodeCreate,
   customFunctions,
   uniforms,
   socketRef,
 }) => {
+  const editor = useContext(EditorContext).editor;
   const menuElements = getMenuElements(customFunctions, uniforms);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
@@ -155,10 +157,11 @@ export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
 
   const handleNodeCreate = useCallback(
     (item: MenuItem) => {
-      onNodeCreate(item, position, socketRef);
+      if (!editor) return;
+      void createNode(editor, item, position, socketRef);
       onClose();
     },
-    [onNodeCreate, position, socketRef, onClose]
+    [editor, onClose, position, socketRef]
   );
 
   const filterItems = (items: MenuCategory["items"]) => {

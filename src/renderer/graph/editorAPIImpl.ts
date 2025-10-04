@@ -95,7 +95,7 @@ export class EditorAPIImp implements EditorAPI {
     x?: number,
     y?: number,
     params?: Parameters
-  ) {
+  ): Promise<string | undefined> {
     if (x !== undefined && y !== undefined) {
       // Convert screen coordinates to area coordinates
       const transform = this.area.area.transform;
@@ -106,13 +106,14 @@ export class EditorAPIImp implements EditorAPI {
       }
     }
 
-    return this.applyDiff(
-      this.compiler.addNode({
-        nodeType,
-        position: { x: x ?? 0, y: y ?? 0 },
-        parameters: params ?? {},
-      })
-    );
+    const diff = this.compiler.addNode({
+      nodeType,
+      position: { x: x ?? 0, y: y ?? 0 },
+      parameters: params ?? {},
+    });
+
+    await this.applyDiff(diff);
+    return diff.addedNodes?.[0]?.node.identifier;
   }
 
   addUniformCallback: (callback: IUniformCallback) => () => void = (

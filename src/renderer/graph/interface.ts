@@ -27,7 +27,7 @@ export interface EditorAPI {
     x?: number,
     y?: number,
     params?: Parameters
-  ) => Promise<void>;
+  ) => Promise<string | undefined>;
 
   addUniformCallback: (callback: IUniformCallback) => () => void;
 
