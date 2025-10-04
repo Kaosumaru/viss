@@ -113,7 +113,7 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
         maxWidth: "100%",
         maxHeight: "100%",
         display: "flex",
-        alignItems: "center",
+        alignItems: "stretch",
         justifyContent: "center",
       }}
     >
