@@ -31,6 +31,6 @@ export async function createNode(
   );
 
   if (socketRef && toId) {
-    editor.addSuggestedConnection(socketRef.nodeId, toId);
+    void editor.addSuggestedConnection(socketRef.nodeId, toId);
   }
 }
