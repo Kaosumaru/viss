@@ -24,9 +24,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --force
+          npm ci
           cd vscode-extension
-          npm ci --force
+          npm ci
 
       - name: Publish Extension
         run: |
