@@ -11,6 +11,11 @@ const FloatingPaper = styled(Paper)`
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 `;
 
 const vertexShader = `
@@ -25,9 +30,10 @@ void main() {
 
 export interface PropertyViewProps {
   fragmentShader: string;
+  onToggleFullscreen: () => void;
 }
 
-export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
+export function PropertyView({ fragmentShader: shader, onToggleFullscreen }: PropertyViewProps) {
   const editorData = useContext(EditorContext).editor;
   const handleSaveGraph = async () => {
     if (!editorData) {
@@ -86,7 +92,8 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
         >
           <Button
             variant="contained"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               void handleSaveGraph();
             }}
             disabled={!editorData}
@@ -96,7 +103,8 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               void handleLoadGraph();
             }}
             disabled={!editorData}
@@ -107,7 +115,8 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
 
           <Button
             variant="outlined"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               void handleClearGraph();
             }}
             disabled={!editorData}
@@ -118,10 +127,12 @@ export function PropertyView({ fragmentShader: shader }: PropertyViewProps) {
         </Stack>
       )}
       <div
+        onClick={onToggleFullscreen}
         style={{
           flex: 1,
           padding: "12px",
           paddingTop: __VSCODE_EXTENSION__ ? "12px" : "0px",
+          cursor: "pointer",
         }}
       >
         <ShaderCanvas vertexShader={vertexShader} fragmentShader={shader} />

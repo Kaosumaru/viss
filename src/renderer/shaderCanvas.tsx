@@ -59,7 +59,7 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = ({
       ref={canvasRef}
       width={previewSize}
       height={previewSize}
-      style={{ display: "block" }}
+      style={{ display: "block", pointerEvents: "none" }}
     />
   );
 };
