@@ -116,6 +116,14 @@ export class EditorAPIImp implements EditorAPI {
     return diff.addedNodes?.[0]?.node.identifier;
   }
 
+  addSuggestedConnection: (
+    fromNodeId: string,
+    toNodeId: string
+  ) => Promise<void> = async (fromNodeId: string, toNodeId: string) => {
+    const diff = this.compiler.addSuggestedConnection(fromNodeId, toNodeId);
+    await this.applyDiff(diff);
+  };
+
   addUniformCallback: (callback: IUniformCallback) => () => void = (
     callback: IUniformCallback
   ) => {

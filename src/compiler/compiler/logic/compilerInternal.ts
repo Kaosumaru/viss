@@ -105,6 +105,34 @@ export class CompilerInternal {
     return uuidv4().replaceAll("-", "_");
   }
 
+  addSuggestedConnection(fromNodeId: string, toNodeId: string): GraphDiff {
+    const fromNode = this.cache.getNodeById(fromNodeId);
+    const toNode = this.cache.getNodeById(toNodeId);
+    if (!fromNode || !toNode) {
+      throw new Error("One of the nodes for suggested connection not found");
+    }
+
+    const fromNodeInfo = this.getNodeInfo(fromNode).instanceInfo;
+    const toNodeInfo = this.getNodeInfo(toNode).instanceInfo;
+
+    const firstOutput = fromNodeInfo.outputs[0];
+    if (!firstOutput) {
+      throw new Error("No output found for suggested connection");
+    }
+
+    for (const input of toNodeInfo.inputs) {
+      const connection: Connection = {
+        from: { nodeId: fromNodeId, socketId: firstOutput.name },
+        to: { nodeId: toNodeId, socketId: input.name },
+      };
+      if (this.canConnect(connection.from, connection.to)) {
+        return this.addConnection(connection);
+      }
+    }
+
+    return {};
+  }
+
   public canConnect(output: SocketReference, input: SocketReference): boolean {
     const outputType = this.getOutputType(output);
     const node = this.cache.getNodeById(input.nodeId);

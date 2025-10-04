@@ -22,5 +22,15 @@ export async function createNode(
     };
   }
 
-  await editor.createNode(node, "screen", position.x, position.y, params);
+  const toId = await editor.createNode(
+    node,
+    "screen",
+    position.x,
+    position.y,
+    params
+  );
+
+  if (socketRef && toId) {
+    editor.addSuggestedConnection(socketRef.nodeId, toId);
+  }
 }

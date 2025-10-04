@@ -16,6 +16,10 @@ export interface EditorAPI {
     defaultValue: ParameterValue
   ): unknown;
   getNode(nodeId: string): UICompilerNode | undefined;
+  addSuggestedConnection: (
+    fromNodeId: string,
+    toNodeId: string
+  ) => Promise<void>;
 
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;

@@ -76,6 +76,13 @@ export class Compiler {
     return this.graph.updateUniform(uniform);
   }
 
+  public addSuggestedConnection(
+    fromNodeId: string,
+    toNodeId: string
+  ): GraphDiff {
+    return this.graph.addSuggestedConnection(fromNodeId, toNodeId);
+  }
+
   static createEmptyGraph(): Graph {
     return CompilerInternal.createGraph();
   }
