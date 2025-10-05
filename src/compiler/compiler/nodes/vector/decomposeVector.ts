@@ -38,7 +38,7 @@ class DecomposeVector extends CompilerNode {
   }
 
   override getLabel(): string {
-    return "decompose Vector";
+    return "decompose";
   }
 
   override getDescription(): string {
