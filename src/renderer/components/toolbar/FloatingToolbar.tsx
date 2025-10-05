@@ -33,15 +33,15 @@ const ToolbarIconButton = styled(IconButton)`
 `;
 
 export interface FloatingToolbarProps {
-  isPropertyViewVisible: boolean;
-  onTogglePropertyView: () => void;
+  isPreviewViewVisible: boolean;
+  onTogglePreviewView: () => void;
   isSidebarVisible: boolean;
   onToggleSidebar: () => void;
 }
 
 export function FloatingToolbar({
-  isPropertyViewVisible,
-  onTogglePropertyView,
+  isPreviewViewVisible,
+  onTogglePreviewView,
   isSidebarVisible,
   onToggleSidebar,
 }: FloatingToolbarProps) {
@@ -59,11 +59,11 @@ export function FloatingToolbar({
     <ToolbarContainer elevation={3}>
       <Tooltip
         title={
-          isPropertyViewVisible ? "Hide Property View" : "Show Property View"
+          isPreviewViewVisible ? "Hide Preview View" : "Show Preview View"
         }
       >
-        <ToolbarIconButton onClick={onTogglePropertyView}>
-          {isPropertyViewVisible ? <Visibility /> : <VisibilityOff />}
+        <ToolbarIconButton onClick={onTogglePreviewView}>
+          {isPreviewViewVisible ? <Visibility /> : <VisibilityOff />}
         </ToolbarIconButton>
       </Tooltip>
       <Tooltip title={isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}>

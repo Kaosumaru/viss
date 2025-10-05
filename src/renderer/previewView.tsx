@@ -28,13 +28,13 @@ void main() {
 }
 `;
 
-export interface PropertyViewProps {
+export interface PreviewViewProps {
   fragmentShader: string;
   onToggleFullscreen: () => void;
   isFullscreen: boolean;
 }
 
-export function PropertyView({ fragmentShader: shader, onToggleFullscreen, isFullscreen }: PropertyViewProps) {
+export function PreviewView({ fragmentShader: shader, onToggleFullscreen, isFullscreen }: PreviewViewProps) {
   const editorData = useContext(EditorContext).editor;
   const handleSaveGraph = async () => {
     if (!editorData) {
