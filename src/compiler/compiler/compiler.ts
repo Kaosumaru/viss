@@ -13,6 +13,7 @@ import type { Connection } from "@graph/connection";
 import type { ParameterValue } from "@graph/parameter";
 import type { SocketReference } from "@graph/socket";
 import type { Uniform } from "@graph/uniform";
+import type { Type } from "@glsl/types/types";
 
 export type IncludeResolver = (
   includeName: FilePath[]
@@ -42,6 +43,10 @@ export class Compiler {
 
   public canConnect(output: SocketReference, input: SocketReference): boolean {
     return this.graph.canConnect(output, input);
+  }
+
+  public getOutputType(nodeId: string, socketId: string): Type {
+    return this.graph.getOutputType({ nodeId, socketId });
   }
 
   public addNode(node: Omit<Node, "identifier">): GraphDiff {
