@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import type { BooleanControl } from "./customParamControl";
 
 export function CustomBooleanControl(props: { data: BooleanControl }) {
@@ -25,21 +25,12 @@ export function CustomBooleanControl(props: { data: BooleanControl }) {
     <FormGroup>
       <FormControlLabel
         control={
-          <Switch
-            checked={boolValue}
-            onChange={handleChange}
-            size="small"
-            sx={{
-              "& .MuiSwitch-switchBase.Mui-checked": {
-                color: "#c9b144",
-              },
-              "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "#c9b144",
-              },
-            }}
-          />
+          <Checkbox checked={boolValue} onChange={handleChange} size="small" />
         }
         label={control.parameter.description || ""}
+        sx={{
+          userSelect: "none",
+        }}
       />
     </FormGroup>
   );

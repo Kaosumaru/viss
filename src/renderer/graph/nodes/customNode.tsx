@@ -119,7 +119,7 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
     >
       {/* <div style={{ position: 'absolute', top: '-1em', right: '1em' }}>{props.data.id}</div> */}
       <div className="glossy rete-node"></div>
-      <div className="title">
+      <div className="title" style={{ userSelect: "none" }}>
         {props.data.label}
         {errorMessage && (
           <Tooltip title={errorMessage} placement="top">
@@ -146,7 +146,9 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
                     data-testid="input-socket"
                   />
                   {(!input.control || !input.showControl) && (
-                    <div className="input-title">{input.label}</div>
+                    <div className="input-title" style={{ userSelect: "none" }}>
+                      {input.label}
+                    </div>
                   )}
                   {input.control && input.showControl && (
                     <RefControl
@@ -168,7 +170,10 @@ export function Node<Scheme extends Schemes>(props: Props<Scheme>) {
               output && (
                 <div className="output" key={key}>
                   {
-                    /*!output?.control &&*/ <div className="output-title">
+                    /*!output?.control &&*/ <div
+                      className="output-title"
+                      style={{ userSelect: "none" }}
+                    >
                       {output.label}
                     </div>
                   }
