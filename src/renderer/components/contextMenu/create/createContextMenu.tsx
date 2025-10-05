@@ -119,7 +119,7 @@ const CategoryIcon = styled(Box)(() => ({
   color: "#cccccc",
 }));
 
-interface MaterialContextMenuProps {
+interface CreateContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
   customFunctions: FunctionDefinition[];
@@ -127,7 +127,7 @@ interface MaterialContextMenuProps {
   socketRef?: SocketRef;
 }
 
-export const MaterialContextMenu: React.FC<MaterialContextMenuProps> = ({
+export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
   position,
   onClose,
   customFunctions,

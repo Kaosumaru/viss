@@ -1,7 +1,7 @@
 import { useRete } from "rete-react-plugin";
 import { createEditor, type OnGraphChanged } from "./graph/editor";
 import { useCallback, useEffect, useRef } from "react";
-import { MaterialContextMenuProvider } from "./components/contextMenu/materialContextMenuProvider";
+import { ContextMenuProvider } from "./components/contextMenu/contextMenuProvider";
 import { UICompilerNode } from "./graph/nodes/compilerNode";
 import type { EditorAPI } from "./graph/interface";
 import {
@@ -84,7 +84,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
   );
 
   const contextMenuProvider = (
-    <MaterialContextMenuProvider
+    <ContextMenuProvider
       getNodeById={getNodeById}
       customFunctions={getCustomFunctions()}
       uniforms={getUniforms()}
@@ -108,7 +108,7 @@ export function EditorView({ onChanged }: EditorViewProps) {
       >
         <div ref={ref} style={{ height: "100vh" }} />
       </NodeSelectionArea>
-    </MaterialContextMenuProvider>
+    </ContextMenuProvider>
   );
 
   return contextMenuProvider;

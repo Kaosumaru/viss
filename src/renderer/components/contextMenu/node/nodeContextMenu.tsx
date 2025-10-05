@@ -13,7 +13,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import type { UICompilerNode } from "../../graph/nodes/compilerNode";
+import type { UICompilerNode } from "../../../graph/nodes/compilerNode";
 import { EditorContext } from "@renderer/context/EditorContext";
 
 // Styled components for Unreal Engine-like appearance

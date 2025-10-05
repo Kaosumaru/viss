@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { MaterialContextMenu } from "./materialContextMenu";
-import { NodeContextMenu } from "./nodeContextMenu";
+import { CreateContextMenu } from "./create/createContextMenu";
+import { NodeContextMenu } from "./node/nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniforms } from "@graph/uniform";
@@ -23,16 +23,19 @@ interface MouseDownState {
   target: Element | null;
 }
 
-interface MaterialContextMenuProviderProps {
+interface ContextMenuProviderProps {
   children: React.ReactNode;
   getNodeById?: (nodeId: string) => UICompilerNode | undefined;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
 }
 
-export const MaterialContextMenuProvider: React.FC<
-  MaterialContextMenuProviderProps
-> = ({ children, getNodeById, customFunctions, uniforms }) => {
+export const ContextMenuProvider: React.FC<ContextMenuProviderProps> = ({
+  children,
+  getNodeById,
+  customFunctions,
+  uniforms,
+}) => {
   const resolveRef = useRef<(v: unknown) => void>(null);
   const [contextMenuState, setContextMenuState] = useState<ContextMenuState>({
     visible: false,
@@ -163,7 +166,7 @@ export const MaterialContextMenuProvider: React.FC<
     >
       {children}
       {contextMenuState.visible && contextMenuState.type === "canvas" && (
-        <MaterialContextMenu
+        <CreateContextMenu
           position={contextMenuState.position}
           onClose={hideContextMenu}
           socketRef={contextMenuState.socketRef}
