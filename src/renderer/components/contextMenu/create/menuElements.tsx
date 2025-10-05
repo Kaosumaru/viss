@@ -1,4 +1,5 @@
 import {
+  getNode,
   nodeCategories,
   type NodeCategory,
   type NodeCategoryId,
@@ -71,9 +72,16 @@ function createMenuCategory(category: NodeCategory): MenuCategory {
       name: node.getLabel(),
       nodeType: name as NodeType,
       description: node.getDescription(),
-      filterBy: (_inputType?: Type) => {
-        // TODO get inputs from compiler node
-        return true;
+      filterBy: (inputType?: Type) => {
+        if (!inputType) return true;
+        const nodeClass = getNode(name as NodeType);
+        const inputs = nodeClass.getDefaultInputs();
+        for (const input of inputs) {
+          if (nodeClass.canConnectToInput(input.name, inputType)) {
+            return true;
+          }
+        }
+        return false;
       },
     })),
   };

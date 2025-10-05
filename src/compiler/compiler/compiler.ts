@@ -45,8 +45,8 @@ export class Compiler {
     return this.graph.canConnect(output, input);
   }
 
-  public getOutputType(nodeId: string, socketId: string): Type {
-    return this.graph.getOutputType({ nodeId, socketId });
+  public getOutputType(ref: SocketReference): Type {
+    return this.graph.getOutputType(ref);
   }
 
   public addNode(node: Omit<Node, "identifier">): GraphDiff {

@@ -16,6 +16,8 @@ import { EditorVSExtension } from "./editorVSExtension";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import { compileNode } from "./utils/compileNode";
 import { selectInclude as selectIncludeFile } from "@renderer/vscode/selectIncludeFile";
+import type { SocketReference } from "@graph/socket";
+import type { Type } from "@glsl/types/types";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
@@ -250,6 +252,10 @@ export class EditorAPIImp implements EditorAPI {
 
   compileNode(nodeId?: string): string | undefined {
     return compileNode(this.compiler, nodeId);
+  }
+
+  getOutputType(ref: SocketReference): Type {
+    return this.compiler.getOutputType(ref);
   }
 
   selectNodes(nodeIds: string[]) {

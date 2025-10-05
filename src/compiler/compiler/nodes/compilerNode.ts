@@ -12,6 +12,8 @@ import { toFloat, toVec4 } from "@glsl/utils";
 import { defaultExpressionForType } from "@glsl/types/defaultExpressionForType";
 import type { ScalarTypeName } from "@glsl/types/typenames";
 import type { Uniform } from "@graph/uniform";
+import { canBeImplicitlyConverted } from "@glsl/types/implicitConversion";
+import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
 
 /*
 export type ParamExtractedValue<T> = Extract<
@@ -93,6 +95,10 @@ export abstract class CompilerNode {
     return false;
   }
 
+  getDefaultInputs(): InputPins {
+    return this.inputs_;
+  }
+
   public getInfo(_node: NodeContext, compiledContext: Context): NodeInfo {
     return {
       name: this.getLabel(),
@@ -109,6 +115,15 @@ export abstract class CompilerNode {
 
   public canImplicitlyCastInput() {
     return false;
+  }
+
+  public canConnectToInput(inputName: string, outputType: Type): boolean {
+    const input = this.getInputPin(inputName);
+    if (!input) return false;
+    const canCast = this.canImplicitlyCastInput();
+    return canCast
+      ? canBeImplicitlyConverted(outputType, input.type)
+      : canBeStrictlyConverted(outputType, input.type);
   }
 
   protected addInput(

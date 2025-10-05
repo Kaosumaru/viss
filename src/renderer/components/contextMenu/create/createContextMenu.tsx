@@ -15,7 +15,6 @@ import type { SocketRef } from "@renderer/graph/emitter";
 import { EditorContext } from "@renderer/context/EditorContext";
 import { createNode } from "./createNode";
 import { SearchBar, CategoryComponent } from "./components";
-import type { Type } from "@glsl/types/types";
 import { getFilteredCategories } from "./filterItem";
 import { getMenuElements } from "./menuElements";
 
@@ -53,7 +52,6 @@ interface CreateContextMenuProps {
   onClose: () => void;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
-  inputType?: Type;
   socketRef?: SocketRef;
 }
 
@@ -62,7 +60,6 @@ export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
   onClose,
   customFunctions,
   uniforms,
-  inputType,
   socketRef,
 }) => {
   const editor = useContext(EditorContext).editor;
@@ -98,10 +95,11 @@ export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
     [editor, onClose, position, socketRef]
   );
 
-  const filteredCategories = useMemo(
-    () => getFilteredCategories(menuElements, searchTerm, inputType),
-    [menuElements, searchTerm, inputType]
-  );
+  const filteredCategories = useMemo(() => {
+    const inputType =
+      editor && socketRef ? editor.getOutputType(socketRef) : undefined;
+    return getFilteredCategories(menuElements, searchTerm, inputType);
+  }, [menuElements, searchTerm, socketRef, editor]);
 
   // Get all visible items in a flat array for keyboard navigation
   const getAllVisibleItems = () => {

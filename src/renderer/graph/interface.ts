@@ -1,7 +1,9 @@
 import type { NodeType } from "@compiler/nodes/allNodes";
 import type { FunctionDefinition } from "@glsl/function";
+import type { Type } from "@glsl/types/types";
 import type { FilePath, Graph } from "@graph/graph";
 import type { Parameters, ParameterValue } from "@graph/parameter";
+import type { SocketReference } from "@graph/socket";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import type { UICompilerNode } from "renderer/graph/nodes/compilerNode";
 
@@ -38,6 +40,8 @@ export interface EditorAPI {
   isNodeSelected: (nodeId: string) => boolean;
   deleteNode: (nodeId: string) => Promise<void>;
   deleteNodes: (nodeIds: string[]) => Promise<void>;
+
+  getOutputType(ref: SocketReference): Type;
 
   copyNodes: (nodeIds: string[]) => string;
   pasteNodes: (
