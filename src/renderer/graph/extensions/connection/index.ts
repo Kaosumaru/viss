@@ -63,6 +63,7 @@ export class ConnectionPlugin<
   private preudoconnection = createPseudoconnection({ isPseudo: true });
   private socketsCache = new Map<Element, SocketData>();
   private shouldUpdate = true;
+  private handlingPick = false;
 
   constructor() {
     super("connection");
@@ -119,38 +120,47 @@ export class ConnectionPlugin<
 
   // eslint-disable-next-line max-statements
   async pick(event: PointerEvent, type: EventType) {
+    if (this.handlingPick) return;
+
     const flowContext = {
       editor: this.editor,
       scope: this,
       socketsCache: this.socketsCache,
     };
-    const pointedElements = elementsFromPoint(event.clientX, event.clientY);
-    const pickedSocket = findSocket(this.socketsCache, pointedElements);
 
-    if (pickedSocket) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.currentFlow = this.currentFlow || this.findPreset(pickedSocket);
+    this.handlingPick = true;
+    try {
+      const pointedElements = elementsFromPoint(event.clientX, event.clientY);
+      const pickedSocket = findSocket(this.socketsCache, pointedElements);
 
-      if (this.currentFlow) {
-        await this.currentFlow.pick(
-          { socket: pickedSocket, event: type },
-          flowContext
-        );
-        this.shouldUpdate = true;
-        this.preudoconnection.mount(this.areaPlugin);
+      if (pickedSocket) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.currentFlow = this.currentFlow || this.findPreset(pickedSocket);
+
+        if (this.currentFlow) {
+          await this.currentFlow.pick(
+            { socket: pickedSocket, event: type },
+            flowContext
+          );
+          this.shouldUpdate = true;
+          this.preudoconnection.mount(this.areaPlugin);
+        }
+      } else if (this.currentFlow) {
+        this.shouldUpdate = false;
+        await this.currentFlow.drop(flowContext, {
+          x: event.clientX,
+          y: event.clientY,
+        });
       }
-    } else if (this.currentFlow) {
-      this.shouldUpdate = false;
-      await this.currentFlow.drop(flowContext, {
-        x: event.clientX,
-        y: event.clientY,
-      });
+      if (this.currentFlow && !this.currentFlow.getPickedSocket()) {
+        this.preudoconnection.unmount(this.areaPlugin);
+        this.currentFlow = null;
+      }
+    } finally {
+      this.handlingPick = false;
     }
-    if (this.currentFlow && !this.currentFlow.getPickedSocket()) {
-      this.preudoconnection.unmount(this.areaPlugin);
-      this.currentFlow = null;
-    }
+
     this.update();
   }
 
