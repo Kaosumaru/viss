@@ -7,10 +7,7 @@ import {
   Box,
   Chip,
 } from "@mui/material";
-import {
-  ExpandMore,
-  ExpandLess,
-} from "@mui/icons-material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { MenuCategory, MenuItem } from "../interface";
 import { MenuItemComponent } from "./MenuItemComponent";

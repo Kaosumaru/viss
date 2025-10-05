@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { ListItem, ListItemText, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { MenuItem } from "../interface";
 

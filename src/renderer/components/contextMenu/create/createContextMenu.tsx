@@ -5,12 +5,7 @@ import React, {
   useCallback,
   useContext,
 } from "react";
-import {
-  Paper,
-  List,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Paper, List, Typography, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { MenuCategory, MenuItem } from "./interface";
 import { getMenuElements } from "./menuElements";
