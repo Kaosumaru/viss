@@ -1,6 +1,7 @@
 import { type Type } from "@glsl/types/types";
 import {
   CompilerNode,
+  type InputPin,
   type NodeContext,
   type NodeInfo,
 } from "../../compilerNode";
@@ -85,6 +86,31 @@ export class FunctionNode extends CompilerNode {
 
   public override canImplicitlyCastInput() {
     return false;
+  }
+
+  public override getBaseDeclaredInputs(): InputPin[] {
+    const resolver = new TemplatesResolver();
+
+    for (const [name, type] of Object.entries(this.templates)) {
+      resolver.addTemplate(name, type);
+    }
+
+    const inputPins: InputPin[] = [];
+
+    // Get base types without any inputs connected
+    for (const [name, paramType, opts] of this.functionParams) {
+      const options = opts ?? {};
+      if (options.output) {
+        continue;
+      }
+      const type = resolver.resolveType(paramType);
+      inputPins.push({
+        name,
+        type,
+      });
+    }
+
+    return inputPins;
   }
 
   protected resolveTemplates(node: NodeContext): [Type, ParamPin[]] {

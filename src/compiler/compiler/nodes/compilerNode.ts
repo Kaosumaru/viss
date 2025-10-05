@@ -240,6 +240,19 @@ export abstract class CompilerNode {
     return this.inputs_.find((input) => input.name === name);
   }
 
+  public getInputPins(): InputPins {
+    return this.inputs_;
+  }
+
+  /**
+   * Get the base declared input pins for this node without requiring a context.
+   * This is used for type checking and validation.
+   * Override this method for nodes with dynamic inputs.
+   */
+  public getBaseDeclaredInputs(): InputPins {
+    return this.inputs_;
+  }
+
   getDefaultParameters(): GraphParameters {
     const params: GraphParameters = {};
     for (const param of this.parameters_) {

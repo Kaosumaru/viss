@@ -1,4 +1,6 @@
 import { scalar, vector } from "@glsl/types/types";
+import type { Type } from "@glsl/types/types";
+import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
 import { LiteralNode } from "./basic/literal";
 import { BooleanLiteralNode } from "./basic/booleanLiteral";
 import type { CompilerNode } from "./compilerNode";
@@ -454,4 +456,28 @@ export function getNode(type: NodeType): CompilerNode {
     throw new Error(`Node type "${type}" not found`);
   }
   return node;
+}
+
+/**
+ * Checks if the given type matches any of the declared inputs for the specified node type.
+ * Uses strict type conversion rules to determine compatibility.
+ * 
+ * @param nodeType - The type of the node to check
+ * @param type - The type to check against the node's inputs
+ * @returns true if the type matches at least one input of the node, false otherwise
+ */
+export function typeMatchesAnyNodeInput(
+  nodeType: NodeType,
+  type: Type
+): boolean {
+  const node = getNode(nodeType);
+  const inputs = node.getBaseDeclaredInputs();
+  
+  for (const input of inputs) {
+    if (canBeStrictlyConverted(type, input.type)) {
+      return true;
+    }
+  }
+  
+  return false;
 }
