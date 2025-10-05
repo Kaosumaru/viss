@@ -7,21 +7,10 @@ import React, {
 } from "react";
 import {
   Paper,
-  TextField,
   List,
-  ListItem,
-  ListItemText,
-  Collapse,
   Typography,
   Box,
-  InputAdornment,
-  Chip,
 } from "@mui/material";
-import {
-  Search as SearchIcon,
-  ExpandMore,
-  ExpandLess,
-} from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { MenuCategory, MenuItem } from "./interface";
 import { getMenuElements } from "./menuElements";
@@ -30,6 +19,7 @@ import type { Uniforms } from "@graph/uniform";
 import type { SocketRef } from "@renderer/graph/emitter";
 import { EditorContext } from "@renderer/context/EditorContext";
 import { createNode } from "./createNode";
+import { SearchBar, CategoryComponent } from "./components";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -42,32 +32,6 @@ const ContextMenuContainer = styled(Paper)(() => ({
   border: "1px solid #464647",
   borderRadius: 4,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
-}));
-
-const SearchContainer = styled(Box)(() => ({
-  padding: "8px 8px",
-  borderBottom: "1px solid #464647",
-  backgroundColor: "#383838",
-}));
-
-const StyledTextField = styled(TextField)(() => ({
-  "& .MuiInputBase-root": {
-    color: "#ffffff",
-    fontSize: "14px",
-    backgroundColor: "#1e1e1e",
-    "& fieldset": {
-      border: "1px solid #464647",
-    },
-    "&:hover fieldset": {
-      borderColor: "#007acc",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#007acc",
-    },
-  },
-  "& .MuiInputAdornment-root": {
-    color: "#cccccc",
-  },
 }));
 
 const CategoryList = styled(List)(() => ({
@@ -84,39 +48,6 @@ const CategoryList = styled(List)(() => ({
     background: "#464647",
     borderRadius: "4px",
   },
-}));
-
-const CategoryHeader = styled(ListItem)(() => ({
-  backgroundColor: "#323233",
-  borderBottom: "1px solid #464647",
-  padding: "2px 8px",
-  cursor: "pointer",
-  "&:hover": {
-    backgroundColor: "#404041",
-  },
-}));
-
-const NodeItem = styled(ListItem)<{ $isSelected?: boolean }>(
-  ({ $isSelected }) => ({
-    padding: "0px 10px",
-    cursor: "pointer",
-    borderLeft: "2px solid transparent",
-    backgroundColor: $isSelected ? "#414142" : "transparent",
-    "&:hover": {
-      backgroundColor: "#414142",
-      borderLeftColor: "#007acc",
-    },
-    ...($isSelected && {
-      borderLeftColor: "#007acc",
-    }),
-  })
-);
-
-const CategoryIcon = styled(Box)(() => ({
-  display: "flex",
-  alignItems: "center",
-  marginRight: "8px",
-  color: "#cccccc",
 }));
 
 interface CreateContextMenuProps {
@@ -269,108 +200,38 @@ export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
         zIndex: 9999,
       }}
     >
-      <SearchContainer>
-        <StyledTextField
-          inputRef={searchInputRef}
-          placeholder="Search nodes..."
-          variant="outlined"
-          size="small"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setSelectedIndex(-1); // Reset selection when search changes
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-      </SearchContainer>
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={(value) => {
+          setSearchTerm(value);
+          setSelectedIndex(-1); // Reset selection when search changes
+        }}
+        inputRef={searchInputRef}
+      />
 
       <CategoryList>
         {(() => {
           let globalItemIndex = 0;
-          return filteredCategories.map((category) => (
-            <Box key={category.name}>
-              <CategoryHeader
-                onClick={() => {
+          return filteredCategories.map((category) => {
+            const itemCount = category.items.length;
+            const categoryComponent = (
+              <CategoryComponent
+                key={category.name}
+                category={category}
+                isExpanded={expandedCategories.has(category.name)}
+                onToggle={() => {
                   toggleCategory(category.name);
                 }}
-              >
-                <CategoryIcon>{category.icon}</CategoryIcon>
-                <ListItemText
-                  primary={
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
-                      <Typography variant="body2" fontWeight="bold">
-                        {category.name}
-                      </Typography>
-                      <Box display="flex" alignItems="center">
-                        <Chip
-                          label={category.items.length}
-                          size="small"
-                          sx={{
-                            backgroundColor: "#464647",
-                            color: "#cccccc",
-                            fontSize: "11px",
-                            height: "20px",
-                            marginRight: "8px",
-                          }}
-                        />
-                        {expandedCategories.has(category.name) ? (
-                          <ExpandLess fontSize="small" />
-                        ) : (
-                          <ExpandMore fontSize="small" />
-                        )}
-                      </Box>
-                    </Box>
-                  }
-                />
-              </CategoryHeader>
-              <Collapse in={expandedCategories.has(category.name)}>
-                {expandedCategories.has(category.name) &&
-                  filterItems(category.items).map((item) => {
-                    const currentItemIndex = globalItemIndex++;
-                    const isSelected = selectedIndex === currentItemIndex;
-                    return (
-                      <NodeItem
-                        key={item.name}
-                        ref={isSelected ? selectedItemRef : null}
-                        $isSelected={isSelected}
-                        onClick={() => {
-                          handleNodeCreate(item);
-                        }}
-                        onMouseEnter={() => {
-                          setSelectedIndex(currentItemIndex);
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <>
-                              <Typography variant="body2" color="#ffffff">
-                                {item.name}{" "}
-                                <Typography variant="caption" color="#cccccc">
-                                  {item.description}
-                                </Typography>
-                              </Typography>
-                            </>
-                          }
-                        />
-                      </NodeItem>
-                    );
-                  })}
-              </Collapse>
-            </Box>
-          ));
+                onItemCreate={handleNodeCreate}
+                selectedIndex={selectedIndex}
+                globalItemIndex={globalItemIndex}
+                onItemMouseEnter={setSelectedIndex}
+                selectedItemRef={selectedItemRef}
+              />
+            );
+            globalItemIndex += itemCount;
+            return categoryComponent;
+          });
         })()}
         {filteredCategories.length === 0 && (
           <Box p={2} textAlign="center">
