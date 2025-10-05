@@ -634,7 +634,7 @@ export class CompilerInternal {
     return invalidatedNodeIds;
   }
 
-  protected getOutputType(ref: SocketReference): Type {
+  public getOutputType(ref: SocketReference): Type {
     const ctx = this.compile(ref.nodeId);
     const socket = ctx.outputs[ref.socketId];
     if (!socket) {
