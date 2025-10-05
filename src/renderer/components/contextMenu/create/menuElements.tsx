@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniform, Uniforms } from "@graph/uniform";
+import type { Type } from "@glsl/types/types";
 
 export function getMenuElements(
   customFunctions: FunctionDefinition[],
@@ -40,6 +41,10 @@ function functionToItem(fn: FunctionDefinition): MenuItem {
     nodeType: "glslFunction",
     identifierParam: fn.name,
     description: "No description available",
+    filterBy: (inputType?: Type) => {
+      if (!inputType) return true;
+      return false;
+    },
   };
 }
 
@@ -49,6 +54,10 @@ function uniformToItem(fn: Uniform): MenuItem {
     nodeType: "uniform",
     identifierParam: fn.id,
     description: "No description available",
+    filterBy: (inputType?: Type) => {
+      if (!inputType) return true;
+      return false;
+    },
   };
 }
 
@@ -62,6 +71,10 @@ function createMenuCategory(category: NodeCategory): MenuCategory {
       name: node.getLabel(),
       nodeType: name as NodeType,
       description: node.getDescription(),
+      filterBy: (_inputType?: Type) => {
+        // TODO get inputs from compiler node
+        return true;
+      },
     })),
   };
 }

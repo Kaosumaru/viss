@@ -52,6 +52,21 @@ export class FunctionNode extends CompilerNode {
     this.functionParams = signature.params;
     this.templates = signature.templates;
     this.description = description;
+
+    for (const param of this.functionParams) {
+      const [name, type] = param;
+      switch (type.id) {
+        case "template":
+        case "templateBooleanComponent":
+        case "templateComponent":
+        case "templateOrComponent":
+        case "templateOrComponentOrBoolean":
+          // TODO
+          break;
+        default:
+          this.addInput(name, type);
+      }
+    }
   }
 
   override compile(node: NodeContext): Context {

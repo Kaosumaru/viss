@@ -4,7 +4,7 @@ import type { MenuCategory, MenuItem } from "./interface";
 export function filterItem(
   item: MenuItem,
   searchTermLowerCase: string,
-  _inputType?: Type
+  inputType?: Type
 ): boolean {
   if (searchTermLowerCase) {
     if (
@@ -13,6 +13,9 @@ export function filterItem(
     ) {
       return false;
     }
+  }
+  if (inputType) {
+    if (!item.filterBy(inputType)) return false;
   }
   return true;
 }
