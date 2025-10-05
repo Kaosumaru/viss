@@ -4,10 +4,7 @@ import { NodeContextMenu } from "./node/nodeContextMenu";
 import { UICompilerNode } from "../../graph/nodes/compilerNode";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniforms } from "@graph/uniform";
-import emitter, {
-  type ConnectionDropperEvent,
-  type SocketRef,
-} from "@renderer/graph/emitter";
+import { useEmitter, type SocketRef } from "@renderer/graph/emitter";
 
 interface ContextMenuState {
   visible: boolean;
@@ -49,26 +46,20 @@ export const ContextMenuProvider: React.FC<ContextMenuProviderProps> = ({
     target: null,
   });
 
-  useEffect(() => {
-    const handler = async (event: ConnectionDropperEvent) => {
-      const position = event.position;
-      setContextMenuState({
-        visible: true,
-        position,
-        type: "canvas",
-        socketRef: event.from,
-      });
-      const openPromise = new Promise((resolve) => {
-        resolveRef.current = resolve;
-      });
+  useEmitter("connectionDroppedOnEmpty", async (event) => {
+    const position = event.position;
+    setContextMenuState({
+      visible: true,
+      position,
+      type: "canvas",
+      socketRef: event.from,
+    });
+    const openPromise = new Promise((resolve) => {
+      resolveRef.current = resolve;
+    });
 
-      await openPromise;
-    };
-    emitter.on("connectionDroppedOnEmpty", handler);
-    return () => {
-      emitter.off("connectionDroppedOnEmpty", handler);
-    };
-  }, []);
+    await openPromise;
+  });
 
   useEffect(() => {
     if (!contextMenuState.visible && resolveRef.current) {
@@ -79,67 +70,69 @@ export const ContextMenuProvider: React.FC<ContextMenuProviderProps> = ({
 
   const handleMouseDown = useCallback((event: React.MouseEvent) => {
     // Only handle right mouse button
-    if (event.button === 2) {
-      mouseDownState.current = {
-        isRightMouseDown: true,
-        startPosition: { x: event.clientX, y: event.clientY },
-        target: event.target as Element,
-      };
+    if (event.button !== 2) {
+      return;
     }
+    mouseDownState.current = {
+      isRightMouseDown: true,
+      startPosition: { x: event.clientX, y: event.clientY },
+      target: event.target as Element,
+    };
   }, []);
 
   const handleMouseUp = useCallback((event: React.MouseEvent) => {
     // Only handle right mouse button
-    if (event.button === 2 && mouseDownState.current.isRightMouseDown) {
-      const endPosition = { x: event.clientX, y: event.clientY };
-      const startPosition = mouseDownState.current.startPosition;
+    if (event.button !== 2 || !mouseDownState.current.isRightMouseDown) {
+      return;
+    }
+    const endPosition = { x: event.clientX, y: event.clientY };
+    const startPosition = mouseDownState.current.startPosition;
 
-      // Calculate distance moved
-      const deltaX = endPosition.x - startPosition.x;
-      const deltaY = endPosition.y - startPosition.y;
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    // Calculate distance moved
+    const deltaX = endPosition.x - startPosition.x;
+    const deltaY = endPosition.y - startPosition.y;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-      // Only show context menu if movement is less than 5 pixels
-      if (distance < 5) {
-        const target = mouseDownState.current.target;
-        const nodeElement = target?.closest("[data-node-id]");
-        const isOnSocket = target?.closest(".rete-socket");
-        const isOnConnection = target?.closest(".rete-connection");
+    // Only show context menu if movement is less than 5 pixels
+    if (distance < 5) {
+      const target = mouseDownState.current.target;
+      const nodeElement = target?.closest("[data-node-id]");
+      const isOnSocket = target?.closest(".rete-socket");
+      const isOnConnection = target?.closest(".rete-connection");
 
-        // Don't show context menu on sockets or connections
-        if (!isOnSocket && !isOnConnection) {
-          event.preventDefault();
-          event.stopPropagation();
+      // Don't show context menu on sockets or connections
+      if (!isOnSocket && !isOnConnection) {
+        event.preventDefault();
+        event.stopPropagation();
 
-          if (nodeElement) {
-            // Right-clicked on a node - show node context menu
-            const nodeId =
-              nodeElement.getAttribute("data-node-id") ||
-              nodeElement.getAttribute("data-testid") ||
-              nodeElement.id;
+        if (nodeElement) {
+          // Right-clicked on a node - show node context menu
+          const nodeId =
+            nodeElement.getAttribute("data-node-id") ||
+            nodeElement.getAttribute("data-testid") ||
+            nodeElement.id;
 
-            if (nodeId) {
-              setContextMenuState({
-                visible: true,
-                position: endPosition,
-                type: "node",
-                nodeId,
-              });
-            }
-          } else {
-            // Right-clicked on canvas - show canvas context menu
+          if (nodeId) {
             setContextMenuState({
               visible: true,
               position: endPosition,
-              type: "canvas",
+              type: "node",
+              nodeId,
             });
           }
+        } else {
+          // Right-clicked on canvas - show canvas context menu
+          setContextMenuState({
+            visible: true,
+            position: endPosition,
+            type: "canvas",
+          });
         }
       }
-
-      // Reset mouse down state
-      mouseDownState.current.isRightMouseDown = false;
     }
+
+    // Reset mouse down state
+    mouseDownState.current.isRightMouseDown = false;
   }, []);
 
   const handleContextMenu = useCallback((event: React.MouseEvent) => {
