@@ -6,6 +6,7 @@ export interface MenuItem {
   identifierParam?: string;
   description?: string;
 }
+
 export interface MenuCategory {
   name: string;
   icon: React.ReactNode;
