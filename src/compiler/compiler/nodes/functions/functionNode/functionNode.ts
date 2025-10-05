@@ -53,20 +53,7 @@ export class FunctionNode extends CompilerNode {
     this.templates = signature.templates;
     this.description = description;
 
-    for (const param of this.functionParams) {
-      const [name, type] = param;
-      switch (type.id) {
-        case "template":
-        case "templateBooleanComponent":
-        case "templateComponent":
-        case "templateOrComponent":
-        case "templateOrComponentOrBoolean":
-          // TODO
-          break;
-        default:
-          this.addInput(name, type);
-      }
-    }
+    this.fillDefaultInputs();
   }
 
   override compile(node: NodeContext): Context {
@@ -156,6 +143,19 @@ export class FunctionNode extends CompilerNode {
       ],
       parameters: [],
     };
+  }
+
+  private fillDefaultInputs() {
+    const resolver = new TemplatesResolver();
+
+    for (const [name, type] of Object.entries(this.templates)) {
+      resolver.addTemplate(name, type);
+    }
+    for (const param of this.functionParams) {
+      const [name, paramType] = param;
+      const type = resolver.resolveType(paramType);
+      this.addInput(name, type);
+    }
   }
 
   outType: Type | TemplateParameter;
