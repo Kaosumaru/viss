@@ -645,6 +645,17 @@ export class CompilerInternal {
     return socket.type;
   }
 
+  public getInputType(nodeId: string, socketId: string): Type | undefined {
+    const inputConnection = this.getInputNode(nodeId, socketId);
+    if (!inputConnection) {
+      return undefined;
+    }
+    return this.getOutputType({
+      nodeId: inputConnection.node.identifier,
+      socketId: inputConnection.socketId,
+    });
+  }
+
   protected cache: GraphCache = new GraphCache();
   protected cachedContexts: Map<string, Context> = new Map();
   protected nameToFunction: Record<string, FunctionDefinition> = {};
