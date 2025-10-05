@@ -20,9 +20,9 @@ const emitter = new Emittery<Events>();
 
 export default emitter;
 
-export function useEmitter(
-  name: keyof Events,
-  handler: (event: Events[keyof Events]) => Promise<void> | void
+export function useEmitter<T extends keyof Events>(
+  name: T,
+  handler: (event: Events[T]) => Promise<void> | void
 ) {
   useEffect(() => {
     emitter.on(name, handler);
