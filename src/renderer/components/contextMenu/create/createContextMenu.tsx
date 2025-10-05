@@ -4,17 +4,20 @@ import React, {
   useEffect,
   useCallback,
   useContext,
+  useMemo,
 } from "react";
 import { Paper, List, Typography, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import type { MenuCategory, MenuItem } from "./interface";
-import { getMenuElements } from "./menuElements";
+import type { MenuItem } from "./interface";
 import type { FunctionDefinition } from "@glsl/function";
 import type { Uniforms } from "@graph/uniform";
 import type { SocketRef } from "@renderer/graph/emitter";
 import { EditorContext } from "@renderer/context/EditorContext";
 import { createNode } from "./createNode";
 import { SearchBar, CategoryComponent } from "./components";
+import type { Type } from "@glsl/types/types";
+import { getFilteredCategories } from "./filterItem";
+import { getMenuElements } from "./menuElements";
 
 // Styled components for Unreal Engine-like appearance
 const ContextMenuContainer = styled(Paper)(() => ({
@@ -50,6 +53,7 @@ interface CreateContextMenuProps {
   onClose: () => void;
   customFunctions: FunctionDefinition[];
   uniforms: Uniforms;
+  inputType?: Type;
   socketRef?: SocketRef;
 }
 
@@ -58,10 +62,14 @@ export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
   onClose,
   customFunctions,
   uniforms,
+  inputType,
   socketRef,
 }) => {
   const editor = useContext(EditorContext).editor;
-  const menuElements = getMenuElements(customFunctions, uniforms);
+  const menuElements = useMemo(
+    () => getMenuElements(customFunctions, uniforms),
+    [customFunctions, uniforms]
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(menuElements.map((cat) => cat.name))
@@ -90,26 +98,10 @@ export const CreateContextMenu: React.FC<CreateContextMenuProps> = ({
     [editor, onClose, position, socketRef]
   );
 
-  const filterItems = (items: MenuCategory["items"]) => {
-    if (!searchTerm) return items;
-    return items.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
-  const getFilteredCategories = () => {
-    if (!searchTerm) return menuElements;
-    return menuElements
-      .map((category) => ({
-        ...category,
-        items: filterItems(category.items),
-      }))
-      .filter((category) => category.items.length > 0);
-  };
-
-  const filteredCategories = getFilteredCategories();
+  const filteredCategories = useMemo(
+    () => getFilteredCategories(menuElements, searchTerm, inputType),
+    [menuElements, searchTerm, inputType]
+  );
 
   // Get all visible items in a flat array for keyboard navigation
   const getAllVisibleItems = () => {

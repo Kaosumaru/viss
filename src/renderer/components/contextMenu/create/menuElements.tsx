@@ -18,7 +18,7 @@ import type { Uniform, Uniforms } from "@graph/uniform";
 export function getMenuElements(
   customFunctions: FunctionDefinition[],
   uniforms: Uniforms
-) {
+): MenuCategory[] {
   return [
     ...menuElements,
     {
