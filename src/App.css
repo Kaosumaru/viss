@@ -31,7 +31,7 @@ body {
 
 .fill-area {
   display: table;
-  z-index: -1;
+  z-index: -1000;
   position: absolute;
   top: -320000px;
   left: -320000px;
