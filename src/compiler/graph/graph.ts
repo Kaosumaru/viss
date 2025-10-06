@@ -46,10 +46,16 @@ export interface AddedNodeInfo {
 export interface GraphDiff {
   addedNodes?: AddedNodeInfo[];
   removedNodes?: Node[];
-  addedConnections?: Connection[];
-  removedConnections?: Connection[];
   translatedNodes?: Set<string>;
   nodesWithModifiedProperties?: Node[];
+
+  addedConnections?: Connection[];
+  removedConnections?: Connection[];
+
+  addedGroups?: Group[];
+  removedGroups?: Group[];
+  updatedGroups?: Group[];
+
   invalidatedNodeIds?: Set<string>;
   updatedUniforms?: Uniforms;
   updatedIncludes?: string[];
@@ -59,46 +65,73 @@ export interface GraphDiff {
 
 export function mergeGraphDiffs(diffs: GraphDiff[]): GraphDiff {
   return diffs.reduce<GraphDiff>((acc, diff) => {
-    acc.addedNodes = [...(acc.addedNodes || []), ...(diff.addedNodes || [])];
+    acc.addedNodes = mergeLists(acc.addedNodes, diff.addedNodes);
+    acc.removedNodes = mergeLists(acc.removedNodes, diff.removedNodes);
 
-    acc.removedNodes = [
-      ...(acc.removedNodes || []),
-      ...(diff.removedNodes || []),
-    ];
-    acc.addedConnections = [
-      ...(acc.addedConnections || []),
-      ...(diff.addedConnections || []),
-    ];
-    acc.removedConnections = [
-      ...(acc.removedConnections || []),
-      ...(diff.removedConnections || []),
-    ];
-    acc.invalidatedNodeIds =
-      acc.invalidatedNodeIds || diff.invalidatedNodeIds
-        ? new Set([
-            ...(acc.invalidatedNodeIds || []),
-            ...(diff.invalidatedNodeIds || []),
-          ])
-        : undefined;
-    acc.nodesWithModifiedProperties = [
-      ...(acc.nodesWithModifiedProperties || []),
-      ...(diff.nodesWithModifiedProperties || []),
-    ];
-    acc.updatedUniforms =
-      acc.updatedUniforms || diff.updatedUniforms
-        ? {
-            ...(acc.updatedUniforms || {}),
-            ...(diff.updatedUniforms || {}),
-          }
-        : undefined;
-    acc.warnings = [...(acc.warnings || []), ...(diff.warnings || [])];
-    acc.translatedNodes =
-      acc.translatedNodes || diff.translatedNodes
-        ? new Set([
-            ...(acc.translatedNodes || []),
-            ...(diff.translatedNodes || []),
-          ])
-        : undefined;
+    acc.addedConnections = mergeLists(
+      acc.addedConnections,
+      diff.addedConnections
+    );
+    acc.removedConnections = mergeLists(
+      acc.removedConnections,
+      diff.removedConnections
+    );
+
+    acc.addedGroups = mergeLists(acc.addedGroups, diff.addedGroups);
+    acc.removedGroups = mergeLists(acc.removedGroups, diff.removedGroups);
+    acc.updatedGroups = mergeLists(acc.updatedGroups, diff.updatedGroups);
+
+    acc.invalidatedNodeIds = mergeSets(
+      acc.invalidatedNodeIds,
+      diff.invalidatedNodeIds
+    );
+    acc.nodesWithModifiedProperties = mergeLists(
+      acc.nodesWithModifiedProperties,
+      diff.nodesWithModifiedProperties
+    );
+    acc.updatedUniforms = mergeObjects(
+      acc.updatedUniforms,
+      diff.updatedUniforms
+    );
+    acc.updatedIncludes = mergeLists(acc.updatedIncludes, diff.updatedIncludes);
+    acc.warnings = mergeLists(acc.warnings, diff.warnings);
+    acc.translatedNodes = mergeSets(acc.translatedNodes, diff.translatedNodes);
     return acc;
   }, {});
+}
+
+function mergeLists<T>(
+  a: T[] | undefined,
+  b: T[] | undefined
+): T[] | undefined {
+  if (a || b) {
+    return [...(a || []), ...(b || [])];
+  }
+  return undefined;
+}
+
+function mergeObjects<T>(a: T | undefined, b: T | undefined): T | undefined {
+  if (a && b) {
+    return {
+      ...a,
+      ...b,
+    };
+  }
+  if (a) {
+    return a;
+  }
+  if (b) {
+    return b;
+  }
+  return undefined;
+}
+
+function mergeSets<T>(
+  a: Set<T> | undefined,
+  b: Set<T> | undefined
+): Set<T> | undefined {
+  if (a || b) {
+    return new Set([...(a || []), ...(b || [])]);
+  }
+  return undefined;
 }

@@ -25,6 +25,7 @@ import { canBeStrictlyConverted } from "@glsl/types/strictConversion";
 import type { Uniform, Uniforms } from "@graph/uniform";
 import { loadGraphIntoCompiler } from "./loadGraph";
 import { connectionToID, GraphCache } from "./graphCache";
+import type { Group } from "@graph/group";
 
 export interface InputConnection {
   node: Node;
@@ -246,6 +247,63 @@ export class CompilerInternal {
       removedNodes,
       removedConnections,
       invalidatedNodeIds: this.invalidateNodes(invalidatedNodeIds, true),
+    };
+  }
+
+  addGroup(nodes: string[], text: string | undefined): GraphDiff {
+    const groupId = this.generateNodeId();
+    const newGroup: Group = {
+      id: groupId,
+      nodes,
+      label: text ?? "",
+    };
+    this.graph.groups.push(newGroup);
+    return {
+      addedGroups: [newGroup],
+    };
+  }
+
+  updateGroup(
+    groupId: string,
+    nodes: string[],
+    text: string | undefined
+  ): GraphDiff {
+    const groupIndex = this.graph.groups.findIndex((g) => g.id === groupId);
+    if (groupIndex === -1) {
+      return {};
+    }
+    const group = this.graph.groups[groupIndex];
+    if (!group) {
+      return {};
+    }
+    group.nodes = nodes;
+    group.label = text ?? "";
+    return {
+      updatedGroups: [group],
+    };
+  }
+
+  removeGroups(groupIds: string[]): GraphDiff {
+    const removedGroups: Group[] = [];
+    for (const groupId of groupIds) {
+      const groupIndex = this.graph.groups.findIndex((g) => g.id === groupId);
+      if (groupIndex !== -1) {
+        const [removedGroup] = this.graph.groups.splice(groupIndex, 1);
+        if (removedGroup) {
+          removedGroups.push(removedGroup);
+        }
+      }
+    }
+    return {
+      removedGroups,
+    };
+  }
+
+  insertGroups(groups: Group[]): GraphDiff {
+    const addedGroups: Group[] = [];
+    this.graph.groups.push(...groups);
+    return {
+      addedGroups,
     };
   }
 

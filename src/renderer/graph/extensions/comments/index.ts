@@ -252,8 +252,8 @@ export class CommentPlugin<
    * @param links List of node IDs the comment is linked with
    * @returns comment that was created
    */
-  public addFrame(text: string, links: string[] = []) {
-    const comment = new FrameComment(text, this.area, this.editor, {
+  public addFrame(id: string, text: string, links: string[] = []) {
+    const comment = new FrameComment(id, text, this.area, this.editor, {
       contextMenu: ({ id }) => void this.editComment(id),
       pick: (data) => {
         this.area.area.content.reorder(

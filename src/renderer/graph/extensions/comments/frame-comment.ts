@@ -13,6 +13,7 @@ export class FrameComment extends Comment {
   private editor: NodeEditor<ExpectedSchemes>;
 
   constructor(
+    id: string,
     text: string,
     area: BaseAreaPlugin<ExpectedSchemes, unknown>,
     editor: NodeEditor<ExpectedSchemes>,
@@ -40,6 +41,7 @@ export class FrameComment extends Comment {
       drag: () => 1,
     });
 
+    this.id = id;
     this.editor = editor;
     this.nested.className = "frame-comment no-selection";
   }

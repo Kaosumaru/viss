@@ -101,9 +101,9 @@ export class EditorAPIImp implements EditorAPI {
     });
   }
 
-  group(nodeIds: string[], text?: string): void {
+  async group(nodeIds: string[], text?: string): Promise<void> {
     if (nodeIds.length === 0) return;
-    this.comment.addFrame(text ?? "", nodeIds);
+    return this.applyDiff(this.compiler.addGroup(nodeIds, text));
   }
 
   centerView(): Promise<void> {
@@ -440,6 +440,22 @@ export class EditorAPIImp implements EditorAPI {
 
         if (promises.length !== 0) {
           await Promise.all(promises);
+        }
+      }
+
+      if (diff.updatedGroups) {
+        // TODO
+      }
+
+      if (diff.addedGroups) {
+        for (const group of diff.addedGroups) {
+          this.comment.addFrame(group.id, group.label, group.nodes);
+        }
+      }
+
+      if (diff.removedGroups) {
+        for (const group of diff.removedGroups) {
+          this.comment.delete(group.id);
         }
       }
 

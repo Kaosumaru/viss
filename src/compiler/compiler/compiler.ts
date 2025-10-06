@@ -61,6 +61,22 @@ export class Compiler {
     return this.graph.removeNodes(nodeIds);
   }
 
+  public addGroup(nodes: string[], text?: string): GraphDiff {
+    return this.graph.addGroup(nodes, text);
+  }
+
+  public removeGroup(groupId: string): GraphDiff {
+    return this.graph.removeGroups([groupId]);
+  }
+
+  public updateGroup(
+    groupId: string,
+    nodes: string[],
+    text?: string
+  ): GraphDiff {
+    return this.graph.updateGroup(groupId, nodes, text);
+  }
+
   public translateNode(nodeId: string, x: number, y: number): GraphDiff {
     return this.graph.translateNode(nodeId, x, y);
   }

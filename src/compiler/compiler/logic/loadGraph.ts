@@ -35,6 +35,9 @@ export async function loadGraphIntoCompiler(
     (otherNode) => !this.cache.hasNode(otherNode.identifier)
   );
 
+  // TODO just add and remove all for now
+  const addedGroups = otherGraph.groups;
+
   const addedConnections = otherGraph.connections.filter(
     (conn) => !this.cache.getConnectionById(connectionToID(conn))
   );
@@ -42,6 +45,9 @@ export async function loadGraphIntoCompiler(
   const removedConnections: Connection[] = this.graph.connections.filter(
     (conn) => !otherConnections.has(connectionToID(conn))
   );
+
+  // TODO just add and remove all for now
+  const removedGroups = this.graph.groups.map((group) => group.id);
 
   const removedNodes = this.graph.nodes
     .filter((node) => !otherNodes.get(node.identifier))
@@ -63,6 +69,7 @@ export async function loadGraphIntoCompiler(
 
   let diff: GraphDiff = {};
 
+  diff = mergeGraphDiffs([diff, this.removeGroups(removedGroups)]);
   diff = mergeGraphDiffs([diff, this.removeConnections(removedConnections)]);
   diff = mergeGraphDiffs([diff, this.removeNodes(removedNodes, false)]);
   diff = mergeGraphDiffs([diff, this.removeUniforms(removedUniforms)]);
@@ -74,6 +81,7 @@ export async function loadGraphIntoCompiler(
   diff = mergeGraphDiffs([diff, this.updateUniforms(modifiedUniforms)]);
   diff = mergeGraphDiffs([diff, this.insertNodes(addedNodes)]);
   diff = mergeGraphDiffs([diff, this.addConnections(addedConnections)]);
+  diff = mergeGraphDiffs([diff, this.insertGroups(addedGroups)]);
 
   diff.nodesWithModifiedProperties = diff.nodesWithModifiedProperties
     ? [...diff.nodesWithModifiedProperties, ...modifiedNodes]
