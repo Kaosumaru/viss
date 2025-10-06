@@ -23,6 +23,7 @@ import {
 import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 import emitter from "./emitter";
 import type { Position } from "@graph/position";
+import { CommentPlugin } from "./extensions/comments";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -37,13 +38,21 @@ export function createEditor(
     accumulating: accumulateOnCtrl(),
   });
 
-  const editorData = new EditorAPIImp(editor, area, selectable, onChanged);
+  const arrange = new AutoArrangePlugin<Schemes>();
+  const comment = new CommentPlugin<Schemes, AreaExtra>();
+  const editorData = new EditorAPIImp(
+    editor,
+    area,
+    selectable,
+    arrange,
+    comment,
+    onChanged
+  );
 
   editorData.addUniformCallback(shaderRenderer);
 
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = createRenderer(shaderRenderer);
-  const arrange = new AutoArrangePlugin<Schemes>();
 
   addCustomBackground(area);
   connection.addPreset(ConnectionPresets.classic.setup());
@@ -54,6 +63,7 @@ export function createEditor(
   area.use(connection);
   area.use(render);
   area.use(arrange);
+  area.use(comment);
 
   area.area.setDragHandler(
     new Drag({
@@ -90,9 +100,6 @@ export function createEditor(
     if (context.type === "zoom" && context.data.source === "dblclick") return;
     return context;
   });
-
-  // await editorData.createNode("output", "screen");
-  //void AreaExtensions.zoomAt(area, editor.getNodes());
 
   return Promise.resolve(editorData);
 }

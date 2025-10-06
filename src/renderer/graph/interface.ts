@@ -23,6 +23,9 @@ export interface EditorAPI {
     toNodeId: string
   ) => Promise<void>;
 
+  arrangeNodes(nodeIds: string[]): Promise<void>;
+  addComment(nodeIds: string[], text?: string): void;
+
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;
   destroy: () => void;

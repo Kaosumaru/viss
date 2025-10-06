@@ -18,12 +18,16 @@ import { compileNode } from "./utils/compileNode";
 import { selectInclude as selectIncludeFile } from "@renderer/vscode/selectIncludeFile";
 import type { SocketReference } from "@graph/socket";
 import type { Type } from "@glsl/types/types";
+import type { AutoArrangePlugin } from "rete-auto-arrange-plugin";
+import type { CommentPlugin } from "./extensions/comments";
 
 export class EditorAPIImp implements EditorAPI {
   constructor(
     editor: NodeEditor<Schemes>,
     area: AreaPlugin<Schemes, AreaExtra>,
     selectable: SelectableAPI,
+    arrange: AutoArrangePlugin<Schemes>,
+    comment: CommentPlugin<Schemes, AreaExtra>,
     onChanged?: OnGraphChanged
   ) {
     this.extension = new EditorVSExtension(this, area);
@@ -38,6 +42,8 @@ export class EditorAPIImp implements EditorAPI {
     this.editor = editor;
     this.area = area;
     this.selectable = selectable;
+    this.arrange = arrange;
+    this.comment = comment;
     this.onOutputChanged = onChanged;
 
     this.area.addPipe((context) => {
@@ -85,6 +91,19 @@ export class EditorAPIImp implements EditorAPI {
     void this.applyDiff(this.compiler.getGraphAsDiff());
 
     void this.extension.initialize();
+  }
+
+  async arrangeNodes(nodeIds: string[]): Promise<void> {
+    await this.arrange.layout({
+      nodes: nodeIds
+        .map((id) => this.getNode(id))
+        .filter((n) => n !== undefined),
+    });
+  }
+
+  addComment(nodeIds: string[], text?: string): void {
+    if (nodeIds.length === 0) return;
+    this.comment.addFrame(text ?? "", nodeIds);
   }
 
   centerView(): Promise<void> {
@@ -503,6 +522,8 @@ export class EditorAPIImp implements EditorAPI {
 
   private editor: NodeEditor<Schemes>;
   private area: AreaPlugin<Schemes, AreaExtra>;
+  private arrange: AutoArrangePlugin<Schemes>;
+  private comment: CommentPlugin<Schemes, AreaExtra>;
   private onOutputChanged?: OnGraphChanged;
   private deserializing = false;
   private extension: EditorVSExtension;
