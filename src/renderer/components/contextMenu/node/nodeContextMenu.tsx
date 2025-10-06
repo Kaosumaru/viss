@@ -11,6 +11,8 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
+  AutoFixHigh as ArrangeIcon,
+  Group as GroupIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import type { UICompilerNode } from "../../../graph/nodes/compilerNode";
@@ -52,6 +54,12 @@ const MenuIcon = styled(Box)(() => ({
   },
   "&.preview-icon": {
     color: "#007acc", // Blue color for preview action
+  },
+  "&.arrange-icon": {
+    color: "#4CAF50", // Green color for arrange action
+  },
+  "&.group-icon": {
+    color: "#9C27B0", // Purple color for group action
   },
 }));
 
@@ -109,6 +117,24 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     onClose();
   };
 
+  const handleArrangeClick = () => {
+    if (!editor) return;
+    const selectedNodes = editor.getSelectedNodes();
+    void editor.arrangeNodes(selectedNodes);
+    onClose();
+  };
+
+  const handleGroupClick = () => {
+    if (!editor) return;
+    const selectedNodes = editor.getSelectedNodes();
+    editor.group(selectedNodes);
+    onClose();
+  };
+
+  // Get selected nodes info
+  const selectedNodes = editor?.getSelectedNodes() || [];
+  const hasMultipleSelected = selectedNodes.length > 1;
+
   return (
     <ContextMenuContainer
       ref={menuRef}
@@ -137,6 +163,42 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
             secondary={
               <Typography variant="caption" color="#cccccc">
                 {node.showPreview ? "Hide node preview" : "Show node preview"}
+              </Typography>
+            }
+          />
+        </MenuItem>
+        {hasMultipleSelected && (
+          <MenuItem onClick={handleArrangeClick}>
+            <MenuIcon className="arrange-icon">
+              <ArrangeIcon fontSize="small" />
+            </MenuIcon>
+            <ListItemText
+              primary={
+                <Typography variant="body2" color="#ffffff">
+                  Arrange
+                </Typography>
+              }
+              secondary={
+                <Typography variant="caption" color="#cccccc">
+                  Auto-arrange selected nodes
+                </Typography>
+              }
+            />
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleGroupClick}>
+          <MenuIcon className="group-icon">
+            <GroupIcon fontSize="small" />
+          </MenuIcon>
+          <ListItemText
+            primary={
+              <Typography variant="body2" color="#ffffff">
+                Group
+              </Typography>
+            }
+            secondary={
+              <Typography variant="caption" color="#cccccc">
+                Group selected nodes
               </Typography>
             }
           />

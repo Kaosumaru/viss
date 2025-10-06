@@ -101,7 +101,7 @@ export class EditorAPIImp implements EditorAPI {
     });
   }
 
-  addComment(nodeIds: string[], text?: string): void {
+  group(nodeIds: string[], text?: string): void {
     if (nodeIds.length === 0) return;
     this.comment.addFrame(text ?? "", nodeIds);
   }
