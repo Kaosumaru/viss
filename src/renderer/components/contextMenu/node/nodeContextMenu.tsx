@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable no-constant-binary-expression */
 import React, { useRef, useEffect, useContext } from "react";
 import {
   Paper,
@@ -186,23 +188,26 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
             />
           </MenuItem>
         )}
-        <MenuItem onClick={handleGroupClick}>
-          <MenuIcon className="group-icon">
-            <GroupIcon fontSize="small" />
-          </MenuIcon>
-          <ListItemText
-            primary={
-              <Typography variant="body2" color="#ffffff">
-                Group
-              </Typography>
-            }
-            secondary={
-              <Typography variant="caption" color="#cccccc">
-                Group selected nodes
-              </Typography>
-            }
-          />
-        </MenuItem>
+
+        {false && (
+          <MenuItem onClick={handleGroupClick}>
+            <MenuIcon className="group-icon">
+              <GroupIcon fontSize="small" />
+            </MenuIcon>
+            <ListItemText
+              primary={
+                <Typography variant="body2" color="#ffffff">
+                  Group
+                </Typography>
+              }
+              secondary={
+                <Typography variant="caption" color="#cccccc">
+                  Group selected nodes
+                </Typography>
+              }
+            />
+          </MenuItem>
+        )}
         <MenuItem onClick={handleDeleteClick}>
           <MenuIcon className="delete-icon">
             <DeleteIcon fontSize="small" />
