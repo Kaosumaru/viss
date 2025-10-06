@@ -41,7 +41,7 @@ export class FrameComment extends Comment {
     });
 
     this.editor = editor;
-    this.nested.className = "frame-comment";
+    this.nested.className = "frame-comment no-selection";
   }
 
   private getRect(): Rect {

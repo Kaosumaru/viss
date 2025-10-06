@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 
 test("getOutputType returns correct type for float literal", () => {
   const compiler = new Compiler({ noVariables: true });
-  
+
   const { addedNodes } = compiler.addNode({
     nodeType: "float",
     position: { x: 0, y: 0 },
@@ -23,14 +23,14 @@ test("getOutputType returns correct type for float literal", () => {
   }
 
   const nodeId = node.node.identifier;
-  const outputType = compiler.getOutputType(nodeId, "out");
+  const outputType = compiler.getOutputType({ nodeId, socketId: "out" });
 
   expect(outputType).toEqual(scalar("float"));
 });
 
 test("getOutputType returns correct type for vector add operation", () => {
   const compiler = new Compiler({ noVariables: true });
-  
+
   // Create two vector literals
   const { addedNodes: nodes1 } = compiler.addNode({
     nodeType: "vec3",
@@ -51,14 +51,21 @@ test("getOutputType returns correct type for vector add operation", () => {
     parameters: {},
   });
 
-  if (!nodes1 || nodes1.length === 0 || !nodes2 || nodes2.length === 0 || !addNodes || addNodes.length === 0) {
+  if (
+    !nodes1 ||
+    nodes1.length === 0 ||
+    !nodes2 ||
+    nodes2.length === 0 ||
+    !addNodes ||
+    addNodes.length === 0
+  ) {
     throw new Error("Failed to add nodes");
   }
 
   const node1 = nodes1[0];
   const node2 = nodes2[0];
   const addNode = addNodes[0];
-  
+
   if (!node1 || !node2 || !addNode) {
     throw new Error("Nodes are undefined");
   }
@@ -78,14 +85,17 @@ test("getOutputType returns correct type for vector add operation", () => {
     to: { nodeId: addNodeId, socketId: "b" },
   });
 
-  const outputType = compiler.getOutputType(addNodeId, "out");
+  const outputType = compiler.getOutputType({
+    nodeId: addNodeId,
+    socketId: "out",
+  });
 
   expect(outputType).toEqual(vector("float", 3));
 });
 
 test("getOutputType throws error for invalid socket id", () => {
   const compiler = new Compiler({ noVariables: true });
-  
+
   const { addedNodes } = compiler.addNode({
     nodeType: "float",
     position: { x: 0, y: 0 },
@@ -106,7 +116,7 @@ test("getOutputType throws error for invalid socket id", () => {
   const nodeId = node.node.identifier;
 
   expect(() => {
-    compiler.getOutputType(nodeId, "invalid_socket");
+    compiler.getOutputType({ nodeId, socketId: "invalid_socket" });
   }).toThrow("Output socket with id invalid_socket not found");
 });
 
@@ -114,6 +124,6 @@ test("getOutputType throws error for invalid node id", () => {
   const compiler = new Compiler({ noVariables: true });
 
   expect(() => {
-    compiler.getOutputType("invalid_node_id", "out");
+    compiler.getOutputType({ nodeId: "invalid_node_id", socketId: "out" });
   }).toThrow("Node with id invalid_node_id not found");
 });

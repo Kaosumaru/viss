@@ -87,10 +87,7 @@ export class Comment {
     return this.links.includes(nodeId);
   }
 
-  onContextMenu(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
+  onContextMenu(_e: MouseEvent) {
     if (this.events?.contextMenu) {
       this.events.contextMenu();
     }

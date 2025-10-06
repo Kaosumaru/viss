@@ -49,6 +49,7 @@ export class CompilerInternal {
       nodes: [],
       connections: [],
       uniforms: {},
+      groups: [],
     };
   }
 

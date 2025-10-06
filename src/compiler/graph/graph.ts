@@ -2,6 +2,7 @@ import type { NodeInfo } from "@compiler/nodes/compilerNode";
 import type { Connection } from "./connection";
 import type { Node } from "./node";
 import type { Uniforms } from "./uniform";
+import type { Group } from "./group";
 
 export interface Graph {
   version: number;
@@ -9,6 +10,7 @@ export interface Graph {
   uniforms: Uniforms;
   nodes: Node[];
   connections: Connection[];
+  groups: Group[];
   // comments?: Comment[];
 }
 

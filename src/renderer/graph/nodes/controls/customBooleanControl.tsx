@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import type { BooleanControl } from "./customParamControl";
 
 export function CustomBooleanControl(props: { data: BooleanControl }) {

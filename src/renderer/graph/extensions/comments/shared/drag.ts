@@ -19,6 +19,8 @@ export function useDrag(
         previous = current;
 
         translate(dx, dy);
+        moveEvent.preventDefault();
+        moveEvent.stopPropagation();
       }
       function up() {
         window.removeEventListener("pointermove", move);

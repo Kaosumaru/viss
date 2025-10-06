@@ -44,6 +44,7 @@ export function setup<T extends Descriptors>(
       }, []),
       connections: [],
       uniforms: {},
+      groups: [],
     },
     connect(inputNode, input, outputNode, output) {
       output = output || "out"; // Default output name

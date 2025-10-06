@@ -37,6 +37,10 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
       }
 
       const target = event.target as Element;
+      if (target.closest(".no-selection")) {
+        // Clicked on an element that should not trigger selection
+        return;
+      }
       const nodeElement = target.closest("[data-node-id]");
       if (nodeElement) {
         // Clicked on a node, do not start selection
