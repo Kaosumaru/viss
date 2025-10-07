@@ -300,8 +300,8 @@ export class CompilerInternal {
   }
 
   insertGroups(groups: Group[]): GraphDiff {
-    const addedGroups: Group[] = [];
-    this.graph.groups.push(...groups);
+    const addedGroups: Group[] = [...groups];
+    this.graph.groups.push(...addedGroups);
     return {
       addedGroups,
     };
