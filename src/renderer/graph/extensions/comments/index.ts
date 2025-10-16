@@ -254,7 +254,6 @@ export class CommentPlugin<
    */
   public addFrame(id: string, text: string, links: string[] = []) {
     const comment = new FrameComment(id, text, this.area, this.editor, {
-      contextMenu: ({ id }) => void this.editComment(id),
       pick: (data) => {
         this.area.area.content.reorder(
           comment.element,
