@@ -106,6 +106,18 @@ export class EditorAPIImp implements EditorAPI {
     return this.applyDiff(this.compiler.addGroup(nodeIds, text));
   }
 
+  ungroupNodes(nodeIds: string[]): Promise<void> {
+    return this.applyDiff(this.compiler.ungroupNodes(nodeIds));
+  }
+
+  deleteGroup(groupId: string): Promise<void> {
+    return this.applyDiff(this.compiler.removeGroup(groupId));
+  }
+
+  changeGroupText(groupId: string, text: string): Promise<void> {
+    return this.applyDiff(this.compiler.updateGroupText(groupId, text));
+  }
+
   centerView(): Promise<void> {
     return AreaExtensions.zoomAt(this.area, this.editor.getNodes());
   }
@@ -444,7 +456,12 @@ export class EditorAPIImp implements EditorAPI {
       }
 
       if (diff.updatedGroups) {
-        // TODO
+        // TODO better implementation
+        for (const group of diff.updatedGroups) {
+          this.comment.delete(group.id);
+          this.comment.addFrame(group.id, group.label, group.nodes);
+        }
+        
       }
 
       if (diff.removedGroups) {

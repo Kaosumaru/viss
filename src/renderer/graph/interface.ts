@@ -25,6 +25,9 @@ export interface EditorAPI {
 
   arrangeNodes(nodeIds: string[]): Promise<void>;
   group(nodeIds: string[], text?: string): Promise<void>;
+  ungroupNodes(nodeIds: string[]): Promise<void>;
+  deleteGroup(groupId: string): Promise<void>;
+  changeGroupText(groupId: string, text: string): Promise<void>;
 
   getSelectedNodes: () => string[];
   selectNodes: (nodeIds: string[]) => void;

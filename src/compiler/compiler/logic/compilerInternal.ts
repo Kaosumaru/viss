@@ -265,7 +265,7 @@ export class CompilerInternal {
 
   updateGroup(
     groupId: string,
-    nodes: string[],
+    nodes: string[] | undefined,
     text: string | undefined
   ): GraphDiff {
     const groupIndex = this.graph.groups.findIndex((g) => g.id === groupId);
@@ -276,10 +276,27 @@ export class CompilerInternal {
     if (!group) {
       return {};
     }
-    group.nodes = nodes;
+
+    if (nodes) {
+      group.nodes = nodes;
+    }
+    
     group.label = text ?? "";
     return {
       updatedGroups: [group],
+    };
+  }
+
+  ungroupNodes(nodeIds: string[]): GraphDiff {
+    const updatedGroups: Group[] = [];
+    for (const group of this.graph.groups) {
+      const hasNode = group.nodes.some((nodeId) => nodeIds.includes(nodeId));
+      if (!hasNode) continue;
+      group.nodes = group.nodes.filter((nodeId) => !nodeIds.includes(nodeId));
+      updatedGroups.push(group);
+    }
+    return {
+      updatedGroups,
     };
   }
 

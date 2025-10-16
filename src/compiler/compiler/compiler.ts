@@ -69,6 +69,14 @@ export class Compiler {
     return this.graph.removeGroups([groupId]);
   }
 
+  updateGroupText(groupId: string, text: string): GraphDiff {
+    return this.graph.updateGroup(groupId, undefined, text);
+  }
+
+  ungroupNodes(nodeIds: string[]): GraphDiff {
+    return this.graph.ungroupNodes(nodeIds);
+  }
+
   public updateGroup(
     groupId: string,
     nodes: string[],
