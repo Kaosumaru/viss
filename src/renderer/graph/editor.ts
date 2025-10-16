@@ -23,7 +23,8 @@ import {
 import { ShaderRenderer } from "@renderer/components/shaderOverlay/shaderRenderer";
 import emitter from "./emitter";
 import type { Position } from "@graph/position";
-import { CommentPlugin } from "./extensions/comments";
+import { CommentExtensions, CommentPlugin } from "./extensions/comments";
+import { MyZoom } from "./zoom";
 
 export type OnGraphChanged = (editorData: EditorAPI) => void;
 
@@ -32,10 +33,12 @@ export function createEditor(
   shaderRenderer: ShaderRenderer,
   onChanged?: OnGraphChanged
 ): Promise<EditorAPI> {
+  const accumulating = accumulateOnCtrl();
+  const sel = selector();
   const editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
-  const selectable: SelectableAPI = selectableNodes(area, selector(), {
-    accumulating: accumulateOnCtrl(),
+  const selectable: SelectableAPI = selectableNodes(area, sel, {
+    accumulating,
   });
 
   const arrange = new AutoArrangePlugin<Schemes>();
@@ -64,6 +67,8 @@ export function createEditor(
   area.use(render);
   area.use(arrange);
   area.use(comment);
+
+  CommentExtensions.selectable(comment, sel, accumulating);
 
   area.area.setDragHandler(
     new Drag({
@@ -96,10 +101,9 @@ export function createEditor(
   });
 
   // disable zoom on double click
-  area.addPipe((context) => {
-    if (context.type === "zoom" && context.data.source === "dblclick") return;
-    return context;
-  });
+  area.area.setZoomHandler(
+    new MyZoom(0.5)
+  );
 
   return Promise.resolve(editorData);
 }

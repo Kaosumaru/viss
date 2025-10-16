@@ -40,7 +40,7 @@ export class Comment {
     this.element = document.createElement("div");
     this.nested = document.createElement("div");
     this.element.appendChild(this.nested);
-    this.element.addEventListener("contextmenu", this.onContextMenu.bind(this));
+    this.nested.addEventListener("dblclick", this.onContextMenu.bind(this));
 
     this.dragHandler = new Drag();
 
