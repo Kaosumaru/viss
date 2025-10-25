@@ -26,6 +26,7 @@ export class FrameComment extends Comment {
         dy: number,
         sources?: NodeId[]
       ) => Promise<void>;
+      textEdited?: (comment: FrameComment, newText: string) => void;
     }
   ) {
     super(text, area, {
@@ -39,6 +40,9 @@ export class FrameComment extends Comment {
         if (events?.translate) await events.translate(this, dx, dy, sources);
       },
       drag: () => 1,
+      textEdited: (newText) => {
+        events?.textEdited?.(this, newText);
+      },
     });
 
     this.id = id;

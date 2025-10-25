@@ -3,13 +3,14 @@ import { BaseAreaPlugin, Drag } from "rete-area-plugin";
 
 import type { ExpectedSchemes, Position } from "./types";
 
-interface Events {
+export interface Events {
   contextMenu?: null | (() => void);
   pick?: null | (() => void);
   translate?:
     | null
     | ((dx: number, dy: number, sources?: NodeId[]) => Promise<void>);
   drag?: null | (() => void);
+  textEdited?: (newText: string) => void;
 }
 
 export class Comment {
@@ -30,7 +31,6 @@ export class Comment {
   public area: BaseAreaPlugin<ExpectedSchemes, unknown>;
   private events?: Events;
   private lastClickTime = 0;
-  private textAreaElement: HTMLTextAreaElement | null = null;
 
   constructor(
     text: string,
@@ -137,8 +137,6 @@ export class Comment {
     input.focus();
     input.select();
 
-    this.textAreaElement = input;
-
     // Handle key events
     const handleKeyDown = (e: KeyboardEvent) => {
       e.stopPropagation();
@@ -173,9 +171,10 @@ export class Comment {
 
     this.text = newText;
     this.isEditing = false;
+    if (this.events?.textEdited) {
+      this.events.textEdited(newText);
+    }
     this.update();
-
-    this.textAreaElement = null;
   }
 
   cancelEdit() {
@@ -185,7 +184,6 @@ export class Comment {
     this.isEditing = false;
 
     this.update();
-    this.textAreaElement = null;
   }
 
   onContextMenu(_e: MouseEvent) {

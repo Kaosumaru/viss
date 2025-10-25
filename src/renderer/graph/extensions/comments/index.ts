@@ -20,6 +20,7 @@ export * as CommentExtensions from "./extensions";
 export type Produces =
   | { type: "commentcreated"; data: Comment }
   | { type: "commentremoved"; data: Comment }
+  | { type: "commenttextedited"; data: { id: Comment["id"]; text: string } }
   | { type: "editcomment"; data: Comment }
   | { type: "commentselected"; data: Comment }
   | { type: "commentunselected"; data: Comment }
@@ -266,6 +267,12 @@ export class CommentPlugin<
         await this.emit({
           type: "commenttranslated",
           data: { id, dx, dy, sources },
+        });
+      },
+      textEdited: ({ id }, newText) => {
+        void this.emit({
+          type: "commenttextedited",
+          data: { id, text: newText },
         });
       },
     });
