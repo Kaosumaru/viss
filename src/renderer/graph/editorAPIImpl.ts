@@ -87,6 +87,18 @@ export class EditorAPIImp implements EditorAPI {
       return context;
     });
 
+    this.comment.addPipe(async (context) => {
+      if (this.deserializing) {
+        return context;
+      }
+      if (context.type === "commenttextedited") {
+        // TODO editing comment from UI is causing this to fire which probably rebuilds the comment again
+        const { id, text } = context.data;
+        await this.applyDiff(this.compiler.updateGroupText(id, text));
+      }
+      return context;
+    });
+
     // TODO it's async
     void this.applyDiff(this.compiler.getGraphAsDiff());
 
@@ -461,7 +473,6 @@ export class EditorAPIImp implements EditorAPI {
           this.comment.delete(group.id);
           this.comment.addFrame(group.id, group.label, group.nodes);
         }
-        
       }
 
       if (diff.removedGroups) {
@@ -495,7 +506,10 @@ export class EditorAPIImp implements EditorAPI {
         (diff.addedConnections?.length ?? 0) +
         (diff.removedConnections?.length ?? 0) +
         (diff.nodesWithModifiedProperties?.length ?? 0) +
-        (diff.translatedNodes?.size ?? 0);
+        (diff.translatedNodes?.size ?? 0) +
+        (diff.addedGroups?.length ?? 0) +
+        (diff.removedGroups?.length ?? 0) +
+        (diff.updatedGroups?.length ?? 0);
 
       if (updatedJson > 0) {
         this.extension.saveGraph();
