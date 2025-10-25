@@ -47,7 +47,7 @@ export const SelectionArea: React.FC<SelectionAreaProps> = ({
         return;
       }
 
-      event.preventDefault();
+      // event.preventDefault();
 
       const container = containerRef.current;
       if (!container) return;

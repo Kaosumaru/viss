@@ -23,10 +23,14 @@ export class Comment {
   element!: HTMLElement;
   nested!: HTMLElement;
   prevPosition: null | Position = null;
+  private isEditing = false;
+  private originalText = "";
 
   public text: string;
   public area: BaseAreaPlugin<ExpectedSchemes, unknown>;
   private events?: Events;
+  private lastClickTime = 0;
+  private textAreaElement: HTMLTextAreaElement | null = null;
 
   constructor(
     text: string,
@@ -40,7 +44,7 @@ export class Comment {
     this.element = document.createElement("div");
     this.nested = document.createElement("div");
     this.element.appendChild(this.nested);
-    this.nested.addEventListener("dblclick", this.onContextMenu.bind(this));
+    this.nested.addEventListener("mouseup", this.onMouseUp.bind(this));
 
     this.dragHandler = new Drag();
 
@@ -52,6 +56,7 @@ export class Comment {
       },
       {
         start: () => {
+          if (this.isEditing) return;
           this.prevPosition = { ...area.area.pointer };
 
           if (this.events?.pick) {
@@ -59,6 +64,7 @@ export class Comment {
           }
         },
         translate: () => {
+          if (this.isEditing) return;
           if (this.prevPosition) {
             const pointer = { ...area.area.pointer };
             const dx = pointer.x - this.prevPosition.x;
@@ -69,6 +75,7 @@ export class Comment {
           }
         },
         drag: () => {
+          if (this.isEditing) return;
           this.prevPosition = null;
           if (this.events?.drag) {
             this.events.drag();
@@ -85,6 +92,100 @@ export class Comment {
 
   linkedTo(nodeId: NodeId) {
     return this.links.includes(nodeId);
+  }
+
+  onMouseUp(_e: MouseEvent) {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - this.lastClickTime;
+
+    if (timeDiff < 300) {
+      this.startEditing(_e);
+    }
+
+    this.lastClickTime = currentTime;
+  }
+
+  startEditing(_e: MouseEvent) {
+    if (this.isEditing) return;
+
+    this.isEditing = true;
+    this.originalText = this.text;
+
+    // Create input element
+    const input = document.createElement("textarea");
+    input.value = this.text;
+    input.style.cssText = `
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
+      resize: none;
+      overflow: hidden;
+      user-select: auto;
+    `;
+
+    // Clear the nested element and add input
+    this.nested.innerHTML = "";
+    this.nested.appendChild(input);
+
+    // Focus and select all text
+    input.focus();
+    input.select();
+
+    this.textAreaElement = input;
+
+    // Handle key events
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        this.confirmEdit(input.value);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        this.cancelEdit();
+      }
+    };
+
+    // Handle blur (when clicking outside)
+    const handleBlur = () => {
+      this.confirmEdit(input.value);
+    };
+
+    const stopPropagation = (e: Event) => {
+      e.stopPropagation();
+    };
+
+    input.addEventListener("keydown", handleKeyDown);
+    input.addEventListener("blur", handleBlur);
+
+    input.addEventListener("mouseup", stopPropagation);
+    input.addEventListener("mousedown", stopPropagation);
+    input.addEventListener("mousemove", stopPropagation);
+  }
+
+  confirmEdit(newText: string) {
+    if (!this.isEditing) return;
+
+    this.text = newText;
+    this.isEditing = false;
+    this.update();
+
+    this.textAreaElement = null;
+  }
+
+  cancelEdit() {
+    if (!this.isEditing) return;
+
+    this.text = this.originalText;
+    this.isEditing = false;
+
+    this.update();
+    this.textAreaElement = null;
   }
 
   onContextMenu(_e: MouseEvent) {
@@ -112,7 +213,9 @@ export class Comment {
   }
 
   update() {
-    this.nested.innerText = this.text;
+    if (!this.isEditing) {
+      this.nested.innerText = this.text;
+    }
     this.nested.style.transform = `translate(${this.x}px, ${this.y}px)`;
   }
 

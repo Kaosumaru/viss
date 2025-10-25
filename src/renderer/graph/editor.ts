@@ -101,9 +101,7 @@ export function createEditor(
   });
 
   // disable zoom on double click
-  area.area.setZoomHandler(
-    new MyZoom(0.5)
-  );
+  area.area.setZoomHandler(new MyZoom(0.25));
 
   return Promise.resolve(editorData);
 }

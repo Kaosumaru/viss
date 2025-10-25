@@ -90,7 +90,7 @@ export class FrameComment extends Comment {
 
   public async resize() {
     const bbox = nodesBBox(this.editor, this.area, this.links, {
-      top: 50,
+      top: 70,
       left: 20,
       right: 20,
       bottom: 20,

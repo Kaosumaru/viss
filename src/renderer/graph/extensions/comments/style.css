@@ -3,6 +3,7 @@
     color: black;
     padding: 12px;
     font-size: 140%;
+    font-weight: bold;
     color: white;
     position: absolute;
     cursor: move;
@@ -25,4 +26,6 @@
     z-index: -10;
     background: rgba(20, 20, 20, 0.3);
     border: 6px solid transparent;
+    
+    user-select: none;
 }
